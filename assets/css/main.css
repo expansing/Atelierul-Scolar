@@ -1,0 +1,1390 @@
+/* ============================================================
+   ATELIERUL ȘCOLAR — Design System
+   Temă jucăușă pentru copii de 6-8 ani: culori vii, colțuri
+   rotunjite, butoane mari, animații blânde, mascotă, light/dark.
+   ============================================================ */
+
+:root {
+  --font-main: 'Comic Neue', 'Baloo 2', 'Segoe UI', 'Verdana', system-ui, sans-serif;
+
+  --bg: #f6f9ff;
+  --bg-card: #ffffff;
+  --bg-soft: #eef4ff;
+  --text: #26324f;
+  --text-soft: #5f6f92;
+  --border: #dbe6fb;
+
+  --primary: #ff7a59;      /* coral */
+  --primary-dark: #f25c3d;
+  --accent: #ffc93c;       /* sun */
+  --success: #34c77b;
+  --danger: #ff5c7a;
+  --purple: #9b5cff;
+  --teal: #12c2b0;
+  --blue: #4f8cff;
+  --pink: #ff6fa5;
+
+  /* Culori pe subiect */
+  --s-mat: #4f8cff;
+  --s-lim: #ff7a59;
+  --s-log: #9b5cff;
+  --s-inf: #12c2b0;
+  --s-sci: #34c77b;
+  --s-civ: #ff6fa5;
+
+  --radius: 22px;
+  --radius-sm: 14px;
+  --shadow: 0 8px 24px rgba(38, 50, 79, 0.10);
+  --shadow-hover: 0 14px 34px rgba(38, 50, 79, 0.18);
+}
+
+[data-theme="dark"] {
+  --bg: #141a2b;
+  --bg-card: #1e2740;
+  --bg-soft: #263252;
+  --text: #eef2fb;
+  --text-soft: #a3b3d4;
+  --border: #31406a;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.40);
+  --shadow-hover: 0 14px 34px rgba(0, 0, 0, 0.55);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-main);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  font-size: 18px;
+  transition: background 0.4s, color 0.4s;
+  min-height: 100vh;
+}
+
+/* ---------- Fundal animat: baloane + stele ---------- */
+.bg-bubbles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bg-bubbles span {
+  position: absolute;
+  bottom: -140px;
+  border-radius: 50%;
+  opacity: 0.12;
+  animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+  from { transform: translateY(0) rotate(0deg); }
+  to   { transform: translateY(-130vh) rotate(360deg); }
+}
+
+/* ---------- Header ---------- */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--border);
+}
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--border);
+}
+.site-footer {
+  text-align: center;
+  padding: 1.6rem 1rem 2.2rem;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+.site-footer p { margin-bottom: 0.9rem; }
+
+/* ---------- Buton resetare progres ---------- */
+.btn-reset-progress {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  background: var(--bg-card);
+  border: 2px dashed var(--border);
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s, color 0.2s, background 0.2s;
+}
+.btn-reset-progress:hover {
+  transform: translateY(-2px);
+  border-color: var(--danger);
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 8%, var(--bg-card));
+}
+
+/* ---------- Modal resetare ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  background: rgba(20, 26, 43, 0.55);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.modal-overlay.show { opacity: 1; }
+.modal-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hover);
+  max-width: 420px;
+  width: 100%;
+  padding: 1.8rem 1.6rem;
+  text-align: center;
+  transform: translateY(12px) scale(0.96);
+  transition: transform 0.2s;
+}
+.modal-overlay.show .modal-card { transform: translateY(0) scale(1); }
+.modal-emoji { font-size: 3rem; margin-bottom: 0.4rem; animation: wiggle 2.5s ease-in-out infinite; }
+.modal-card h2 { font-size: 1.4rem; margin-bottom: 0.6rem; color: var(--text); }
+.modal-card p { color: var(--text-soft); margin-bottom: 1.3rem; }
+.modal-actions { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { transform: translateY(-2px); background: color-mix(in srgb, var(--danger) 88%, #000); }
+.header-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0.7rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.logo {
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.logo .mascot { font-size: 1.5rem; animation: wiggle 3s ease-in-out infinite; }
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+nav { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; }
+.nav-link {
+  text-decoration: none;
+  color: var(--text-soft);
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  transition: background 0.2s, color 0.2s;
+}
+.nav-link:hover { background: var(--bg-soft); color: var(--text); }
+.nav-link.active { background: var(--primary); color: #fff; }
+.stars-chip { background: var(--accent); color: #5a3d00; font-weight: 800; }
+
+/* ---------- Buton temă ---------- */
+.btn-theme {
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 1.1rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow);
+}
+.btn-theme:hover { transform: scale(1.08) rotate(12deg); }
+
+/* ---------- Buton sunet ---------- */
+.btn-sound {
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 1.1rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: var(--shadow);
+}
+.btn-sound:hover { transform: scale(1.08); }
+
+/* ---------- Main ---------- */
+main {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1.4rem 1.2rem 3rem;
+}
+
+/* ---------- Hero ---------- */
+.hero { text-align: center; padding: 1.5rem 0 0.5rem; }
+.hero .mascot-big {
+  font-size: 4.5rem;
+  display: inline-block;
+  animation: bob 2.6s ease-in-out infinite;
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.hero h1 {
+  font-size: clamp(1.9rem, 5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0.4rem 0;
+}
+.hero h1 .grad {
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--teal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero p {
+  max-width: 640px;
+  margin: 0.6rem auto 0;
+  color: var(--text-soft);
+  font-size: 1.1rem;
+}
+.hero-motto {
+  display: inline-block;
+  margin-top: 1rem;
+  background: var(--bg-card);
+  border: 2px dashed var(--border);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  color: var(--text-soft);
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Progres global ---------- */
+#global-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  max-width: 520px;
+  margin: 1.6rem auto 0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 0.6rem 1.2rem;
+  box-shadow: var(--shadow);
+  font-weight: 700;
+}
+#global-progress .bar {
+  flex: 1;
+  height: 14px;
+  background: var(--bg-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+#global-progress .bar > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+/* ---------- Titlu secțiune ---------- */
+h2.section-title {
+  text-align: center;
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 2.4rem 0 1.2rem;
+}
+
+/* ---------- Grilă subiecte ---------- */
+.subjects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.2rem;
+}
+.subject-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.subject-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--sc);
+}
+.subject-card .sc-icon {
+  font-size: 2.6rem;
+  display: inline-block;
+  animation: bob 3s ease-in-out infinite;
+}
+.subject-card h3 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 0.5rem 0 0.2rem;
+  color: var(--sc);
+}
+.subject-card p { color: var(--text-soft); font-size: 0.98rem; }
+.subject-card .sc-meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+  flex-wrap: wrap;
+}
+.chip {
+  background: var(--bg-soft);
+  color: var(--text-soft);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.subject-card .sc-progress {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 6px;
+  background: var(--bg-soft);
+}
+.subject-card .sc-progress > i {
+  display: block; height: 100%;
+  background: var(--sc);
+  width: 0%;
+  transition: width 0.6s ease;
+}
+
+/* ---------- Grilă activități (pagina subiect) ---------- */
+.subject-hero {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+.subject-hero .sh-icon { font-size: 3rem; }
+.subject-hero h1 { font-size: 1.8rem; font-weight: 800; color: var(--sc); }
+.subject-hero p { color: var(--text-soft); }
+
+.activities-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.activity-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  box-shadow: var(--shadow);
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  position: relative;
+}
+.activity-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--sc);
+}
+.activity-card .ac-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  background: var(--bg-soft);
+  border-radius: 14px;
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+}
+.activity-card .ac-body h3 { font-size: 1.12rem; font-weight: 800; }
+.activity-card .ac-body p { color: var(--text-soft); font-size: 0.9rem; margin-top: 0.15rem; }
+.activity-card .ac-num {
+  position: absolute;
+  top: 0.7rem; right: 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-soft);
+  background: var(--bg-soft);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+}
+.activity-card .ac-meta { margin-top: 0.5rem; }
+.activity-card.done { border-color: var(--success); }
+.activity-card.done .ac-num { background: var(--success); color: #fff; }
+
+/* ---------- Pagina activitate ---------- */
+.lesson-hero {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+.lesson-hero .lh-icon { font-size: 3rem; }
+.lesson-hero h1 { font-size: 1.7rem; font-weight: 800; }
+.lesson-hero .lh-sub { color: var(--text-soft); font-weight: 700; }
+
+/* ---------- Taburi ---------- */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.tab {
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-soft);
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tab:hover { border-color: var(--sc); color: var(--text); }
+.tab.active {
+  background: var(--sc);
+  color: #fff;
+  border-color: var(--sc);
+  box-shadow: var(--shadow);
+}
+
+.panel {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.35s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.panel:not(.active) { display: none; }
+.panel h2 { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.7rem; }
+.panel p { margin-bottom: 0.7rem; }
+.panel ul { margin: 0.5rem 0 0.7rem 1.4rem; }
+.panel li { margin-bottom: 0.35rem; }
+
+/* ---------- Blocuri speciale ---------- */
+.callout {
+  background: var(--bg-soft);
+  border-left: 5px solid var(--sc);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1.1rem;
+  margin: 0.8rem 0;
+}
+.callout .co-title { font-weight: 800; margin-bottom: 0.3rem; }
+.objectives li::marker { color: var(--sc); }
+
+/* ---------- Finalizare lecție ---------- */
+.lesson-actions {
+  margin-top: 1.4rem;
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn {
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 1.05rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1.6rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s;
+  box-shadow: var(--shadow);
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-primary { background: var(--sc, var(--primary)); color: #fff; }
+.btn-ghost { background: var(--bg-card); color: var(--text); border: 2px solid var(--border); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.lesson-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+.lesson-nav a {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 800;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 0.6rem 1.1rem;
+  transition: all 0.2s;
+  box-shadow: var(--shadow);
+}
+.lesson-nav a:hover { border-color: var(--sc); transform: translateY(-2px); }
+
+/* ---------- Footer ---------- */
+footer {
+  text-align: center;
+  color: var(--text-soft);
+  padding: 1.6rem 1rem;
+  border-top: 2px solid var(--border);
+  margin-top: 2rem;
+  font-weight: 700;
+}
+
+/* ============================================================
+   GAME ENGINES
+   ============================================================ */
+.game {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  box-shadow: var(--shadow);
+  margin: 0.8rem 0;
+}
+.game .g-title { font-weight: 800; font-size: 1.15rem; margin-bottom: 0.4rem; }
+.game .g-intro { color: var(--text-soft); margin-bottom: 0.9rem; }
+.game .g-status {
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin: 0.6rem 0;
+  min-height: 1.4rem;
+}
+.game .g-status.good { color: var(--success); }
+.game .g-status.bad { color: var(--danger); }
+
+/* Grid generic pentru obiecte */
+.game-grid {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  margin: 0.8rem 0;
+}
+.game-item {
+  background: var(--bg-soft);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 0.5rem;
+  text-align: center;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s, background 0.2s;
+  user-select: none;
+  min-height: 70px;
+  display: grid;
+  place-items: center;
+}
+.game-item:hover { transform: scale(1.05); border-color: var(--sc); }
+.game-item.selected { border-color: var(--sc); background: color-mix(in srgb, var(--sc) 18%, var(--bg-soft)); }
+.game-item.correct { border-color: var(--success); background: color-mix(in srgb, var(--success) 20%, var(--bg-soft)); }
+.game-item.wrong { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 18%, var(--bg-soft)); animation: shake 0.4s; }
+.game-item.disabled { opacity: 0.5; cursor: default; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* Opțiuni quiz */
+.match-col { display: flex; flex-direction: column; gap: 0.6rem; }
+.match-col .game-item { width: 100%; }
+
+.quiz-options { display: grid; gap: 0.7rem; grid-template-columns: 1fr 1fr; }
+.quiz-opt {
+  background: var(--bg-soft);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.quiz-opt:hover { border-color: var(--sc); transform: translateY(-2px); }
+.quiz-opt.correct { border-color: var(--success); background: color-mix(in srgb, var(--success) 20%, var(--bg-soft)); }
+.quiz-opt.wrong { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 18%, var(--bg-soft)); }
+.quiz-opt:disabled { cursor: default; }
+
+/* Zone classify */
+.classify-zones { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 0.8rem; }
+.classify-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem;
+  min-height: 120px;
+  background: var(--bg-soft);
+}
+.classify-zone h4 { font-weight: 800; margin-bottom: 0.5rem; text-align: center; }
+.classify-zone .cz-items { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.classify-zone .cz-item {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.classify-zone.drop-ok { border-color: var(--success); }
+
+/* Memory */
+.memory-grid { display: grid; gap: 0.6rem; grid-template-columns: repeat(4, 1fr); }
+.memory-card {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  background: var(--bg-soft);
+  font-size: 1.8rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+  user-select: none;
+}
+.memory-card.flipped { background: var(--bg-card); border-color: var(--sc); }
+.memory-card.matched { background: color-mix(in srgb, var(--success) 20%, var(--bg-soft)); border-color: var(--success); cursor: default; }
+.memory-card .face { display: grid; place-items: center; }
+
+/* Arrange / order */
+.arrange-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin: 0.8rem 0; }
+.arrange-slot {
+  min-width: 90px;
+  min-height: 70px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  background: var(--bg-soft);
+  padding: 0.4rem;
+}
+.arrange-slot.filled { border-style: solid; border-color: var(--sc); background: var(--bg-card); }
+.arrange-pool { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.6rem; }
+.arrange-pool .game-item { min-width: 80px; }
+
+/* Clock */
+.clock-face {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 6px solid var(--sc);
+  background: var(--bg-card);
+  position: relative;
+  margin: 0.8rem auto;
+  box-shadow: var(--shadow);
+}
+.clock-face .tick {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 2px; height: 8px;
+  background: var(--text-soft);
+  transform-origin: 0 0;
+}
+.clock-hand {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform-origin: 0 0;
+  border-radius: 999px;
+}
+.clock-hand.hour { width: 6px; height: 42px; background: var(--text); margin-left: -3px; margin-top: -42px; }
+.clock-hand.minute { width: 4px; height: 62px; background: var(--sc); margin-left: -2px; margin-top: -62px; }
+.clock-center {
+  position: absolute; left: 50%; top: 50%;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--sc); transform: translate(-50%, -50%);
+}
+.clock-num {
+  position: absolute;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--text-soft);
+}
+
+/* Shapes */
+.shape-display {
+  display: grid;
+  place-items: center;
+  margin: 0.8rem 0;
+}
+.shape-display svg { width: 150px; height: 150px; }
+
+/* Input text (limba română) */
+.type-input {
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+  color: var(--text);
+  width: 100%;
+  max-width: 340px;
+}
+.type-input:focus { outline: none; border-color: var(--sc); }
+
+/* Buton reset joc */
+.btn-replay {
+  margin-top: 0.8rem;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border: 2px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-replay:hover { border-color: var(--sc); }
+
+/* ---------- BALANCE (balanță) ---------- */
+.balance-scale {
+  position: relative;
+  height: 220px;
+  margin: 0.8rem auto 0.4rem;
+  max-width: 420px;
+}
+.balance-beam {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  width: 340px;
+  height: 10px;
+  margin-left: -170px;
+  background: linear-gradient(90deg, var(--sc), var(--sc-soft, var(--sc)));
+  border-radius: 6px;
+  transform-origin: center center;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 2;
+}
+.balance-pan {
+  position: absolute;
+  top: 10px;
+  width: 130px;
+  text-align: center;
+}
+.balance-pan-left { left: -10px; }
+.balance-pan-right { right: -10px; }
+.balance-pan-objects {
+  min-height: 70px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: center;
+  gap: 2px;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  background: var(--bg-soft);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 0.4rem;
+}
+.balance-pan-label {
+  margin-top: 0.3rem;
+  font-weight: 900;
+  font-size: 1.3rem;
+  color: var(--sc);
+}
+.balance-fulcrum {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin-left: -14px;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 40px solid var(--sc);
+  z-index: 3;
+}
+.balance-base {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  width: 120px;
+  height: 14px;
+  margin-left: -60px;
+  background: var(--sc);
+  border-radius: 0 0 10px 10px;
+  z-index: 1;
+}
+
+/* ---------- SHOP (magazin) ---------- */
+.shop-scene {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin: 0.8rem 0;
+}
+.shop-item-card,
+.shop-wallet {
+  background: var(--bg-soft);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem;
+  text-align: center;
+}
+.shop-item-emoji { font-size: 3rem; }
+.shop-item-name { font-weight: 800; margin: 0.3rem 0; }
+.shop-item-price {
+  display: inline-block;
+  background: var(--sc);
+  color: #fff;
+  font-weight: 900;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+}
+.shop-wallet-label { font-size: 0.85rem; color: var(--text-soft); font-weight: 700; }
+.shop-wallet-amount { font-size: 1.6rem; font-weight: 900; color: var(--sc); margin: 0.2rem 0; }
+.shop-wallet-coins { font-size: 1.1rem; letter-spacing: 2px; word-break: break-all; }
+
+/* ---------- GEN (forme din jurul tău) ---------- */
+.gen-scene {
+  background: var(--bg-soft);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin: 0.8rem 0;
+  text-align: center;
+}
+.gen-objects {
+  font-size: 2.4rem;
+  line-height: 1.4;
+  letter-spacing: 0.15rem;
+  word-break: break-word;
+}
+
+/* ============================================================
+   „De ce învățăm?” — drumul cu 6 opriri
+   ============================================================ */
+/* banner de pe pagina de acasă */
+.dece-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  max-width: 760px;
+  margin: 1.4rem auto 0;
+  background: linear-gradient(120deg, var(--bg-card), var(--bg-soft));
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1rem 1.3rem;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: var(--text);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.dece-banner:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--success);
+}
+.dece-banner-emoji { font-size: 2.4rem; animation: bob 3s ease-in-out infinite; }
+.dece-banner-text { flex: 1; font-size: 1rem; }
+.dece-banner-text strong { color: var(--success); font-size: 1.1rem; }
+.dece-banner-arrow { font-size: 1.6rem; font-weight: 800; color: var(--success); }
+
+.dece-hero {
+  text-align: center;
+  padding: 1.5rem 0 0.5rem;
+}
+.dece-mascot {
+  font-size: 4.5rem;
+  display: inline-block;
+  animation: bob 2.6s ease-in-out infinite;
+}
+.dece-hero h1 {
+  font-size: clamp(1.9rem, 5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0.4rem 0;
+}
+.dece-hero h1 .grad {
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--teal));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.dece-hero p {
+  max-width: 640px;
+  margin: 0.6rem auto 0;
+  color: var(--text-soft);
+  font-size: 1.1rem;
+}
+
+/* Metru de creștere */
+.dece-meter {
+  max-width: 460px;
+  margin: 1.4rem auto 0;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.2rem;
+  box-shadow: var(--shadow);
+}
+.dece-meter-label {
+  font-weight: 800;
+  color: var(--text-soft);
+  margin-bottom: 0.4rem;
+}
+.dece-meter-bar {
+  height: 16px;
+  background: var(--bg-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.dece-meter-bar > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+.dece-meter-count {
+  text-align: right;
+  font-weight: 800;
+  color: var(--success);
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+}
+
+/* Traseul */
+.dece-path {
+  position: relative;
+  max-width: 760px;
+  margin: 2rem auto 0;
+  padding: 0 0.5rem;
+}
+/* linia centrală a drumului */
+.dece-path::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--border) 0 14px,
+    transparent 14px 28px
+  );
+  border-radius: 999px;
+}
+
+.dece-camp {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  margin-bottom: 2.4rem;
+}
+.dece-camp.right {
+  flex-direction: row-reverse;
+}
+/* nodul pe drum */
+.dece-node {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 4px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: var(--shadow);
+  z-index: 2;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.dece-camp.done .dece-node {
+  border-color: var(--success);
+  transform: scale(1.08);
+}
+.dece-camp-card {
+  flex: 1;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.3rem 1.4rem;
+  box-shadow: var(--shadow);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.dece-camp.done .dece-camp-card {
+  border-color: var(--success);
+}
+.dece-camp-num {
+  display: inline-block;
+  background: var(--bg-soft);
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  margin-bottom: 0.4rem;
+}
+.dece-camp-card h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.6rem;
+}
+.dece-camp-card .dece-body p {
+  margin-bottom: 0.6rem;
+  color: var(--text);
+}
+
+/* Bufnița vorbăreașă */
+.dece-owl {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.9rem;
+}
+.dece-owl-face {
+  font-size: 2rem;
+  flex: 0 0 auto;
+  animation: bob 3s ease-in-out infinite;
+}
+.dece-owl p {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+/* Lecția */
+.dece-lesson {
+  background: linear-gradient(90deg, rgba(255, 201, 60, 0.18), rgba(52, 199, 123, 0.14));
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  margin: 1rem 0;
+  font-weight: 700;
+}
+.dece-lesson-tag {
+  display: inline-block;
+  background: var(--accent);
+  color: #4a3600;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  margin-right: 0.4rem;
+}
+
+/* buton „Am înțeles” */
+.dece-done-btn {
+  width: 100%;
+  margin-top: 0.4rem;
+}
+.dece-done-btn:disabled {
+  background: var(--success);
+  opacity: 1;
+}
+
+/* ---------- elemente interactive ---------- */
+.di {
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin: 0.8rem 0;
+  text-align: center;
+}
+.di-btn { margin-top: 0.7rem; }
+
+/* Oprire 1 — creier */
+.di-brain-emoji {
+  font-size: 40px;
+  display: inline-block;
+  transition: font-size 0.4s, transform 0.4s;
+}
+.di-brain-meter {
+  height: 14px;
+  background: var(--bg-card);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0.7rem 0 0.3rem;
+}
+.di-brain-meter > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--blue), var(--purple));
+  transition: width 0.4s;
+}
+.di-brain-label { font-weight: 700; color: var(--text-soft); font-size: 0.95rem; }
+
+/* Oprire 2 — atenție */
+.di-attention-title { font-weight: 800; margin-bottom: 0.6rem; }
+.di-attention-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  max-width: 320px;
+  margin: 0 auto;
+}
+.di-attention-cell {
+  font-size: 1.8rem;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.di-attention-cell:hover { transform: scale(1.08); }
+.di-attention-cell.found {
+  background: var(--success);
+  border-color: var(--success);
+  animation: pop 0.4s ease;
+}
+.di-attention-cell.wrong {
+  background: var(--danger);
+  border-color: var(--danger);
+}
+.di-attention-status { font-weight: 700; color: var(--text-soft); margin-top: 0.6rem; }
+
+/* Oprire 3 — curiozitate */
+.di-curiosity-title { font-weight: 800; margin-bottom: 0.6rem; }
+.di-curiosity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+.di-curiosity-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.di-curiosity-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+.di-curiosity-emoji { font-size: 2rem; }
+.di-curiosity-q { font-weight: 700; font-size: 0.95rem; }
+.di-curiosity-answer {
+  margin-top: 0.7rem;
+  background: var(--bg-card);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem;
+  font-weight: 700;
+  opacity: 0.55;
+  transition: opacity 0.3s;
+}
+.di-curiosity-answer.show { opacity: 1; }
+
+/* Oprire 4 — perseverență */
+.di-perseverance-title { font-weight: 800; margin-bottom: 0.6rem; }
+.di-perseverance-tower {
+  min-height: 120px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+.di-perseverance-fall {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--danger);
+  animation: shake 0.4s ease;
+}
+.di-perseverance-built {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+}
+.di-perseverance-block {
+  width: 90px;
+  height: 22px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 6px;
+  animation: pop 0.3s ease;
+}
+.di-perseverance-status { font-weight: 700; color: var(--text-soft); margin-bottom: 0.4rem; }
+
+/* Oprire 5 — practica */
+.di-practice-title { font-weight: 800; margin-bottom: 0.7rem; }
+.di-practice-track {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  text-align: left;
+}
+.di-practice-racer { display: flex; flex-direction: column; gap: 0.25rem; }
+.di-practice-emoji { font-size: 1.4rem; }
+.di-practice-name { font-weight: 700; font-size: 0.9rem; color: var(--text-soft); }
+.di-practice-bar {
+  height: 14px;
+  background: var(--bg-card);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.di-practice-bar > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  transition: width 0.4s;
+}
+[data-racer="geniu"] .di-practice-bar > i { background: var(--text-soft); }
+[data-racer="luptator"] .di-practice-bar > i { background: linear-gradient(90deg, var(--success), var(--teal)); }
+.di-practice-status { font-weight: 700; color: var(--text-soft); margin: 0.6rem 0; }
+
+/* Oprire 6 — celebrare */
+.di-celebrate-emoji { font-size: 3rem; animation: bob 2s ease-in-out infinite; }
+.di-celebrate-text { font-weight: 700; color: var(--text-soft); margin-top: 0.4rem; }
+
+/* Final */
+.dece-finish {
+  max-width: 560px;
+  margin: 2.5rem auto 0;
+  text-align: center;
+}
+.dece-finish-card {
+  background: var(--bg-card);
+  border: 3px solid var(--success);
+  border-radius: var(--radius);
+  padding: 1.8rem;
+  box-shadow: var(--shadow-hover);
+  animation: pop 0.5s ease;
+}
+.dece-finish-emoji { font-size: 4rem; }
+.dece-finish-card h2 { font-size: 1.6rem; margin: 0.5rem 0; }
+.dece-finish-list {
+  list-style: none;
+  text-align: left;
+  max-width: 380px;
+  margin: 0.8rem auto;
+}
+.dece-finish-list li {
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.9rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+.dece-finish-big {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--success);
+  margin: 0.8rem 0;
+}
+
+/* animații auxiliare */
+@keyframes pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+/* ---------- Confetti ---------- */
+.confetti-piece {
+  position: fixed;
+  top: -20px;
+  width: 12px;
+  height: 12px;
+  z-index: 999;
+  pointer-events: none;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0.2; }
+}
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: var(--bg-card);
+  font-weight: 800;
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  box-shadow: var(--shadow-hover);
+  z-index: 1000;
+  animation: toastIn 0.3s ease;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ---------- Ecran invalid ---------- */
+.invalid-screen {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+.invalid-screen .big { font-size: 4rem; }
+.invalid-screen h1 { font-size: 1.8rem; margin: 0.6rem 0; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 640px) {
+  body { font-size: 17px; }
+  .quiz-options { grid-template-columns: 1fr; }
+  .classify-zones { grid-template-columns: 1fr; }
+  .memory-grid { grid-template-columns: repeat(3, 1fr); }
+  .hero .mascot-big { font-size: 3.5rem; }
+  .shop-scene { grid-template-columns: 1fr; }
+  .balance-beam { width: 280px; margin-left: -140px; }
+  .balance-pan { width: 110px; }
+  .gen-objects { font-size: 1.9rem; }
+  /* De ce învățăm? — pe mobil, drumul e o coloană simplă */
+  .dece-path::before { left: 32px; }
+  .dece-camp, .dece-camp.right {
+    flex-direction: row;
+    gap: 0.8rem;
+  }
+  .dece-node { width: 52px; height: 52px; font-size: 1.6rem; }
+  .di-curiosity-grid { grid-template-columns: 1fr; }
+}

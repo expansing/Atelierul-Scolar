@@ -1,0 +1,15 @@
+{
+  "name": "atelierul-scolar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site educațional static în limba română pentru copii de 6-8 ani (clasa 1-2): matematică, limba română, logică, informatică, științe și educație civică — cu jocuri, imagini și animații.",
+  "engines": {
+    "node": ">=12"
+  },
+  "scripts": {
+    "validate": "node validate-data.js",
+    "check:syntax": "node --check assets/js/data.js && node --check assets/js/engines.js && node --check assets/js/progress.js && node --check assets/js/sound.js && node --check assets/js/confetti.js && node --check assets/js/render.js && node --check assets/js/dece.js && node --check assets/js/app.js",
+    "check": "npm run check:syntax && npm run validate",
+    "serve": "python3 -m http.server 8080"
+  }
+}
