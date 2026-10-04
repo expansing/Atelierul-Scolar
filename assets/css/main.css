@@ -5,7 +5,7 @@
    ============================================================ */
 
 :root {
-  --font-main: 'Comic Neue', 'Baloo 2', 'Segoe UI', 'Verdana', system-ui, sans-serif;
+  --font-main: 'Baloo 2', 'Comic Neue', 'Segoe UI', 'Verdana', system-ui, sans-serif;
 
   --bg: #f6f9ff;
   --bg-card: #ffffff;
@@ -510,6 +510,86 @@ h2.section-title {
 }
 .callout .co-title { font-weight: 800; margin-bottom: 0.3rem; }
 .objectives li::marker { color: var(--sc); }
+
+/* ---------- Montessori ---------- */
+.ms-block {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 2px dashed #b8e6cc;
+}
+.ms-block-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1d7a4a;
+  margin-bottom: 0.4rem;
+}
+.ms-intro {
+  background: linear-gradient(135deg, #e8f7ee, #f2fbf5);
+  border: 2px solid #b8e6cc;
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1.1rem;
+  margin: 0.8rem 0;
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+.ms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.8rem;
+  margin: 0.8rem 0;
+}
+.ms-card {
+  display: flex;
+  gap: 0.7rem;
+  background: var(--bg-soft);
+  border: 2px solid #d8ecd9;
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.ms-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(52, 199, 123, 0.18);
+}
+.ms-card-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.ms-card-body strong {
+  display: block;
+  color: #1d7a4a;
+  margin-bottom: 0.25rem;
+}
+.ms-card-body p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.ms-game-hint {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  background: linear-gradient(135deg, #e8f7ee, #f2fbf5);
+  border: 2px solid #b8e6cc;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 0.9rem;
+}
+.ms-game-hint-icon {
+  font-size: 1.7rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.ms-game-hint strong {
+  color: #1d7a4a;
+  font-size: 0.95rem;
+}
+.ms-game-hint p {
+  margin: 0.15rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
 
 /* ---------- Finalizare lecție ---------- */
 .lesson-actions {
@@ -1274,7 +1354,108 @@ footer {
 [data-racer="luptator"] .di-practice-bar > i { background: linear-gradient(90deg, var(--success), var(--teal)); }
 .di-practice-status { font-weight: 700; color: var(--text-soft); margin: 0.6rem 0; }
 
-/* Oprire 6 — celebrare */
+/* Oprire 6 — cititul */
+.di-reading-title { font-weight: 800; margin-bottom: 0.6rem; }
+.di-reading-book { margin-bottom: 0.6rem; }
+.di-reading-word {
+  opacity: 0;
+  transition: opacity 0.4s;
+  background: var(--soft, #eef2fb);
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+  margin: 0.6rem 0;
+}
+.di-reading-word.show { opacity: 1; }
+.di-reading-word-big {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--accent, #4f8cff);
+  margin-bottom: 0.3rem;
+}
+.di-reading-count { font-weight: 700; color: var(--text-soft); }
+
+/* Oprire 7 — mintea crește */
+.di-growth-title { font-weight: 800; margin-bottom: 0.6rem; }
+.di-growth-plant {
+  font-size: 3rem;
+  text-align: center;
+  margin: 0.8rem 0;
+  transition: transform 0.5s ease;
+}
+.di-growth-status { font-weight: 700; color: var(--text-soft); margin-bottom: 0.4rem; }
+
+/* Oprire 8 — greșelile */
+.di-mistakes-title { font-weight: 800; margin-bottom: 0.6rem; }
+.di-mistakes-choices { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+.di-mistakes-choice {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.8rem;
+  font-size: 1rem;
+  font-weight: 800;
+  background: var(--bg-card);
+  border: 3px solid var(--line, #dfe6f5);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.di-mistakes-choice:hover { transform: translateY(-3px); border-color: var(--accent); }
+.di-mistakes-answer {
+  opacity: 0;
+  transition: opacity 0.4s;
+  font-weight: 700;
+  padding: 0.6rem;
+  border-radius: 12px;
+}
+.di-mistakes-answer.show { opacity: 1; }
+.di-mistakes-answer.good { background: #e8f5e9; color: #2e7d32; }
+.di-mistakes-answer.bad { background: #ffebee; color: #c62828; }
+
+/* Oprire 9 — atenția */
+.di-focus-title { font-weight: 800; margin-bottom: 0.6rem; }
+.di-focus-circle {
+  width: 80px;
+  height: 80px;
+  margin: 0.8rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background: var(--soft, #eef2fb);
+  border: 4px solid var(--accent, #4f8cff);
+  border-radius: 50%;
+  transition: transform 1.8s ease-in-out;
+}
+.di-focus-status { font-weight: 700; color: var(--text-soft); margin-bottom: 0.4rem; text-align: center; }
+
+/* Oprire 10 — micile pași */
+.di-steps-title { font-weight: 800; margin-bottom: 0.6rem; }
+.di-steps-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.6rem; }
+.di-steps-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  font-weight: 700;
+  background: var(--bg-card);
+  border: 2px solid var(--line, #dfe6f5);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+.di-steps-item:hover { transform: translateX(4px); border-color: var(--accent); }
+.di-steps-item.done {
+  background: #e8f5e9;
+  border-color: var(--success);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+.di-steps-emoji { font-size: 1.3rem; }
+.di-steps-status { font-weight: 700; color: var(--text-soft); }
+
+/* Oprire 11 — celebrare */
 .di-celebrate-emoji { font-size: 3rem; animation: bob 2s ease-in-out infinite; }
 .di-celebrate-text { font-weight: 700; color: var(--text-soft); margin-top: 0.4rem; }
 
@@ -1358,6 +1539,62 @@ footer {
 @keyframes toastIn {
   from { opacity: 0; transform: translate(-50%, 20px); }
   to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ---------- Elemente generative: progres, serie, animații ---------- */
+.g-progress {
+  height: 10px;
+  background: var(--soft, #eef2fb);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0.6rem 0;
+  border: 2px solid var(--line, #dfe6f5);
+}
+.g-progress-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent, #4f8cff), #7fb0ff);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.g-streak {
+  display: inline-block;
+  background: #fff3e0;
+  color: #e65100;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  border: 2px solid #ffcc80;
+  animation: streak-pulse 0.6s ease;
+}
+@keyframes streak-pulse {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.count-pop {
+  display: inline-block;
+  animation: count-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes count-pop {
+  0% { transform: scale(0) rotate(-12deg); opacity: 0; }
+  70% { transform: scale(1.25) rotate(6deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+.type-prompt {
+  font-size: 1.15rem;
+  font-weight: 700;
+  background: var(--soft, #eef2fb);
+  border: 2px dashed var(--accent, #4f8cff);
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+  margin: 0.8rem 0;
+  animation: prompt-in 0.4s ease;
+}
+@keyframes prompt-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ---------- Ecran invalid ---------- */

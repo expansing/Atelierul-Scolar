@@ -128,12 +128,33 @@ const Render = {
   _panelExplicatie(a) {
     let html = '<div class="panel active" data-panel="explicatie"><h2>📖 Hai să înțelegem!</h2>';
     a.explanation.forEach(p => { html += '<p>' + p + '</p>'; });
+    if (a.montessori) {
+      html += this._montessoriBlock(a);
+    }
     html += '</div>';
     return html;
   },
 
   _panelJoc(a) {
-    return '<div class="panel" data-panel="joc"><div class="game" id="game-area"></div></div>';
+    let hint = '';
+    if (a.montessori && a.montessori.materials && a.montessori.materials.length) {
+      const m = a.montessori.materials[0];
+      hint = '<div class="ms-game-hint"><span class="ms-game-hint-icon">' + m.icon + '</span><div><strong>🌿 Moment Montessori</strong><p>' + m.how + '</p></div></div>';
+    }
+    return '<div class="panel" data-panel="joc">' + hint + '<div class="game" id="game-area"></div></div>';
+  },
+
+  /* Blocul Montessori — integrat în explicație, nu tab separat */
+  _montessoriBlock(a) {
+    const m = a.montessori;
+    let html = '<div class="ms-block"><div class="ms-block-title">🌿 La fel ca la Montessori</div>';
+    html += '<p class="ms-intro">' + m.intro + '</p>';
+    html += '<div class="ms-grid">';
+    m.materials.forEach(mat => {
+      html += '<div class="ms-card"><div class="ms-card-icon">' + mat.icon + '</div><div class="ms-card-body"><strong>' + mat.name + '</strong><p>' + mat.how + '</p></div></div>';
+    });
+    html += '</div></div>';
+    return html;
   },
 
   _panelObiective(a) {
@@ -161,7 +182,13 @@ const Render = {
     html += '</ul></div>';
     html += '<div class="callout" style="border-color:var(--danger)"><div class="co-title">🚩 Semnale de atenție</div><ul>';
     p.redflags.forEach(r => { html += '<li>' + r + '</li>'; });
-    html += '</ul></div></div>';
+    html += '</ul></div>';
+    if (a.montessori && a.montessori.tips && a.montessori.tips.length) {
+      html += '<div class="callout" style="border-color:#b8e6cc"><div class="co-title">🌿 Joc Montessori acasă</div><ul>';
+      a.montessori.tips.forEach(t => { html += '<li>' + t + '</li>'; });
+      html += '</ul></div>';
+    }
+    html += '</div>';
     return html;
   },
 

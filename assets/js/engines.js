@@ -28,18 +28,66 @@ const Engines = {
     el.className = 'g-status' + (cls ? ' ' + cls : '');
   },
 
-  /* ---------- QUIZ ---------- */
+  /* ---------- utilitare generative ---------- */
+  randInt(min, max) {
+    return min + Math.floor(Math.random() * (max - min + 1));
+  },
+  pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  },
+  // submulțime aleatorie de mărime n (fără duplicate)
+  sample(arr, n) {
+    const a = arr.slice();
+    const out = [];
+    while (a.length && out.length < n) {
+      out.push(a.splice(Math.floor(Math.random() * a.length), 1)[0]);
+    }
+    return out;
+  },
+  // combină conținutul principal cu un pool opțional de conținut suplimentar.
+  // Pentru arrange, conținutul suplimentar stă în demo.extra (demo.pool ar
+  // intra în conflict cu q.pool folosit pentru detectarea tiparelor).
+  poolOf(demo, key) {
+    const extra = key === 'questions' ? (demo.extra || demo.pool || []) : (demo.pool || []);
+    return (demo[key] || []).concat(extra);
+  },
+  // bară de progres vizuală
+  progressBar(pct) {
+    const p = Math.max(0, Math.min(100, Math.round(pct)));
+    return '<div class="g-progress"><div class="g-progress-fill" style="width:' + p + '%"></div></div>';
+  },
+  // insignă de serie (streak) — apare de la 2 răspunsuri corect la rând
+  streakBadge(streak) {
+    if (streak < 2) return '';
+    return '<span class="g-streak">🔥 ' + streak + '</span>';
+  },
+
+  /* ---------- QUIZ ----------
+     Generativ: la fiecare joc se alege un subset aleator de întrebări din
+     pool (conținut + pool suplimentar), iar opțiunile se amestecă. */
   quiz(container, demo, onDone) {
+    const ROUNDS = demo.rounds || 5;
+    const pool = Engines.poolOf(demo, 'questions');
+    const total = Math.min(ROUNDS, pool.length);
     let idx = 0;
     let score = 0;
-    const total = demo.questions.length;
+    let streak = 0;
+    let bestStreak = 0;
+
+    // alege întrebările aleator și amestecă opțiunile
+    const questions = Engines.sample(pool, total).map(q => {
+      const correctText = q.options[q.answer];
+      const opts = Engines.shuffle(q.options.slice());
+      return { q: q.q, options: opts, answer: opts.indexOf(correctText) };
+    });
 
     const render = () => {
-      const q = demo.questions[idx];
+      const q = questions[idx];
       container.innerHTML =
         '<div class="g-title">' + demo.title + '</div>' +
         '<div class="g-intro">' + demo.intro + '</div>' +
-        '<div class="g-status">Întrebarea ' + (idx + 1) + ' din ' + total + ' · Scor: ' + score + '</div>' +
+        '<div class="g-status">Întrebarea ' + (idx + 1) + ' din ' + total + ' · Scor: ' + score + ' ' + Engines.streakBadge(streak) + '</div>' +
+        Engines.progressBar((idx / total) * 100) +
         '<div class="q-text" style="font-size:1.3rem;font-weight:800;margin:0.6rem 0">' + q.q + '</div>' +
         '<div class="quiz-options"></div>';
 
@@ -54,10 +102,13 @@ const Engines = {
           if (correct) {
             b.classList.add('correct');
             score++;
+            streak++;
+            bestStreak = Math.max(bestStreak, streak);
             Sound.good();
           } else {
             b.classList.add('wrong');
             opts.children[q.answer].classList.add('correct');
+            streak = 0;
             Sound.bad();
           }
           Array.from(opts.children).forEach(c => c.disabled = true);
@@ -81,10 +132,19 @@ const Engines = {
         '<div style="color:var(--text-soft);margin:0.4rem 0">' +
         (pct >= 80 ? 'Excelent! Ești un adevărat campion!' : pct >= 50 ? 'Foarte bine! Continuă să exersezi!' : 'Nu te da bătut! Încearcă din nou!') +
         '</div>' +
+        (bestStreak >= 3 ? '<div style="margin:0.4rem 0">🔥 Cea mai lungă serie: ' + bestStreak + '</div>' : '') +
         '<button class="btn-replay" id="replay">🔄 Joacă din nou</button>' +
         '</div>';
       container.querySelector('#replay').addEventListener('click', () => {
-        idx = 0; score = 0; render();
+        idx = 0; score = 0; streak = 0; bestStreak = 0;
+        // regenează întrebările pentru un joc nou
+        questions.length = 0;
+        Engines.sample(pool, total).forEach(q => {
+          const correctText = q.options[q.answer];
+          const opts = Engines.shuffle(q.options.slice());
+          questions.push({ q: q.q, options: opts, answer: opts.indexOf(correctText) });
+        });
+        render();
       });
       if (onDone) onDone(pct);
     };
@@ -92,32 +152,68 @@ const Engines = {
     render();
   },
 
-  /* ---------- COUNT ---------- */
+  /* ---------- COUNT ----------
+     Generativ: la fiecare rundă se alege un emoji aleator și un număr aleator,
+     iar opțiunile se generează dinamic. Emojile apar unul câte unul (animat). */
   count(container, demo, onDone) {
+    const ROUNDS = demo.rounds || 5;
+    const emojiPool = (demo.pool && demo.pool.length ? demo.pool : demo.items.map(i => i.emoji));
+    const total = ROUNDS;
     let idx = 0;
     let score = 0;
-    const total = demo.items.length;
+    let streak = 0;
+
+    // generează o rundă: emoji aleator + număr aleator + opțiuni
+    const genRound = () => {
+      const emoji = Engines.pick(emojiPool);
+      const count = Engines.randInt(1, 10);
+      const opts = new Set([count]);
+      while (opts.size < 3) {
+        const d = Engines.randInt(-3, 3);
+        const v = count + d;
+        if (v >= 1 && v <= 12) opts.add(v);
+      }
+      return { emoji, count, options: Engines.shuffle(Array.from(opts)) };
+    };
+
+    const rounds = [];
+    for (let i = 0; i < total; i++) rounds.push(genRound());
 
     const render = () => {
-      const item = demo.items[idx];
-      const emojis = Array.from({ length: item.count }, () => item.emoji).join(' ');
+      const item = rounds[idx];
       container.innerHTML =
         '<div class="g-title">' + demo.title + '</div>' +
         '<div class="g-intro">' + demo.intro + '</div>' +
-        '<div class="g-status">Numără: ' + (idx + 1) + ' din ' + total + '</div>' +
-        '<div class="count-display" style="font-size:2.2rem;text-align:center;background:var(--bg-soft);border-radius:var(--radius-sm);padding:1rem;margin:0.6rem 0;letter-spacing:0.2rem">' + emojis + '</div>' +
+        '<div class="g-status">Numără: ' + (idx + 1) + ' din ' + total + ' · Scor: ' + score + ' ' + Engines.streakBadge(streak) + '</div>' +
+        Engines.progressBar((idx / total) * 100) +
+        '<div class="count-display" style="font-size:2.2rem;text-align:center;background:var(--bg-soft);border-radius:var(--radius-sm);padding:1rem;margin:0.6rem 0;letter-spacing:0.2rem;min-height:3.5rem"></div>' +
         '<div class="quiz-options" style="grid-template-columns:repeat(3,1fr)"></div>';
 
+      const display = container.querySelector('.count-display');
+      // animare: emojile apar unul câte unul
+      let shown = 0;
+      const addOne = () => {
+        if (shown < item.count) {
+          const span = document.createElement('span');
+          span.textContent = item.emoji;
+          span.className = 'count-pop';
+          display.appendChild(span);
+          shown++;
+          setTimeout(addOne, 180);
+        }
+      };
+      addOne();
+
       const opts = container.querySelector('.quiz-options');
-      demo.items[idx].options.forEach((opt, i) => {
+      item.options.forEach(opt => {
         const b = document.createElement('button');
         b.className = 'quiz-opt';
         b.textContent = opt;
         b.addEventListener('click', () => {
           if (b.disabled) return;
           const correct = opt === item.count;
-          if (correct) { b.classList.add('correct'); score++; Sound.good(); }
-          else { b.classList.add('wrong'); Sound.bad(); }
+          if (correct) { b.classList.add('correct'); score++; streak++; Sound.good(); }
+          else { b.classList.add('wrong'); streak = 0; Sound.bad(); }
           Array.from(opts.children).forEach(c => c.disabled = true);
           setTimeout(() => { idx++; if (idx < total) render(); else finish(); }, 1000);
         });
@@ -133,25 +229,36 @@ const Engines = {
         '<div style="font-size:3rem">' + (pct >= 80 ? '🏆' : '👍') + '</div>' +
         '<div style="font-size:1.4rem;font-weight:800;margin:0.5rem">Ai numărat corect ' + score + ' din ' + total + '!</div>' +
         '<button class="btn-replay" id="replay">🔄 Joacă din nou</button></div>';
-      container.querySelector('#replay').addEventListener('click', () => { idx = 0; score = 0; render(); });
+      container.querySelector('#replay').addEventListener('click', () => {
+        idx = 0; score = 0; streak = 0;
+        rounds.length = 0;
+        for (let i = 0; i < total; i++) rounds.push(genRound());
+        render();
+      });
       if (onDone) onDone(pct);
     };
 
     render();
   },
 
-  /* ---------- MATCH (perechi) ---------- */
+  /* ---------- MATCH (perechi) ----------
+     Generativ: la fiecare joc se alege un subset aleator de perechi din pool. */
   match(container, demo, onDone) {
-    const left = demo.pairs.map(p => p.a);
-    const right = Engines.shuffle(demo.pairs.map(p => p.b));
+    const ROUNDS = demo.rounds || 5;
+    const pool = Engines.poolOf(demo, 'pairs');
+    const pairs = Engines.sample(pool, Math.min(ROUNDS, pool.length));
+    const left = pairs.map(p => p.a);
+    const right = Engines.shuffle(pairs.map(p => p.b));
     let matched = 0;
+    let moves = 0;
     let selectedLeft = null;
     let selectedRight = null;
 
     container.innerHTML =
       '<div class="g-title">' + demo.title + '</div>' +
       '<div class="g-intro">' + demo.intro + '</div>' +
-      '<div class="g-status">Perechi găsite: 0 din ' + demo.pairs.length + '</div>' +
+      '<div class="g-status">Perechi găsite: 0 din ' + pairs.length + ' · Mutări: 0</div>' +
+      Engines.progressBar(0) +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">' +
       '<div class="match-col" id="match-left"></div>' +
       '<div class="match-col" id="match-right"></div></div>';
@@ -192,7 +299,8 @@ const Engines = {
     }
     function tryMatch() {
       if (!selectedLeft || !selectedRight) return;
-      const pair = demo.pairs[selectedLeft.i];
+      moves++;
+      const pair = pairs[selectedLeft.i];
       if (selectedRight.dataset.label === pair.b) {
         selectedLeft.el.classList.remove('selected');
         selectedLeft.el.classList.add('correct');
@@ -200,9 +308,10 @@ const Engines = {
         selectedRight.classList.add('correct');
         matched++;
         Sound.good();
-        container.querySelector('.g-status').textContent = 'Perechi găsite: ' + matched + ' din ' + demo.pairs.length;
+        container.querySelector('.g-status').textContent = 'Perechi găsite: ' + matched + ' din ' + pairs.length + ' · Mutări: ' + moves;
+        container.querySelector('.g-progress-fill').style.width = Math.round((matched / pairs.length) * 100) + '%';
         selectedLeft = null; selectedRight = null;
-        if (matched === demo.pairs.length) finish();
+        if (matched === pairs.length) finish();
       } else {
         selectedLeft.el.classList.add('wrong');
         selectedRight.classList.add('wrong');
@@ -215,20 +324,29 @@ const Engines = {
       }
     }
     function finish() {
-      container.querySelector('.g-status').textContent = '🎉 Ai găsit toate perechile!';
+      container.querySelector('.g-status').textContent = '🎉 Ai găsit toate perechile în ' + moves + ' mutări!';
       container.querySelector('.g-status').classList.add('good');
+      const btn = document.createElement('button');
+      btn.className = 'btn-replay';
+      btn.textContent = '🔄 Joacă din nou';
+      btn.addEventListener('click', () => location.reload());
+      container.appendChild(btn);
       if (onDone) onDone(100);
     }
   },
 
-  /* ---------- ARRANGE (ordine) ---------- */
+  /* ---------- ARRANGE (ordine) ----------
+     Generativ: la fiecare joc se alege un subset aleator de întrebări din pool. */
   arrange(container, demo, onDone) {
+    const ROUNDS = demo.rounds || 5;
+    const qPool = Engines.poolOf(demo, 'questions');
+    const questions = Engines.sample(qPool, Math.min(ROUNDS, qPool.length));
     let idx = 0;
     let score = 0;
-    const total = demo.questions.length;
+    const total = questions.length;
 
     const render = () => {
-      const q = demo.questions[idx];
+      const q = questions[idx];
       // Detectăm dacă e tipar (are pool) sau propoziție (words + answer)
       const isPattern = q.pool;
       container.innerHTML =
@@ -299,8 +417,9 @@ const Engines = {
             // Verificăm dacă toate sunt umplute
             const filledCount = row.querySelectorAll('.arrange-slot.filled').length;
             if (filledCount === wordCount) {
-              const built = Array.from(row.querySelectorAll('.arrange-slot')).map(s => s.textContent).join(' ');
-              const expected = q.answer || q.words.join(' ');
+              const norm = s => s.replace(/[,\s]+/g, ' ').trim();
+              const built = norm(Array.from(row.querySelectorAll('.arrange-slot')).map(s => s.textContent).join(' '));
+              const expected = norm(q.answer || q.words.join(' '));
               if (built === expected) {
                 row.querySelectorAll('.arrange-slot').forEach(s => { s.style.borderColor = 'var(--success)'; });
                 score++;
@@ -325,16 +444,24 @@ const Engines = {
         '<div style="font-size:3rem">' + (pct >= 80 ? '🏆' : '👍') + '</div>' +
         '<div style="font-size:1.4rem;font-weight:800;margin:0.5rem">Ai reușit ' + score + ' din ' + total + '!</div>' +
         '<button class="btn-replay" id="replay">🔄 Joacă din nou</button></div>';
-      container.querySelector('#replay').addEventListener('click', () => { idx = 0; score = 0; render(); });
+      container.querySelector('#replay').addEventListener('click', () => {
+        idx = 0; score = 0;
+        questions.length = 0;
+        Engines.sample(qPool, Math.min(ROUNDS, qPool.length)).forEach(qq => questions.push(qq));
+        render();
+      });
       if (onDone) onDone(pct);
     };
 
     render();
   },
 
-  /* ---------- CLASSIFY (sortare în zone) ---------- */
+  /* ---------- CLASSIFY (sortare în zone) ----------
+     Generativ: la fiecare joc se alege un subset aleator de itemi din pool. */
   classify(container, demo, onDone) {
-    const items = Engines.shuffle(demo.items.slice());
+    const ROUNDS = demo.rounds || 6;
+    const iPool = Engines.poolOf(demo, 'items');
+    const items = Engines.shuffle(Engines.sample(iPool, Math.min(ROUNDS, iPool.length)));
     let placed = 0;
     let correct = 0;
     const total = items.length;
@@ -343,6 +470,7 @@ const Engines = {
       '<div class="g-title">' + demo.title + '</div>' +
       '<div class="g-intro">' + demo.intro + '</div>' +
       '<div class="g-status">Sortate: 0 din ' + total + '</div>' +
+      Engines.progressBar(0) +
       '<div class="game-grid" id="classify-pool"></div>' +
       '<div class="classify-zones" id="classify-zones"></div>';
 
@@ -406,6 +534,8 @@ const Engines = {
         Sound.bad();
       }
       container.querySelector('.g-status').textContent = 'Sortate: ' + placed + ' din ' + total;
+      const pf = container.querySelector('.g-progress-fill');
+      if (pf) pf.style.width = Math.round((placed / total) * 100) + '%';
 
       if (placed === total) finish();
     }
@@ -424,9 +554,12 @@ const Engines = {
     }
   },
 
-  /* ---------- MEMORY (perechi ascunse) ---------- */
+  /* ---------- MEMORY (perechi ascunse) ----------
+     Generativ: la fiecare joc se alege un subset aleator de emoji din pool. */
   memory(container, demo, onDone) {
-    const pairs = demo.pairs.slice(0, 6);
+    const ROUNDS = demo.rounds || 6;
+    const mPool = Engines.poolOf(demo, 'pairs');
+    const pairs = Engines.sample(mPool, Math.min(ROUNDS, mPool.length));
     const cards = Engines.shuffle(pairs.concat(pairs));
     let flipped = [];
     let matched = 0;
@@ -503,18 +636,43 @@ const Engines = {
     }
   },
 
-  /* ---------- CLOCK ---------- */
+  /* ---------- CLOCK ----------
+     Generativ: la fiecare rundă se generează o oră aleatorie (ore rotunde sau
+     jumătate de oră) și opțiuni aleatorii. */
   clock(container, demo, onDone) {
+    const ROUNDS = demo.rounds || 5;
+    const total = ROUNDS;
     let idx = 0;
     let score = 0;
-    const total = demo.questions.length;
+    let streak = 0;
+
+    // generează o rundă: oră aleatorie + minute (0 sau 30) + opțiuni
+    const genRound = () => {
+      const hour = Engines.randInt(1, 12);
+      const minute = Math.random() < 0.5 ? 0 : 30;
+      const correct = hour + ':' + (minute === 0 ? '00' : '30');
+      const opts = new Set([correct]);
+      while (opts.size < 3) {
+        const h = Engines.randInt(1, 12);
+        const m = Math.random() < 0.5 ? 0 : 30;
+        opts.add(h + ':' + (m === 0 ? '00' : '30'));
+      }
+      const desc = minute === 0
+        ? 'Acul scurt este pe ' + hour + ', iar acul lung pe 12.'
+        : 'Acul scurt este pe ' + hour + ', iar acul lung pe 6 (jumătate de oră).';
+      return { hour, minute, correct, options: Engines.shuffle(Array.from(opts)), desc };
+    };
+
+    const rounds = [];
+    for (let i = 0; i < total; i++) rounds.push(genRound());
 
     const render = () => {
-      const q = demo.questions[idx];
+      const q = rounds[idx];
       container.innerHTML =
         '<div class="g-title">' + demo.title + '</div>' +
         '<div class="g-intro">' + demo.intro + '</div>' +
-        '<div class="g-status">Ceas: ' + (idx + 1) + ' din ' + total + '</div>' +
+        '<div class="g-status">Ceas: ' + (idx + 1) + ' din ' + total + ' · Scor: ' + score + ' ' + Engines.streakBadge(streak) + '</div>' +
+        Engines.progressBar((idx / total) * 100) +
         '<div class="clock-face" id="clock-face"></div>' +
         '<div style="text-align:center;color:var(--text-soft);margin:0.4rem 0">' + q.desc + '</div>' +
         '<div class="quiz-options" style="grid-template-columns:repeat(3,1fr)"></div>';
@@ -522,19 +680,18 @@ const Engines = {
       Engines.drawClock(container.querySelector('#clock-face'), q.hour, q.minute);
 
       const opts = container.querySelector('.quiz-options');
-      q.options.forEach((opt, i) => {
+      q.options.forEach(opt => {
         const b = document.createElement('button');
         b.className = 'quiz-opt';
         b.textContent = opt;
         b.addEventListener('click', () => {
           if (b.disabled) return;
-          // Ora corectă este q.hour + ':00'
-          const correctOpt = q.hour + ':00';
-          if (opt === correctOpt) {
-            b.classList.add('correct'); score++; Sound.good();
+          if (opt === q.correct) {
+            b.classList.add('correct'); score++; streak++; Sound.good();
           } else {
             b.classList.add('wrong');
-            Array.from(opts.children).forEach(c => { if (c.textContent === correctOpt) c.classList.add('correct'); });
+            Array.from(opts.children).forEach(c => { if (c.textContent === q.correct) c.classList.add('correct'); });
+            streak = 0;
             Sound.bad();
           }
           Array.from(opts.children).forEach(c => c.disabled = true);
@@ -552,7 +709,12 @@ const Engines = {
         '<div style="font-size:3rem">' + (pct >= 80 ? '🏆' : '👍') + '</div>' +
         '<div style="font-size:1.4rem;font-weight:800;margin:0.5rem">Ai citit corect ' + score + ' din ' + total + ' ceasuri!</div>' +
         '<button class="btn-replay" id="replay">🔄 Joacă din nou</button></div>';
-      container.querySelector('#replay').addEventListener('click', () => { idx = 0; score = 0; render(); });
+      container.querySelector('#replay').addEventListener('click', () => {
+        idx = 0; score = 0; streak = 0;
+        rounds.length = 0;
+        for (let i = 0; i < total; i++) rounds.push(genRound());
+        render();
+      });
       if (onDone) onDone(pct);
     };
 
@@ -597,33 +759,59 @@ const Engines = {
     face.appendChild(center);
   },
 
-  /* ---------- SHAPES ---------- */
+  /* ---------- SHAPES ----------
+     Generativ: la fiecare rundă se alege o formă aleatorie și opțiuni aleatorii. */
   shapes(container, demo, onDone) {
+    const ROUNDS = demo.rounds || 5;
+    const total = ROUNDS;
     let idx = 0;
     let score = 0;
-    const total = demo.questions.length;
+    let streak = 0;
+
+    // catalog de forme (nume + cheie pentru SVG)
+    const catalog = [
+      { shape: 'circle', name: 'Cerc' },
+      { shape: 'square', name: 'Pătrat' },
+      { shape: 'triangle', name: 'Triunghi' },
+      { shape: 'rectangle', name: 'Dreptunghi' },
+      { shape: 'star', name: 'Stea' },
+      { shape: 'pentagon', name: 'Pentagon' }
+    ];
+
+    // generează o rundă: formă aleatorie + 3 opțiuni (una corectă)
+    const genRound = () => {
+      const q = Engines.pick(catalog);
+      const others = Engines.sample(catalog.filter(c => c.name !== q.name), 2);
+      const options = Engines.shuffle([q.name, others[0].name, others[1].name]);
+      return { shape: q.shape, name: q.name, options };
+    };
+
+    const rounds = [];
+    for (let i = 0; i < total; i++) rounds.push(genRound());
 
     const render = () => {
-      const q = demo.questions[idx];
+      const q = rounds[idx];
       container.innerHTML =
         '<div class="g-title">' + demo.title + '</div>' +
         '<div class="g-intro">' + demo.intro + '</div>' +
-        '<div class="g-status">Formă: ' + (idx + 1) + ' din ' + total + '</div>' +
+        '<div class="g-status">Formă: ' + (idx + 1) + ' din ' + total + ' · Scor: ' + score + ' ' + Engines.streakBadge(streak) + '</div>' +
+        Engines.progressBar((idx / total) * 100) +
         '<div class="shape-display">' + Engines.shapeSVG(q.shape) + '</div>' +
         '<div class="quiz-options" style="grid-template-columns:repeat(3,1fr)"></div>';
 
       const opts = container.querySelector('.quiz-options');
-      q.options.forEach((opt, i) => {
+      q.options.forEach(opt => {
         const b = document.createElement('button');
         b.className = 'quiz-opt';
         b.textContent = opt;
         b.addEventListener('click', () => {
           if (b.disabled) return;
           if (opt === q.name) {
-            b.classList.add('correct'); score++; Sound.good();
+            b.classList.add('correct'); score++; streak++; Sound.good();
           } else {
             b.classList.add('wrong');
             Array.from(opts.children).forEach(c => { if (c.textContent === q.name) c.classList.add('correct'); });
+            streak = 0;
             Sound.bad();
           }
           Array.from(opts.children).forEach(c => c.disabled = true);
@@ -640,8 +828,12 @@ const Engines = {
         '<div style="text-align:center;padding:1rem">' +
         '<div style="font-size:3rem">' + (pct >= 80 ? '🏆' : '👍') + '</div>' +
         '<div style="font-size:1.4rem;font-weight:800;margin:0.5rem">Ai recunoscut corect ' + score + ' din ' + total + ' forme!</div>' +
-        '<button class="btn-replay" id="replay">🔄 Joacă din nou</button></div>';
-      container.querySelector('#replay').addEventListener('click', () => { idx = 0; score = 0; render(); });
+        '<button class="btn-replay" id="replay">🔄 Joacă din nou (forme noi)</button></div>';
+      container.querySelector('#replay').addEventListener('click', () => {
+        idx = 0; score = 0; streak = 0;
+        for (let i = 0; i < total; i++) rounds[i] = genRound();
+        render();
+      });
       if (onDone) onDone(pct);
     };
 
@@ -669,38 +861,65 @@ const Engines = {
   },
 
   /* ---------- TYPE (scriere) ---------- */
+  /* ---------- TYPE (scriere) ----------
+     Generativ: la fiecare rundă se alege aleator un prompt dintr-o pool de
+     propoziții de completat. Copilul scrie, primește feedback și poate
+     continua cu alt prompt. */
   type(container, demo, onDone) {
-    container.innerHTML =
-      '<div class="g-title">' + demo.title + '</div>' +
-      '<div class="g-intro">' + demo.intro + '</div>' +
-      '<div class="g-status">' + demo.prompt + '</div>' +
-      '<input type="text" class="type-input" id="type-input" placeholder="Scrie aici..." autocomplete="off">' +
-      '<div style="margin-top:0.8rem;color:var(--text-soft);font-size:0.9rem">' +
-      '<strong>Exemple:</strong><br>' +
-      demo.examples.map(e => '• ' + e).join('<br>') +
-      '</div>' +
-      '<div style="margin-top:0.8rem"><button class="btn btn-primary" id="type-check">✅ Verifică</button></div>' +
-      '<div id="type-feedback" style="margin-top:0.8rem;font-weight:800"></div>';
+    // pool de prompturi: promptul principal + orice pool suplimentar de prompturi
+    const prompts = [demo.prompt].concat(demo.pool || []);
+    const examples = demo.examples || [];
+    let idx = 0;
+    let done = 0;
 
-    const input = container.querySelector('#type-input');
-    const feedback = container.querySelector('#type-feedback');
-    container.querySelector('#type-check').addEventListener('click', () => {
-      const val = input.value.trim();
-      if (val.length < 3) {
-        feedback.textContent = 'Scrie o propoziție mai lungă!';
-        feedback.style.color = 'var(--danger)';
-        return;
-      }
-      feedback.textContent = '🎉 Foarte bine! Ai scris: „' + val + '”';
-      feedback.style.color = 'var(--success)';
-      Sound.good();
-      Confetti.burst();
-      if (onDone) onDone(100);
-    });
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') container.querySelector('#type-check').click();
-    });
-    input.focus();
+    const current = () => prompts[idx % prompts.length];
+
+    const render = () => {
+      const p = current();
+      container.innerHTML =
+        '<div class="g-title">' + demo.title + '</div>' +
+        '<div class="g-intro">' + demo.intro + '</div>' +
+        '<div class="g-status">Propoziție ' + (done + 1) + ' · Ai scris deja ' + done + '</div>' +
+        '<div class="type-prompt">' + p + '</div>' +
+        '<input type="text" class="type-input" id="type-input" placeholder="Scrie aici..." autocomplete="off">' +
+        (examples.length ?
+          '<div style="margin-top:0.8rem;color:var(--text-soft);font-size:0.9rem">' +
+          '<strong>Exemple:</strong><br>' +
+          examples.map(e => '• ' + e).join('<br>') +
+          '</div>' : '') +
+        '<div style="margin-top:0.8rem;display:flex;gap:0.6rem;flex-wrap:wrap">' +
+        '<button class="btn btn-primary" id="type-check">✅ Verifică</button>' +
+        '<button class="btn" id="type-next">⏭️ Altă propoziție</button>' +
+        '</div>' +
+        '<div id="type-feedback" style="margin-top:0.8rem;font-weight:800"></div>';
+
+      const input = container.querySelector('#type-input');
+      const feedback = container.querySelector('#type-feedback');
+      const check = () => {
+        const val = input.value.trim();
+        if (val.length < 3) {
+          feedback.textContent = 'Scrie o propoziție mai lungă!';
+          feedback.style.color = 'var(--danger)';
+          return;
+        }
+        feedback.textContent = '🎉 Foarte bine! Ai scris: „' + val + '”';
+        feedback.style.color = 'var(--success)';
+        Sound.good();
+        Confetti.burst();
+        done++;
+        if (onDone) onDone(100);
+      };
+      container.querySelector('#type-check').addEventListener('click', check);
+      container.querySelector('#type-next').addEventListener('click', () => {
+        idx++;
+        render();
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') check();
+      });
+      input.focus();
+    };
+    render();
   },
 
   /* ---------- BALANCE (balanță — formă fizică din jurul tău) ----------
@@ -815,7 +1034,7 @@ const Engines = {
           '<div class="shop-item-card"><div class="shop-item-emoji">' + r.item.emoji + '</div><div class="shop-item-name">' + r.item.name + '</div><div class="shop-item-price">' + r.price + ' lei</div></div>' +
           '<div class="shop-wallet"><div class="shop-wallet-label">Bani în buzunar</div><div class="shop-wallet-amount">' + r.wallet + ' lei</div><div class="shop-wallet-coins">' + coins + '</div></div>' +
         '</div>' +
-        '<div class="q-text" style="font-size:1.2rem;font-weight:800;margin:0.6rem 0;text-align:center">Cât ban primești de la casieră?</div>' +
+        '<div class="q-text" style="font-size:1.2rem;font-weight:800;margin:0.6rem 0;text-align:center">Ce ban primești de la casieră?</div>' +
         '<div class="quiz-options" style="grid-template-columns:repeat(3,1fr)"></div>';
 
       const opts = container.querySelector('.quiz-options');
@@ -845,7 +1064,7 @@ const Engines = {
         '<div style="text-align:center;padding:1rem">' +
         '<div style="font-size:3rem">' + (pct >= 80 ? '🏆' : pct >= 50 ? '👍' : '💪') + '</div>' +
         '<div style="font-size:1.4rem;font-weight:800;margin:0.5rem">Ai calculat corect restul la ' + score + ' din ' + ROUNDS + '!</div>' +
-        '<div style="color:var(--text-soft);margin:0.4rem 0">La magazin, restul de bani este ce rămâne după ce plătești prețul.</div>' +
+        '<div style="color:var(--text-soft);margin:0.4rem 0">La magazin, restul este suma de bani care rămâne după ce plătești prețul.</div>' +
         '<button class="btn-replay" id="replay">🔄 Joacă din nou</button></div>';
       container.querySelector('#replay').addEventListener('click', () => { idx = 0; score = 0; render(); });
       if (onDone) onDone(pct);

@@ -66,6 +66,17 @@ const ACTIVITIES = [
 /* ==================== MATEMATICĂ ==================== */
 {
   id: "mat-1", subject: "mat", num: 1, title: "Numărăm până la 100", icon: "🔢", duration: "20 min",
+  montessori: {
+    intro: "Maria Montessori a folosit mărgele pentru a învăța numerele. Fiecare mărgele este o unitate mică pe care o poți ține în mână — așa numerele devin reale.",
+    materials: [
+      { icon: "🔵", name: "Mărgele aurii", how: "Numără 10 mărgele și le pui într-un grup. Aia e o zecime! Fă 10 grupuri și ai o sută." },
+      { icon: "🧮", name: "Cadru de numărat", how: "Mută mărgelele pe cadrul: 3 pe rândul de sus, 2 pe cel de jos — aia e 5. Fă-ți numerele tale." },
+    ],
+    tips: [
+      "Numără cu degetele, dar și cu ochii: arată la fiecare obiect pe când numeri.",
+      "Numără lucruri din jur: pași, linguri, nasturi.",
+    ]
+  },
   objectives: [
     "Să numere corect de la 1 la 100",
     "Să numere obiecte din jur și să le asocieze cu numărul corect",
@@ -86,7 +97,8 @@ const ACTIVITIES = [
       { emoji: "🐟", count: 7, options: [6, 7, 8] },
       { emoji: "🌸", count: 9, options: [8, 9, 10] },
       { emoji: "🚗", count: 12, options: [10, 11, 12] }
-    ]
+    ],
+    pool: ["🍎", "⭐", "🐟", "🌸", "🚗", "🍌", "🐱", "🏀", "🍪", "🎈", "🐞", "🧸", "🍇", "🐢", "🌻", "⚽", "🍩", "🦋"]
   },
   questions: [
     "Care număr vine după 49?",
@@ -106,6 +118,17 @@ const ACTIVITIES = [
 },
 {
   id: "mat-2", subject: "mat", num: 2, title: "Adunarea", icon: "➕", duration: "20 min",
+  montessori: {
+    intro: "La Montessori, adunarea se face cu obiecte reale: iei câteva mărgele, apoi iei mai multe, și numeri ce ai în față.",
+    materials: [
+      { icon: "🪙", name: "Mărgele sau nasturi", how: "Ia 3 nasturi, apoi ia încă 2. Numără-i pe toți: aia e 5. Încearcă cu numerele tale." },
+      { icon: "🍎", name: "Fructe pe masă", how: "Pune 2 mere pe farfurie, apoi adaugă încă 3. Câte sunt acum? Numără-le cu voce tare." },
+    ],
+    tips: [
+      "Adunarea e punerea lucrurilor împreună. Împrăștierea e scăderea.",
+      "Începe cu numere mici și crește pe măsură ce te descurci mai bine.",
+    ]
+  },
   objectives: [
     "Să înțeleagă că adunarea înseamnă „punem împreună”",
     "Să adune numere mici (până la 20) corect",
@@ -126,6 +149,16 @@ const ACTIVITIES = [
       { q: "5 + 3 = ?", options: ["7", "8", "9"], answer: 1 },
       { q: "6 + 2 = ?", options: ["7", "8", "9"], answer: 1 },
       { q: "9 + 1 = ?", options: ["9", "10", "11"], answer: 1 }
+    ],
+    pool: [
+      { q: "2 + 2 = ?", options: ["3", "4", "5"], answer: 1 },
+      { q: "7 + 1 = ?", options: ["7", "8", "9"], answer: 1 },
+      { q: "8 + 2 = ?", options: ["9", "10", "11"], answer: 1 },
+      { q: "1 + 4 = ?", options: ["4", "5", "6"], answer: 1 },
+      { q: "6 + 4 = ?", options: ["9", "10", "11"], answer: 1 },
+      { q: "5 + 5 = ?", options: ["9", "10", "11"], answer: 1 },
+      { q: "3 + 6 = ?", options: ["8", "9", "10"], answer: 1 },
+      { q: "10 + 0 = ?", options: ["9", "10", "11"], answer: 1 }
     ]
   },
   questions: [
@@ -146,6 +179,17 @@ const ACTIVITIES = [
 },
 {
   id: "mat-3", subject: "mat", num: 3, title: "Scăderea", icon: "➖", duration: "20 min",
+  montessori: {
+    intro: "Scăderea e luarea de la. Montessori o învață cu obiecte reale: ai câteva, iei câteva, și vezi ce rămâne.",
+    materials: [
+      { icon: "🍪", name: "Biscuiți sau crackers", how: "Pune 5 biscuiți pe masă. Mănâncă 2. Câte rămân? Numără-le: aia e 3." },
+      { icon: "🧸", name: "Jucării", how: "Pune 4 jucării pe podea. Ia una. Câte rămân? Încearcă cu numerele tale." },
+    ],
+    tips: [
+      "Scăderea e luarea de la. Nu poți lua mai mult decât ai!",
+      "Numără mai întâi ce ai, apoi ia, apoi numără ce rămâne.",
+    ]
+  },
   objectives: [
     "Să înțeleagă că scăderea înseamnă „luăm dintr-un grup”",
     "Să scadă numere mici (până la 20) corect",
@@ -166,6 +210,16 @@ const ACTIVITIES = [
       { q: "9 − 4 = ?", options: ["4", "5", "6"], answer: 1 },
       { q: "8 − 5 = ?", options: ["2", "3", "4"], answer: 1 },
       { q: "6 − 6 = ?", options: ["0", "1", "6"], answer: 0 }
+    ],
+    pool: [
+      { q: "4 − 1 = ?", options: ["2", "3", "4"], answer: 1 },
+      { q: "10 − 3 = ?", options: ["6", "7", "8"], answer: 1 },
+      { q: "8 − 4 = ?", options: ["3", "4", "5"], answer: 1 },
+      { q: "9 − 5 = ?", options: ["3", "4", "5"], answer: 1 },
+      { q: "7 − 7 = ?", options: ["0", "1", "7"], answer: 0 },
+      { q: "6 − 2 = ?", options: ["3", "4", "5"], answer: 0 },
+      { q: "10 − 5 = ?", options: ["4", "5", "6"], answer: 1 },
+      { q: "5 − 3 = ?", options: ["1", "2", "3"], answer: 1 }
     ]
   },
   questions: [
@@ -186,6 +240,17 @@ const ACTIVITIES = [
 },
 {
   id: "mat-4", subject: "mat", num: 4, title: "Forme geometrice", icon: "📐", duration: "20 min",
+  montessori: {
+    intro: "Montessori are un „cabinet geometric”: forme de lemn pe care le atingi cu ochii închiși. Forma se simte cu degetele, nu doar se vede.",
+    materials: [
+      { icon: "🧊", name: "Forme din carton", how: "Taie un pătrat, un triunghi și un cerc. Trasează-le cu degetul și spune numele fiecăreia." },
+      { icon: "🔲", name: "Cabinet geometric", how: "Acoperă-ți ochii și atinge forma. Ghicește care e înainte să deschizi ochii!" },
+    ],
+    tips: [
+      "Formele au colțuri și laturi. Numără-le cu degetul.",
+      "Găsește forme în cameră: ceasul e un cerc, masa e un pătrat.",
+    ]
+  },
   objectives: [
     "Să recunoască forme de bază: pătrat, triunghi, cerc, dreptunghi",
     "Să numere laturile și vârfurile (colțurile) fiecărei forme",
@@ -226,13 +291,24 @@ const ACTIVITIES = [
 },
 {
   id: "mat-5", subject: "mat", num: 5, title: "Măsurarea", icon: "📏", duration: "20 min",
+  montessori: {
+    intro: "Montessori măsoară cu corpul: o „măsură” e distanța de la vârful degetului mare la vârful degetului mic când mână e deschisă. E rigla ta proprie!",
+    materials: [
+      { icon: "✋", name: "Mâna ta", how: "Măsoară masa cu măsura ta: câte măsuri ai nevoie? Compară cu măsura părintelui tău — e mai mare!" },
+      { icon: "📏", name: "Riglă", how: "Măsoară creionul, cartea și pantoful. Care e cel mai lung? Care e cel mai scurt?" },
+    ],
+    tips: [
+      "Estimează mai întâi: cât de lung crezi că e? Apoi măsoară și verifică.",
+      "Un centimetru e cam cât lățimea degetului mic.",
+    ]
+  },
   objectives: [
     "Să înțeleagă ce înseamnă a măsura",
     "Să compare lungimi: mai lung, mai scurt, egal",
     "Să folosească unități simple de măsură (pas, mână, creion)"
   ],
   explanation: [
-    "A măsura înseamnă să aflăm cât de lung, de înalt sau de greu este ceva. La început folosim obiecte ca unități: un pas, o mână, un creion. Mai târziu folosim rigidele și metrul.",
+    "A măsura înseamnă să aflăm cât de lung, de înalt sau de greu este ceva. La început folosim obiecte ca unități: un pas, o mână, un creion. Mai târziu folosim rigla și metrul.",
     "Comparăm lungimile cu cuvinte: „mai lung”, „mai scurt”, „la fel de lung”. Dacă un creion este mai lung decât un pix, creionul câștigă.",
     "Un truc: când măsori cu pași, pașii trebuie să fie egali. Dacă un pas este mare și altul mic, măsura nu este corectă."
   ],
@@ -246,6 +322,14 @@ const ACTIVITIES = [
       { q: "Care este mai înalt: un copac sau o floare?", options: ["Copacul", "Floarea", "La fel"], answer: 0 },
       { q: "Care este mai lung: un șnur de 5 pași sau unul de 3 pași?", options: ["Cel de 5 pași", "Cel de 3 pași", "La fel"], answer: 0 },
       { q: "Ce folosim ca unitate simplă de măsură?", options: ["Un pas", "Un nor", "O idee"], answer: 0 }
+    ],
+    pool: [
+      { q: "Care este mai lung: o masă sau un creion?", options: ["Masa", "Creionul", "La fel"], answer: 0 },
+      { q: "Care este mai înalt: un om sau o masă?", options: ["Omul", "Masa", "La fel"], answer: 0 },
+      { q: "Care este mai scurt: un șnur de 2 pași sau unul de 4 pași?", options: ["Cel de 2 pași", "Cel de 4 pași", "La fel"], answer: 0 },
+      { q: "Ce este mai greu: o piatră sau o pânză?", options: ["Piatra", "Pânza", "La fel"], answer: 0 },
+      { q: "Cu ce putem măsura lungimea unei hârtii?", options: ["Un creion", "Un nor", "O cântec"], answer: 0 },
+      { q: "Care este mai lung: brațul tău sau degetul tău?", options: ["Brațul", "Degetul", "La fel"], answer: 0 }
     ]
   },
   questions: [
@@ -266,6 +350,17 @@ const ACTIVITIES = [
 },
 {
   id: "mat-6", subject: "mat", num: 6, title: "Citim ceasul", icon: "⏰", duration: "20 min",
+  montessori: {
+    intro: "Montessori are un „cabinet de timp”: un ceas cu acuri mobile. Le rotești și vezi cum trece timpul.",
+    materials: [
+      { icon: "🕐", name: "Ceas de hârtie", how: "Taie un ceas și fă două acuri. Pune-l pe 3. Unde e acul mare? Unde e acul mic?" },
+      { icon: "⏰", name: "Ceas real", how: "Uită-te la ceas în fiecare oră și spune ce oră e. Observă cum se mișcă acurile." },
+    ],
+    tips: [
+      "Acul mare face o tură în jurul ceasului într-o oră.",
+      "Acul mic îți spune ora. Acul mare îți spune minutele.",
+    ]
+  },
   objectives: [
     "Să recunoască ceasul și cele două ace (ore și minute)",
     "Să citească orele rotunde (3:00, 6:00)",
@@ -306,6 +401,17 @@ const ACTIVITIES = [
 },
 {
   id: "mat-7", subject: "mat", num: 7, title: "Balanța", icon: "⚖️", duration: "20 min",
+  montessori: {
+    intro: "Balanța Montessori e o balanță reală cu două tăvi. Pui obiecte pe ea și vezi care e mai greu — fără să ghicești.",
+    materials: [
+      { icon: "⚖️", name: "Balanță", how: "Pune o carte pe o tavă și un creion pe cealaltă. Care coboară? Aia e mai grea." },
+      { icon: "🧱", name: "Obiecte de greutăți diferite", how: "Pune o lingură pe o tavă. Adaugă nasturi pe cealaltă până se echilibrează. Câte nasturi ai nevoie?" },
+    ],
+    tips: [
+      "Un obiect mare nu e mereu mai greu. O piatră mică poate fi mai grea decât o spumă mare!",
+      "Ghicește mai întâi, apoi verifică cu balanța.",
+    ]
+  },
   objectives: [
     "Să compare două cantități (mai mult, mai puțin, egal)",
     "Să înțeleagă echilibrul prin balanță",
@@ -341,6 +447,17 @@ const ACTIVITIES = [
 },
 {
   id: "mat-8", subject: "mat", num: 8, title: "Magazinul", icon: "🛒", duration: "20 min",
+  montessori: {
+    intro: "Montessori are un „joc de bancă”: numeri monede reale și înveți că banii sunt o cantitate pe care o poți număra și aduna.",
+    materials: [
+      { icon: "🪙", name: "Monede", how: "Numără 10 monede. Câte grupuri de 5 poți face? Așa înveți să numeri pe câte 5." },
+      { icon: "🏪", name: "Magazin mic", how: "Fă un magazin cu jucării și prețuri pe hârtie. Cumpără și vinde cu monede reale." },
+    ],
+    tips: [
+      "Banii sunt o cantitate: îi poți aduna și scădea ca pe mărgele.",
+      "Numără mai întâi ce ai, apoi ce ai nevoie.",
+    ]
+  },
   objectives: [
     "Să calculeze restul de bani (scădere)",
     "Să recunoască prețurile și monedele",
@@ -375,6 +492,17 @@ const ACTIVITIES = [
 },
 {
   id: "mat-9", subject: "mat", num: 9, title: "Forme din jurul tău", icon: "🧺", duration: "25 min",
+  montessori: {
+    intro: "Montessori numește asta „lecția în trei perioade”: arăți forma, o numești, și copilul o găsește. Lumea e o clasă mare.",
+    materials: [
+      { icon: "🧺", name: "Coș de forme", how: "Colecționează 5 obiecte de aceeași formă: o minge, un nasture, o monedă. Pune-le într-un coș." },
+      { icon: "🔍", name: "Vânătoare de forme", how: "Mergi prin casă și găsește 3 cercuri, 3 pătrate și 3 triunghiuri. Aduce-le și arată-le." },
+    ],
+    tips: [
+      "Lumea e plină de forme. Uită-te la tavan, la podea, la ferestre.",
+      "Găsește mai întâi formele ușoare, apoi pe cele ascunse.",
+    ]
+  },
   objectives: [
     "Să aplice adunarea și înmulțirea la obiecte reale",
     "Să numere obiecte din mediul înconjurător",
@@ -411,6 +539,17 @@ const ACTIVITIES = [
 /* ==================== LIMBA ROMÂNĂ ==================== */
 {
   id: "lim-1", subject: "lim", num: 1, title: "Litere și sunete", icon: "🔤", duration: "20 min",
+  montessori: {
+    intro: "Montessori a inventat „literele de hârtie abrazivă”: scrii litera cu degetul pe hârtia abrazivă și o simți. Litera se simte, nu doar se vede.",
+    materials: [
+      { icon: "📜", name: "Litere de hârtie abrazivă", how: "Taie literele A, B, C din carton. Trasează-le cu degetul și spune sunetul." },
+      { icon: "🖐️", name: "Litere în aer", how: "Scrie litera în aer cu degetul. Mare, lent, și spune sunetul pe când scrii." },
+    ],
+    tips: [
+      "Fiecare literă are un sunet. A spune „ah”, B spune „buh”.",
+      "Simte mai întâi litera, apoi spune sunetul, apoi scrie-o.",
+    ]
+  },
   objectives: [
     "Să recunoască literele alfabetului",
     "Să distingă vocalele de consoane",
@@ -434,6 +573,16 @@ const ACTIVITIES = [
       { q: "Litera Â este...", options: ["Vocală", "Consoană"], answer: 0 },
       { q: "Litera U este...", options: ["Vocală", "Consoană"], answer: 0 },
       { q: "Litera S este...", options: ["Vocală", "Consoană"], answer: 1 }
+    ],
+    pool: [
+      { q: "Litera E este...", options: ["Vocală", "Consoană"], answer: 0 },
+      { q: "Litera I este...", options: ["Vocală", "Consoană"], answer: 0 },
+      { q: "Litera O este...", options: ["Vocală", "Consoană"], answer: 0 },
+      { q: "Litera T este...", options: ["Vocală", "Consoană"], answer: 1 },
+      { q: "Litera P este...", options: ["Vocală", "Consoană"], answer: 1 },
+      { q: "Litera L este...", options: ["Vocală", "Consoană"], answer: 1 },
+      { q: "Litera R este...", options: ["Vocală", "Consoană"], answer: 1 },
+      { q: "Litera N este...", options: ["Vocală", "Consoană"], answer: 1 }
     ]
   },
   questions: [
@@ -455,6 +604,17 @@ const ACTIVITIES = [
 },
 {
   id: "lim-2", subject: "lim", num: 2, title: "Silabe", icon: "🗣️", duration: "20 min",
+  montessori: {
+    intro: "Montessori bate silabele: bati din palme pentru fiecare parte a cuvântului. „Ba-lan-ță” e 3 bătăi.",
+    materials: [
+      { icon: "👏", name: "Băt din palme", how: "Bate silabele numelui tău. Câte bătăi? Încearcă cu alte cuvinte." },
+      { icon: "🥁", name: "Tob sau masă", how: "Bate silabele pe masă: „ma-șină” e 2 bătăi. Fă-ți cuvintele tale." },
+    ],
+    tips: [
+      "Silabele sunt părțile cuvântului. Bati fiecare parte.",
+      "Cuvintele scurte au 1 silabă, cele lungi au mai multe.",
+    ]
+  },
   objectives: [
     "Să înțeleagă ce este o silabă",
     "Să numere silabele dintr-un cuvânt",
@@ -475,6 +635,16 @@ const ACTIVITIES = [
       { q: "Câte silabe are „ca-meră”?", options: ["1", "2", "3"], answer: 1 },
       { q: "Câte silabe are „so-le-șe”?", options: ["2", "3", "4"], answer: 1 },
       { q: "Câte silabe are „fa-ntâ-nă”?", options: ["2", "3", "4"], answer: 1 }
+    ],
+    pool: [
+      { q: "Câte silabe are „ca-să”?", options: ["1", "2", "3"], answer: 1 },
+      { q: "Câte silabe are „me-re”?", options: ["1", "2", "3"], answer: 1 },
+      { q: "Câte silabe are „pa-pu-șă”?", options: ["2", "3", "4"], answer: 1 },
+      { q: "Câte silabe are „floa-re”?", options: ["1", "2", "3"], answer: 1 },
+      { q: "Câte silabe are „ca-me-ra”?", options: ["2", "3", "4"], answer: 1 },
+      { q: "Câte silabe are „pi-pă-ră”?", options: ["2", "3", "4"], answer: 1 },
+      { q: "Câte silabe are „to-ca”?", options: ["1", "2", "3"], answer: 1 },
+      { q: "Câte silabe are „ma-șină”?", options: ["1", "2", "3"], answer: 1 }
     ]
   },
   questions: [
@@ -495,6 +665,17 @@ const ACTIVITIES = [
 },
 {
   id: "lim-3", subject: "lim", num: 3, title: "Cuvinte și propoziții", icon: "✍️", duration: "20 min",
+  montessori: {
+    intro: "Montessori folosește „alfabetul mobil”: pui literele împreună ca să faci cuvinte, ca un puzzle. Le poți muta până când cuvântul e corect.",
+    materials: [
+      { icon: "🔤", name: "Alfabet mobil", how: "Taie litere din carton. Pune-le împreună ca să faci cuvântul „casă”. Mute-le până e corect." },
+      { icon: "✂️", name: "Puzzle de cuvinte", how: "Scrie un cuvânt pe hârtie și taie-l în litere. Amestecă-le și pune-le înapoi în ordine." },
+    ],
+    tips: [
+      "Un cuvânt e făcut din litere. O propoziție e făcută din cuvinte.",
+      "Fă mai întâi cuvinte scurte, apoi mai lungi.",
+    ]
+  },
   objectives: [
     "Să înțeleagă diferența dintre cuvânt și propoziție",
     "Să pună cuvintele în ordine corectă pentru a forma o propoziție",
@@ -514,6 +695,12 @@ const ACTIVITIES = [
       { words: ["Copilul", "citește", "carte"], answer: "Copilul citește carte" },
       { words: ["Flori", "mireasmă", "frumos"], answer: "Flori mireasmă frumos" },
       { words: ["Soarele", "răsare", "dimineața"], answer: "Soarele răsare dimineața" }
+    ],
+    extra: [
+      { words: ["Pisica", "doarme", "pe", "pat"], answer: "Pisica doarme pe pat" },
+      { words: ["Copilul", "joacă", "în", "parc"], answer: "Copilul joacă în parc" },
+      { words: ["Mama", "cântă", "frumos"], answer: "Mama cântă frumos" },
+      { words: ["Păsările", "zboară", "în", "cer"], answer: "Păsările zboară în cer" }
     ]
   },
   questions: [
@@ -534,6 +721,17 @@ const ACTIVITIES = [
 },
 {
   id: "lim-4", subject: "lim", num: 4, title: "Rime și sunete", icon: "🎵", duration: "20 min",
+  montessori: {
+    intro: "Montessori ascultă sunetele: găsești cuvinte care se termină la fel. „Soare” și „floare” se termină cu același sunet.",
+    materials: [
+      { icon: "🎵", name: "Joc de rime", how: "Spune un cuvânt și găsește altul care rimează: „măr” — „păr”, „casă” — „masă”." },
+      { icon: "👂", name: "Ascultare", how: "Închide ochii și ascultă sunetele din jur. Care rimează?" },
+    ],
+    tips: [
+      "Rimele sunt cuvinte care se termină cu același sunet.",
+      "Spune cuvintele cu voce tare și ascultă finalul fiecăruia.",
+    ]
+  },
   objectives: [
     "Să înțeleagă ce este o rimă",
     "Să găsească cuvinte care rimează",
@@ -553,6 +751,14 @@ const ACTIVITIES = [
       { a: "🍎 Mere", b: "🍐 Pere" },
       { a: "🌸 Floare", b: "🌹 Roză" },
       { a: "🐱 Pisică", b: "🐶 Cățel" }
+    ],
+    pool: [
+      { a: "🏠 Casă", b: "🪑 Masă" },
+      { a: "🍎 Mere", b: "🍐 Pere" },
+      { a: "🌸 Floare", b: "🌹 Roză" },
+      { a: "🐱 Pisică", b: "🐶 Cățel" },
+      { a: "🌞 Soare", b: "🌸 Floare" },
+      { a: "🍎 Măr", b: "💇 Păr" }
     ]
   },
   questions: [
@@ -573,6 +779,17 @@ const ACTIVITIES = [
 },
 {
   id: "lim-5", subject: "lim", num: 5, title: "Povestea mea", icon: "📝", duration: "25 min",
+  montessori: {
+    intro: "Montessori scrie cu „alfabetul mobil”: pui literele împreună ca să faci cuvinte, apoi scrii povestea. Le poți muta până când povestea e corectă.",
+    materials: [
+      { icon: "📝", name: "Alfabet mobil", how: "Pune literele împreună ca să faci cuvintele poveștii tale. Mute-le până e corect." },
+      { icon: "📖", name: "Carte de povești", how: "Scrie povestea ta într-un caiet. Desenează o imagine pentru fiecare propoziție." },
+    ],
+    tips: [
+      "O poveste are un început, un mijloc și un sfârșit.",
+      "Spune mai întâi povestea cu voce tare, apoi scrie-o.",
+    ]
+  },
   objectives: [
     "Să scrie propoziții simple",
     "Să folosească literele corect",
@@ -588,7 +805,15 @@ const ACTIVITIES = [
     title: "Scrie o propoziție",
     intro: "Scrie o propoziție despre ce ai făcut azi.",
     prompt: "Scrie o propoziție care începe cu „Azi am...”",
-    examples: ["Azi am citit o carte.", "Azi am jucat în parc.", "Azi am desenat o floare."]
+    examples: ["Azi am citit o carte.", "Azi am jucat în parc.", "Azi am desenat o floare."],
+    pool: [
+      "Scrie o propoziție care începe cu „Azi am...”",
+      "Scrie o propoziție care începe cu „Îmi place...”",
+      "Scrie o propoziție care începe cu „Mâine voi...”",
+      "Scrie o propoziție care începe cu „Familia mea...”",
+      "Scrie o propoziție care începe cu „În vacanță...”",
+      "Scrie o propoziție care începe cu „Prietenul meu...”"
+    ]
   },
   questions: [
     "Scrie 3 propoziții despre familia ta.",
@@ -608,6 +833,17 @@ const ACTIVITIES = [
 },
 {
   id: "lim-6", subject: "lim", num: 6, title: "Vocalele speciale: ă și â", icon: "🎩", duration: "20 min",
+  montessori: {
+    intro: "Montessori simte literele: scrii „ă” și „â” cu degetul și simți diferența. Pălăria mică de pe „a” schimbă sunetul.",
+    materials: [
+      { icon: "📜", name: "Litere de hârtie abrazivă", how: "Taie literele „ă” și „â” din carton. Trasează-le cu degetul și spune sunetul." },
+      { icon: "🖐️", name: "Litere în aer", how: "Scrie „ă” și „â” în aer cu degetul. Mare, lent, și spune sunetul pe când scrii." },
+    ],
+    tips: [
+      "„ă” spune „ah” și „â” spune „ah”. Sună diferit!",
+      "Uită-te la pălăria mică: e deasupra lui „a” și schimbă sunetul.",
+    ]
+  },
   objectives: [
     "Să recunoască vocalele ă și â",
     "Să distingă când se scrie „î” și când „â”",
@@ -629,6 +865,16 @@ const ACTIVITIES = [
       { q: "Cuvântul „împreună” are...", options: ["î", "â"], answer: 0 },
       { q: "Cuvântul „râu” are...", options: ["â", "î"], answer: 0 },
       { q: "Câte vocale are limba română?", options: ["7", "5"], answer: 0 }
+    ],
+    pool: [
+      { q: "Cuvântul „mâncare” are...", options: ["â", "î"], answer: 0 },
+      { q: "Cuvântul „înot” are...", options: ["î", "â"], answer: 0 },
+      { q: "Cuvântul „îmi” are...", options: ["î", "â"], answer: 0 },
+      { q: "Cuvântul „pâine” are...", options: ["â", "î"], answer: 0 },
+      { q: "Cuvântul „râd” are...", options: ["â", "î"], answer: 0 },
+      { q: "Cuvântul „împreună” are...", options: ["î", "â"], answer: 0 },
+      { q: "La începutul cuvântului scriem...", options: ["î", "â"], answer: 0 },
+      { q: "În mijlocul cuvântului scriem...", options: ["â", "î"], answer: 0 }
     ]
   },
   questions: [
@@ -649,6 +895,17 @@ const ACTIVITIES = [
 },
 {
   id: "lim-7", subject: "lim", num: 7, title: "Cuvinte din jurul tău", icon: "🏷️", duration: "20 min",
+  montessori: {
+    intro: "Montessori numește asta „lecția în trei perioade”: arăți cuvântul, îl numești, și copilul îl găsește. Lumea e o clasă mare.",
+    materials: [
+      { icon: "🏷️", name: "Etichete", how: "Scrie numele lucrurilor pe hârtie și lipește-le: „masă”, „fereastră”, „ușă”." },
+      { icon: "🔍", name: "Vânătoare de cuvinte", how: "Mergi prin casă și găsește 5 cuvinte care încep cu „a”. Aduce-le și arată-le." },
+    ],
+    tips: [
+      "Lumea e plină de cuvinte. Uită-te la semne, la cărți, la televizor.",
+      "Găsește mai întâi cuvintele ușoare, apoi pe cele ascunse.",
+    ]
+  },
   objectives: [
     "Să asocieze cuvinte cu obiecte reale",
     "Să recunoască litere pe etichete și semne",
@@ -669,6 +926,16 @@ const ACTIVITIES = [
       { a: "CARTE", b: "📖" },
       { a: "MERE", b: "🍎" },
       { a: "FLOARE", b: "🌸" }
+    ],
+    pool: [
+      { a: "BANANĂ", b: "🍌" },
+      { a: "MAȘINĂ", b: "🚗" },
+      { a: "BALON", b: "🎈" },
+      { a: "PISICĂ", b: "🐱" },
+      { a: "BOMBOANE", b: "🍬" },
+      { a: "FLUTURUȘ", b: "🦋" },
+      { a: "FÂNTÂNĂ", b: "⛲" },
+      { a: "LUNĂ", b: "🌙" }
     ]
   },
   questions: [
@@ -691,6 +958,17 @@ const ACTIVITIES = [
 /* ==================== LOGICĂ ȘI GÂNDIRE ==================== */
 {
   id: "log-1", subject: "log", num: 1, title: "Tipare și secvențe", icon: "🔁", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „mărgele roșii”: faci tipare cu mărgelele și vezi cum se repetă. Tiparul e o melodie pe care o auzi cu ochii.",
+    materials: [
+      { icon: "🔴", name: "Mărgele sau nasturi", how: "Fă un tipar: roșu, albastru, roșu, albastru. Ce vine mai departe? Fă-ți tiparul tău." },
+      { icon: "🧱", name: "Blocuri", how: "Fă un tipar cu blocuri: mare, mic, mare, mic. Ce vine mai departe?" },
+    ],
+    tips: [
+      "Un tipar e ceva ce se repetă. Caută partea care se repetă.",
+      "Fă mai întâi tipare ușoare, apoi mai grele.",
+    ]
+  },
   objectives: [
     "Să recunoască tipare simple (AB, AAB)",
     "Să completeze tipare cu elementul lipsă",
@@ -710,6 +988,12 @@ const ACTIVITIES = [
       { words: ["⭐", "⭐", "🌙", "⭐", "⭐", "❓"], answer: "🌙", pool: ["⭐", "🌙", "☀️"] },
       { words: ["🔴", "🔵", "🟢", "🔴", "🔵", "❓"], answer: "🟢", pool: ["🔴", "🔵", "🟢"] },
       { words: ["🐱", "🐶", "🐱", "🐶", "❓"], answer: "🐱", pool: ["🐱", "🐶", "🐰"] }
+    ],
+    extra: [
+      { words: ["🔺", "🔵", "🔺", "🔵", "❓"], answer: "🔺", pool: ["🔺", "🔵", "🟢"] },
+      { words: ["🌸", "🌸", "🌻", "🌸", "🌸", "❓"], answer: "🌻", pool: ["🌸", "🌻", "🍀"] },
+      { words: ["🍎", "🍌", "🍎", "🍌", "❓"], answer: "🍎", pool: ["🍎", "🍌", "🍇"] },
+      { words: ["⭐", "🌙", "⭐", "🌙", "❓"], answer: "⭐", pool: ["⭐", "🌙", "☀️"] }
     ]
   },
   questions: [
@@ -730,6 +1014,17 @@ const ACTIVITIES = [
 },
 {
   id: "log-2", subject: "log", num: 2, title: "Ghici figura", icon: "🔍", duration: "20 min",
+  montessori: {
+    intro: "Montessori are un „cabinet geometric”: atingi forma cu ochii închiși și o ghicești. Forma se simte cu degetele, nu doar se vede.",
+    materials: [
+      { icon: "🧊", name: "Forme din carton", how: "Taie un pătrat, un triunghi și un cerc. Acoperă-ți ochii și atinge forma. Ghicește care e." },
+      { icon: "🔲", name: "Cabinet geometric", how: "Pune formele într-o cutie. Ia una cu ochii închiși și ghicește-o înainte să deschizi ochii." },
+    ],
+    tips: [
+      "Formele au colțuri și laturi. Numără-le cu degetul.",
+      "Atinge mai întâi formele ușoare, apoi pe cele grele.",
+    ]
+  },
   objectives: [
     "Să ghicească o figură din indicii",
     "Să folosească proprietățile figurilor (laturi, colțuri)",
@@ -750,6 +1045,14 @@ const ACTIVITIES = [
       { q: "Nu are colțuri, este rotund. Ce este?", options: ["Cerc", "Pătrat", "Triunghi"], answer: 0 },
       { q: "Are 4 laturi, dar cele opuse sunt egale. Ce este?", options: ["Pătrat", "Dreptunghi", "Triunghi"], answer: 1 },
       { q: "Are 5 laturi și 5 colțuri. Ce este?", options: ["Pătrat", "Pentagon", "Cerc"], answer: 1 }
+    ],
+    pool: [
+      { q: "Are 4 laturi egale și 4 colțuri. Ce este?", options: ["Pătrat", "Dreptunghi", "Cerc"], answer: 0 },
+      { q: "Are 3 laturi și 3 colțuri. Ce este?", options: ["Triunghi", "Pătrat", "Cerc"], answer: 0 },
+      { q: "Nu are colțuri, este rotund. Ce este?", options: ["Pătrat", "Cerc", "Triunghi"], answer: 1 },
+      { q: "Are 4 laturi, cele opuse sunt egale. Ce este?", options: ["Dreptunghi", "Pătrat", "Triunghi"], answer: 0 },
+      { q: "Are 6 laturi și 6 colțuri. Ce este?", options: ["Pătrat", "Hexagon", "Cerc"], answer: 1 },
+      { q: "Are 4 laturi egale, dar colțuri ascuțite. Ce este?", options: ["Pătrat", "Dreptunghi", "Cerc"], answer: 0 }
     ]
   },
   questions: [
@@ -770,6 +1073,17 @@ const ACTIVITIES = [
 },
 {
   id: "log-3", subject: "log", num: 3, title: "Joc de memorie", icon: "🧠", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „jocuri de memorie”: te uiți la obiecte, apoi închizi ochii și le ții minte. Memoria e un mușchi pe care îl poți antrena.",
+    materials: [
+      { icon: "🧠", name: "Joc de memorie", how: "Pune 5 obiecte pe masă. Uită-te la ele 10 secunde. Închide ochii și spune ce ai văzut." },
+      { icon: "🃏", name: "Cartonașe", how: "Pune 6 cartonașe cu fața în jos. Răstoarnă 2 și vezi dacă se potrivesc. Ține minte unde e fiecare." },
+    ],
+    tips: [
+      "Memoria e un mușchi: cu cât o folosești mai mult, cu atât e mai puternică.",
+      "Ține minte mai întâi lucruri ușoare, apoi mai grele.",
+    ]
+  },
   objectives: [
     "Să își antreneze memoria vizuală",
     "Să găsească perechi identice",
@@ -784,7 +1098,8 @@ const ACTIVITIES = [
     type: "memory",
     title: "Găsește perechile",
     intro: "Răsturnă cărțile și găsește perechile identice!",
-    pairs: ["🐱", "🐶", "🦋", "🌸", "⭐", "🍎"]
+    pairs: ["🐱", "🐶", "🦋", "🌸", "⭐", "🍎"],
+    pool: ["🐸", "🦁", "🐢", "🌻", "🍌", "🚗", "🏀", "🍕", "🎈", "🐟", "🧸", "🍇"]
   },
   questions: [
     "Câte perechi ai găsit?",
@@ -804,6 +1119,17 @@ const ACTIVITIES = [
 },
 {
   id: "log-4", subject: "log", num: 4, title: "Sortare și clasificare", icon: "🗂️", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „jocuri de clasificare”: sortezi obiecte după culoare, mărime sau formă. Sortarea e cum creierul organizează lumea.",
+    materials: [
+      { icon: "🗂️", name: "Cutii de sortare", how: "Sortează nasturii după culoare: roșii într-o cutie, albaștri în alta. Încearcă cu alte lucruri." },
+      { icon: "🧱", name: "Blocuri", how: "Sortează blocurile după mărime: mic, mediu, mare. Pune-le în ordine." },
+    ],
+    tips: [
+      "Poți sorta după culoare, mărime, formă sau orice altceva.",
+      "Sortează mai întâi după un lucru, apoi după două în același timp.",
+    ]
+  },
   objectives: [
     "Să sorteze obiecte după criterii (culoare, formă, mărime)",
     "Să creeze grupuri de obiecte",
@@ -826,6 +1152,16 @@ const ACTIVITIES = [
       { label: "🐶 Cățel", zone: 1 },
       { label: "🍇 Struguri", zone: 0 },
       { label: "🦋 Fluture", zone: 1 }
+    ],
+    pool: [
+      { label: "🍐 Pară", zone: 0 },
+      { label: "🐸 Broască", zone: 1 },
+      { label: "🍊 Portocală", zone: 0 },
+      { label: "🐟 Pește", zone: 1 },
+      { label: "🍓 Câpșună", zone: 0 },
+      { label: "🐢 Țestoasă", zone: 1 },
+      { label: "🍉 Pepene", zone: 0 },
+      { label: "🦁 Leu", zone: 1 }
     ]
   },
   questions: [
@@ -846,6 +1182,17 @@ const ACTIVITIES = [
 },
 {
   id: "log-5", subject: "log", num: 5, title: "Probleme logice", icon: "🧩", duration: "25 min",
+  montessori: {
+    intro: "Montessori are „jocuri logice”: rezolvi probleme cu obiecte reale. Problema e un puzzle pe care îl poți atinge.",
+    materials: [
+      { icon: "🧩", name: "Puzzle", how: "Rezolvă un puzzle cu 10 piese. Începe cu marginile, apoi completează mijlocul." },
+      { icon: "🧱", name: "Blocuri", how: "Construiește o turn cu 5 blocuri. Câte blocuri ai nevoie ca să fie mai înalt?" },
+    ],
+    tips: [
+      "O problemă e un puzzle. Caută piesa care se potrivește.",
+      "Încearcă mai întâi modul ușor, apoi cel greu.",
+    ]
+  },
   objectives: [
     "Să rezolve probleme logice simple",
     "Să folosească eliminarea (ce nu poate fi)",
@@ -866,6 +1213,14 @@ const ACTIVITIES = [
       { q: "Un ceainic are 4 căni. Dacă se toarnă în 2 căni, câte căni rămân goale?", options: ["2", "3", "4"], answer: 0 },
       { q: "Pisica este în casă. Cățelul este în curte. Unde este pisica?", options: ["În casă", "În curte", "În parc"], answer: 0 },
       { q: "Are 3 bile roșii și 2 albastre. Câte bile are în total?", options: ["3", "5", "6"], answer: 1 }
+    ],
+    pool: [
+      { q: "Ana este mai înaltă decât Berta. Berta este mai înaltă decât Ceca. Cine este cea mai înaltă?", options: ["Ceca", "Ana", "Berta"], answer: 1 },
+      { q: "Mihai are 4 mere. Ioana are cu 2 mai multe. Câte mere are Ioana?", options: ["2", "6", "8"], answer: 1 },
+      { q: "Pisica este în casă. Cățelul este în curte. Unde este pisica?", options: ["În curte", "În casă", "În parc"], answer: 1 },
+      { q: "Are 3 bile roșii și 2 albastre. Câte bile are în total?", options: ["5", "3", "6"], answer: 0 },
+      { q: "Maria are 5 flori. Dă 2 unei prietene. Câte flori îi rămân?", options: ["7", "3", "2"], answer: 1 },
+      { q: "Un scaun are 4 picioare. Câte picioare au 2 scaune?", options: ["6", "8", "4"], answer: 1 }
     ]
   },
   questions: [
@@ -886,6 +1241,17 @@ const ACTIVITIES = [
 },
 {
   id: "log-6", subject: "log", num: 6, title: "Puzzle din jurul tău", icon: "🧮", duration: "25 min",
+  montessori: {
+    intro: "Montessori numește asta „lecția în trei perioade”: arăți puzzle-ul, îl numești, și copilul îl găsește. Lumea e o clasă mare.",
+    materials: [
+      { icon: "🧮", name: "Coș de puzzle-uri", how: "Colecționează 5 puzzle-uri din casă. Rezolvă-le unul câte unul." },
+      { icon: "🔍", name: "Vânătoare de puzzle-uri", how: "Mergi prin casă și găsește 3 puzzle-uri. Aduce-le și rezolvă-le." },
+    ],
+    tips: [
+      "Lumea e plină de puzzle-uri. Uită-te la podea, la tavan, la pereți.",
+      "Rezolvă mai întâi puzzle-urile ușoare, apoi pe cele grele.",
+    ]
+  },
   objectives: [
     "Să rezolve probleme logice cu obiecte reale",
     "Să numere și să compare obiecte din mediul înconjurător",
@@ -920,6 +1286,17 @@ const ACTIVITIES = [
 },
 {
   id: "log-7", subject: "log", num: 7, title: "Ce vine mai departe?", icon: "🔮", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „jocuri de secvențe”: te uiți la o secvență și ghicești ce vine mai departe. Secvența e o melodie pe care o auzi cu ochii.",
+    materials: [
+      { icon: "🔮", name: "Joc de secvențe", how: "Uită-te la secvența: 1, 2, 3, 4. Ce vine mai departe? Fă-ți secvența ta." },
+      { icon: "🧱", name: "Blocuri", how: "Fă o secvență cu blocuri: 1, 2, 3. Câte blocuri ai nevoie pentru următoarea?" },
+    ],
+    tips: [
+      "O secvență e ceva ce crește sau se repetă. Caută regula.",
+      "Ghicește mai întâi, apoi verifică.",
+    ]
+  },
   objectives: [
     "Să recunoască tipare mai complexe",
     "Să prevadă elementul următor dintr-o secvență",
@@ -939,6 +1316,12 @@ const ACTIVITIES = [
       { words: ["🔵", "🔵", "🔴", "🔵", "🔵", "❓"], pool: ["🔵", "🔴", "🟢"], answer: "🔴" },
       { words: ["⭐", "🌙", "⭐", "🌙", "⭐", "❓"], pool: ["⭐", "🌙", "☀️"], answer: "🌙" },
       { words: ["🐱", "🐶", "🐱", "🐶", "🐱", "❓"], pool: ["🐱", "🐶", "🐰"], answer: "🐶" }
+    ],
+    extra: [
+      { words: ["🔺", "🔵", "🔺", "🔵", "❓"], pool: ["🔺", "🔵", "🟢"], answer: "🔺" },
+      { words: ["🌸", "🌸", "🌻", "🌸", "🌸", "❓"], pool: ["🌸", "🌻", "🍀"], answer: "🌻" },
+      { words: ["🍎", "🍌", "🍎", "🍌", "❓"], pool: ["🍎", "🍌", "🍇"], answer: "🍎" },
+      { words: ["⭐", "🌙", "⭐", "🌙", "❓"], pool: ["⭐", "🌙", "☀️"], answer: "⭐" }
     ]
   },
   questions: [
@@ -961,6 +1344,17 @@ const ACTIVITIES = [
 /* ==================== INFORMATICĂ ==================== */
 {
   id: "inf-1", subject: "inf", num: 1, title: "Ce este un calculator?", icon: "💻", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „viața practică”: faci lucruri reale cu mâinile. Un calculator e un instrument pe care îl poți atinge și folosi.",
+    materials: [
+      { icon: "💻", name: "Calculator", how: "Atinge calculatorul: ecranul, tastatura, mouse-ul. Ce face fiecare parte?" },
+      { icon: "🔍", name: "Vânătoare de calculatoare", how: "Mergi prin casă și găsește 3 lucruri care sunt ca un calculator: telefon, tabletă, televizor." },
+    ],
+    tips: [
+      "Un calculator e un instrument. Îl folosești ca să faci lucruri.",
+      "Atinge mai întâi părțile ușoare, apoi pe cele grele.",
+    ]
+  },
   objectives: [
     "Să recunoască părțile unui calculator",
     "Să înțeleagă ce face un calculator",
@@ -983,6 +1377,16 @@ const ACTIVITIES = [
       { label: "📺 Televizor", zone: 1 },
       { label: "🖱️ Mouse", zone: 0 },
       { label: "📻 Radio", zone: 1 }
+    ],
+    pool: [
+      { label: "🖥️ Ecran", zone: 0 },
+      { label: "📱 Telefon", zone: 1 },
+      { label: "⌨️ Tastatură", zone: 0 },
+      { label: "📺 Televizor", zone: 1 },
+      { label: "🖱️ Mouse", zone: 0 },
+      { label: "📻 Radio", zone: 1 },
+      { label: "🖨️ Imprimantă", zone: 0 },
+      { label: "📷 Aparat foto", zone: 1 }
     ]
   },
   questions: [
@@ -1003,6 +1407,17 @@ const ACTIVITIES = [
 },
 {
   id: "inf-2", subject: "inf", num: 2, title: "Mouse-ul și tastatura", icon: "🖱️", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „viața practică”: faci lucruri reale cu mâinile. Mouse-ul și tastatura sunt instrumente pe care le poți atinge și folosi.",
+    materials: [
+      { icon: "🖱️", name: "Mouse", how: "Mișcă mouse-ul: stânga, dreapta, sus, jos. Dă click pe lucruri. Fă-ți jocul tău." },
+      { icon: "⌨️", name: "Tastatură", how: "Apasă tasta: A, B, C. Tastează numele tău. Fă-ți cuvintele tale." },
+    ],
+    tips: [
+      "Mouse-ul mișcă săgeata. Tastatura tastează litere.",
+      "Mișcă mai întâi mouse-ul încet, apoi mai repede.",
+    ]
+  },
   objectives: [
     "Să folosească mouse-ul (click, dublu-click)",
     "Să folosească tastatura (litere, spațiu, enter)",
@@ -1023,6 +1438,14 @@ const ACTIVITIES = [
       { q: "Ce face tasta Enter?", options: ["Șterge", "Nou rând", "Închide"], answer: 1 },
       { q: "Cum selectezi un obiect cu mouse-ul?", options: ["Click simplu", "Dublu-click", "Nu se poate"], answer: 0 },
       { q: "Cum ții mouse-ul?", options: ["Ca pe un pumn", "Ca pe o lingură", "Cu toată mâna"], answer: 1 }
+    ],
+    pool: [
+      { q: "Cum deschizi un program cu mouse-ul?", options: ["Dublu-click", "Click simplu", "Nu se poate"], answer: 0 },
+      { q: "Ce tastă folosim între cuvinte?", options: ["Enter", "Spațiu", "Shift"], answer: 1 },
+      { q: "Ce face tasta Enter?", options: ["Nou rând", "Șterge", "Închide"], answer: 0 },
+      { q: "Cum selectezi un obiect cu mouse-ul?", options: ["Dublu-click", "Click simplu", "Nu se poate"], answer: 1 },
+      { q: "Cum ții mouse-ul?", options: ["Ca pe o lingură", "Ca pe un pumn", "Cu toată mâna"], answer: 0 },
+      { q: "Ce este cea mai lată tastă?", options: ["Spațiu", "Enter", "A"], answer: 0 }
     ]
   },
   questions: [
@@ -1043,6 +1466,17 @@ const ACTIVITIES = [
 },
 {
   id: "inf-3", subject: "inf", num: 3, title: "Algoritmi simpli", icon: "📋", duration: "25 min",
+  montessori: {
+    intro: "Montessori are „jocuri de secvențe”: faci lucruri în ordine. Un algoritm e o listă de pași pe care îi urmezi.",
+    materials: [
+      { icon: "📋", name: "Rețetă", how: "Scrie o rețetă pentru a face un sandviș: 1. Ia pâinea. 2. Pune brânza. 3. Închide-l. Urmează pașii." },
+      { icon: "🧱", name: "Blocuri", how: "Construiește o turn: 1. Ia un bloc. 2. Pune-l pe masă. 3. Pune alt bloc deasupra. Urmează pașii." },
+    ],
+    tips: [
+      "Un algoritm e o listă de pași. Ii faci în ordine.",
+      "Scrie mai întâi pași ușori, apoi mai greli.",
+    ]
+  },
   objectives: [
     "Să înțeleagă ce este un algoritm",
     "Să pună pașii în ordine corectă",
@@ -1060,7 +1494,12 @@ const ACTIVITIES = [
     questions: [
       { words: ["Iau pâine", "Pun brânza", "Pun roșia", "Închid sandvișul"], answer: "Iau pâine, Pun brânza, Pun roșia, Închid sandvișul" },
       { words: ["Mă trezesc", "Mă spăl", "Mănânc", "Merg la școală"], answer: "Mă trezesc, Mă spăl, Mănânc, Merg la școală" },
-      { words: ["Iau creionul", "Desen un cer", "Desen un soare", "Color"], answer: "Iau creionul, Desen un cer, Desen un soare, Color" }
+      { words: ["Iau creionul", "Desenez un cer", "Desenez un soare", "Coloriez"], answer: "Iau creionul, Desenez un cer, Desenez un soare, Coloriez" }
+    ],
+    extra: [
+      { words: ["Mă trezesc", "Mă spăl", "Mănânc", "Merg la școală"], answer: "Mă trezesc, Mă spăl, Mănânc, Merg la școală" },
+      { words: ["Pun apă", "Aștept să fiarbă", "Pun ceaiul", "Toarn în ceașcă"], answer: "Pun apă, Aștept să fiarbă, Pun ceaiul, Toarn în ceașcă" },
+      { words: ["Iau hainele", "Mă îmbrac", "Mă pieptănez", "Merg afară"], answer: "Iau hainele, Mă îmbrac, Mă pieptănez, Merg afară" }
     ]
   },
   questions: [
@@ -1081,6 +1520,17 @@ const ACTIVITIES = [
 },
 {
   id: "inf-4", subject: "inf", num: 4, title: "Gândim ca programatori", icon: "🤖", duration: "25 min",
+  montessori: {
+    intro: "Montessori are „jocuri logice”: rezolvi probleme cu obiecte reale. Programarea e un puzzle pe care îl poți atinge.",
+    materials: [
+      { icon: "🤖", name: "Robot", how: "Fii robot: prietenul tău spune „mearge înainte” și tu mergi înainte. „Întoarce-te stânga” și te întorci stânga." },
+      { icon: "🧱", name: "Blocuri", how: "Construiește o casă cu blocuri: 1. Fă podeaua. 2. Fă pereții. 3. Fă acoperișul. Urmează pașii." },
+    ],
+    tips: [
+      "Programarea e darea de instrucțiuni. Spui ce să faci, pas cu pas.",
+      "Dă mai întâi instrucțiuni ușoare, apoi mai grele.",
+    ]
+  },
   objectives: [
     "Să înțeleagă ce înseamnă a programa",
     "Să descompună o sarcină în pași mici",
@@ -1101,6 +1551,13 @@ const ACTIVITIES = [
       { q: "Ce este un „bug”?", options: ["Un pas lipsă", "Un program bun", "Un calculator"], answer: 0 },
       { q: "Algoritm: „Pun apă, aștept să fiarbă, pun ceaiul”. Ce lipsește?", options: ["Toarn în ceașcă", "Nimic", "Un alt ceainic"], answer: 0 },
       { q: "Cum găsești un bug?", options: ["Verifici pașii", "Nu poți", "Ștergi tot"], answer: 0 }
+    ],
+    pool: [
+      { q: "Algoritm: „Iau pâine, pun brânza, închid sandvișul”. Ce lipsește?", options: ["Mâncatul", "Roșia", "Nimic"], answer: 1 },
+      { q: "Algoritm: „Mă trezesc, merg la școală, mă spăl”. Ce este greșit?", options: ["Lipsește un pas", "Ordinea", "Nimic"], answer: 1 },
+      { q: "Ce este un „bug”?", options: ["Un program bun", "Un pas lipsă", "Un calculator"], answer: 1 },
+      { q: "Algoritm: „Pun apă, aștept să fiarbă, pun ceaiul”. Ce lipsește?", options: ["Un alt ceainic", "Toarn în ceașcă", "Nimic"], answer: 1 },
+      { q: "Cum găsești un bug?", options: ["Nu poți", "Verifici pașii", "Ștergi tot"], answer: 1 }
     ]
   },
   questions: [
@@ -1121,6 +1578,17 @@ const ACTIVITIES = [
 },
 {
   id: "inf-5", subject: "inf", num: 5, title: "Sortăm ca un computer", icon: "🗃️", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „jocuri de clasificare”: sortezi obiecte după culoare, mărime sau formă. Sortarea e cum computerul organizează lucrurile.",
+    materials: [
+      { icon: "🗃️", name: "Cutii de sortare", how: "Sortează cartonașele după număr: 1, 2, 3, 4. Pune-le în ordine." },
+      { icon: "🧱", name: "Blocuri", how: "Sortează blocurile după mărime: mic, mediu, mare. Pune-le în ordine." },
+    ],
+    tips: [
+      "Un computer sortează lucrurile după mărime sau număr. Poți și tu!",
+      "Sortează mai întâi lucruri ușoare, apoi mai grele.",
+    ]
+  },
   objectives: [
     "Să înțeleagă ce înseamnă a sorta date",
     "Să grupeze obiecte după criterii",
@@ -1143,6 +1611,16 @@ const ACTIVITIES = [
       { label: "🍌 Banană", zone: 0 },
       { label: "🥦 Broccoli", zone: 1 },
       { label: "⚽ Minge", zone: 2 }
+    ],
+    pool: [
+      { label: "🍇 Struguri", zone: 0 },
+      { label: "🥒 Castravete", zone: 1 },
+      { label: "🧸 Ursuleț", zone: 2 },
+      { label: "🍊 Portocală", zone: 0 },
+      { label: "🌽 Porumb", zone: 1 },
+      { label: "🎲 Zar", zone: 2 },
+      { label: "🍓 Câpșună", zone: 0 },
+      { label: "🥔 Cartof", zone: 1 }
     ]
   },
   questions: [
@@ -1163,6 +1641,17 @@ const ACTIVITIES = [
 },
 {
   id: "inf-6", subject: "inf", num: 6, title: "Algoritmul zilei mele", icon: "📅", duration: "25 min",
+  montessori: {
+    intro: "Montessori are „viața practică”: faci lucruri reale în ordine. Ziua ta e un algoritm pe care îl urmezi în fiecare zi.",
+    materials: [
+      { icon: "📅", name: "Program de zi", how: "Scrie ziua ta: 1. Te trezești. 2. Mănânci micul dejun. 3. Mergi la școală. Urmează pașii." },
+      { icon: "🧱", name: "Blocuri", how: "Construiește ziua ta cu blocuri: un bloc pentru fiecare lucru pe care îl faci. Pune-le în ordine." },
+    ],
+    tips: [
+      "Ziua ta e un algoritm. Făci lucrurile în ordine.",
+      "Scrie mai întâi pașii ușori, apoi pe cei greli.",
+    ]
+  },
   objectives: [
     "Să ordoneze pașii unei activități",
     "Să înțeleagă ordinea cronologică",
@@ -1181,6 +1670,11 @@ const ACTIVITIES = [
       { words: ["Te trezești", "Te speli", "Mănânci", "Mergi la școală"], answer: "Te trezești Te speli Mănânci Mergi la școală" },
       { words: ["Ieși afară", "Pune hainele", "Pune încălțămintea", "Deschizi ușa"], answer: "Pune hainele Pune încălțămintea Deschizi ușa Ieși afară" },
       { words: ["Speli pe dinți", "Îți pui periuța", "Pui pastă", "Te speli"], answer: "Îți pui periuța Pui pastă Speli pe dinți Te speli" }
+    ],
+    extra: [
+      { words: ["Te trezești", "Te speli", "Mănânci", "Mergi la școală"], answer: "Te trezești Te speli Mănânci Mergi la școală" },
+      { words: ["Pune hainele", "Pune încălțămintea", "Deschizi ușa", "Ieși afară"], answer: "Pune hainele Pune încălțămintea Deschizi ușa Ieși afară" },
+      { words: ["Îți pui periuța", "Pui pastă", "Speli pe dinți", "Te speli"], answer: "Îți pui periuța Pui pastă Speli pe dinți Te speli" }
     ]
   },
   questions: [
@@ -1203,6 +1697,17 @@ const ACTIVITIES = [
 /* ==================== ȘTIINȚE ȘI NATURĂ ==================== */
 {
   id: "sci-1", subject: "sci", num: 1, title: "Sănătos și bolnav", icon: "🏥", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „viața practică”: te ocupi de corpul tău. Corpul tău e un instrument pe care îl poți atinge și folosi.",
+    materials: [
+      { icon: "🏥", name: "Joc de doctor", how: "Fii doctor: măsoară temperatura, ascultă inima. Ce face un doctor?" },
+      { icon: "🧼", name: "Spălat pe mâini", how: "Spală-te pe mâini: 1. Le udă. 2. Pune săpun. 3. Freacă-le. 4. Clătește. Urmează pașii." },
+    ],
+    tips: [
+      "Corpul tău e un instrument. Te ocupi de el în fiecare zi.",
+      "Fă mai întâi lucruri ușoare, apoi mai grele.",
+    ]
+  },
   objectives: [
     "Să recunoască obiceiuri sănătoase",
     "Să distingă comportamente sănătoase de cele nesănătoase",
@@ -1222,9 +1727,19 @@ const ACTIVITIES = [
       { label: "🥗 Mănânc legume", zone: 0 },
       { label: "📱 5 ore de ecran", zone: 1 },
       { label: "😴 Dorm 10 ore", zone: 0 },
-      { label: "🍭 Mult zahăr", zone: 1 },
+      { label: "🍭 Mănânc mult zahăr", zone: 1 },
       { label: "⚽ Juc fotbal", zone: 0 },
       { label: "🖐️ Nu mă spăl pe mâini", zone: 1 }
+    ],
+    pool: [
+      { label: "🍎 Mănânc fructe", zone: 0 },
+      { label: "🍭 Mănânc mult zahăr", zone: 1 },
+      { label: "🚶 Merg pe jos", zone: 0 },
+      { label: "📺 Stau toată ziua pe ecran", zone: 1 },
+      { label: "🛏️ Mă odihnesc bine", zone: 0 },
+      { label: "🍟 Mănânc doar chipsuri", zone: 1 },
+      { label: "🏊 Înot", zone: 0 },
+      { label: "😴 Dorm foarte puțin", zone: 1 }
     ]
   },
   questions: [
@@ -1245,6 +1760,17 @@ const ACTIVITIES = [
 },
 {
   id: "sci-2", subject: "sci", num: 2, title: "Plantele", icon: "🌱", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „materiale vii”: te ocupi de o plantă reală. Planta crește și o vezi cum se schimbă.",
+    materials: [
+      { icon: "🌱", name: "Plantă", how: "Plantează o sămânță: 1. Pune sâmbăna în pământ. 2. Ud-o. 3. Pune-o la soare. Uite-o cum crește." },
+      { icon: "🔍", name: "Vânătoare de plante", how: "Ieși afară și găsește 3 plante. Ce au în comun?" },
+    ],
+    tips: [
+      "O plantă are nevoie de apă, soare și pământ. Crește încet.",
+      "Uită-te mai întâi la părțile ușoare, apoi la cele grele.",
+    ]
+  },
   objectives: [
     "Să recunoască părțile unei plante",
     "Să înțeleagă ce are nevoie o plantă pentru a crește",
@@ -1265,6 +1791,14 @@ const ACTIVITIES = [
       { q: "Ce parte a plantei face hrana?", options: ["Rădăcina", "Frunza", "Tulpina"], answer: 1 },
       { q: "Ce se întâmplă cu o plantă fără apă?", options: ["Crește mai repede", "Se usucă", "Rămâne la fel"], answer: 1 },
       { q: "Cum se numește procesul prin care planta își face hrana?", options: ["Fotosinteză", "Digestie", "Respirație"], answer: 0 }
+    ],
+    pool: [
+      { q: "Ce parte a plantei o susține?", options: ["Tulpina", "Rădăcina", "Flora"], answer: 0 },
+      { q: "Ce parte a plantei o ajută să se înmulțească?", options: ["Flora", "Rădăcina", "Tulpina"], answer: 0 },
+      { q: "Ce iau rădăcinile din pământ?", options: ["Apă", "Lumină", "Aer"], answer: 0 },
+      { q: "Ce are nevoie o plantă, în afară de apă?", options: ["Lumină", "Zahăr", "Muzică"], answer: 0 },
+      { q: "Ce fac frunzele pentru plantă?", options: ["Fac hrana", "O țin în pământ", "O susțin"], answer: 0 },
+      { q: "Ce se întâmplă cu o plantă fără lumină?", options: ["Crește mai repede", "Slăbește", "Rămâne la fel"], answer: 1 }
     ]
   },
   questions: [
@@ -1285,6 +1819,17 @@ const ACTIVITIES = [
 },
 {
   id: "sci-3", subject: "sci", num: 3, title: "Animalele", icon: "🦁", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „materiale vii”: înveți despre animale reale. Animalul e un lucru viu pe care îl poți observa.",
+    materials: [
+      { icon: "🦁", name: "Cartonașe de animale", how: "Uită-te la cartonașe de animale: leu, elefant, pasăre. Ce mănâncă? Unde locuiesc?" },
+      { icon: "🔍", name: "Vânătoare de animale", how: "Ieși afară și găsește 3 animale. Ce au în comun?" },
+    ],
+    tips: [
+      "Animalele sunt lucruri vii. Mănâncă, cresc și se mișcă.",
+      "Uită-te mai întâi la animalele ușoare, apoi la cele grele.",
+    ]
+  },
   objectives: [
     "Să recunoască animale comune",
     "Să asocieze animalul cu habitatul lui",
@@ -1304,6 +1849,15 @@ const ACTIVITIES = [
       { a: "🦅 Vultur", b: "🏔️ Munte" },
       { a: "🐘 Elefant", b: "🌍 Savană" },
       { a: "🐭 Șoarece", b: "🏠 Casă" }
+    ],
+    pool: [
+      { a: "🐦 Pasăre", b: "🌳 Copac" },
+      { a: "🐢 Țestoasă", b: "🏖️ Plajă" },
+      { a: "🐺 Lup", b: "🌲 Pădure" },
+      { a: "🐝 Albină", b: "🌼 Grădină" },
+      { a: "🦋 Fluture", b: "🌸 Flori" },
+      { a: "🦈 Rechin", b: "🌊 Mare" },
+      { a: "🐇 Iepure", b: "🌾 Câmp" }
     ]
   },
   questions: [
@@ -1324,6 +1878,17 @@ const ACTIVITIES = [
 },
 {
   id: "sci-4", subject: "sci", num: 4, title: "Stările apei", icon: "💧", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „viața practică”: faci lucruri reale cu apă. Apa se schimbă de formă și o poți vedea.",
+    materials: [
+      { icon: "💧", name: "Apă", how: "Pune apă într-o cană: 1. Încălzește-o. 2. Devine abur. 3. Răcește-o. 4. Devine gheață. Uite-o cum se schimbă." },
+      { icon: "🔍", name: "Vânătoare de apă", how: "Găsește 3 lucruri care sunt apă: ploaie, rouă, abur. Ce au în comun?" },
+    ],
+    tips: [
+      "Apa poate fi lichid, gaz sau solid. Se schimbă de formă.",
+      "Uită-te mai întâi la formele ușoare, apoi la cele grele.",
+    ]
+  },
   objectives: [
     "Să recunoască cele 3 stări ale apei (lichid, solid, gaz)",
     "Să înțeleagă cum se transformă apa",
@@ -1346,6 +1911,14 @@ const ACTIVITIES = [
       { label: "🌧️ Ploaie", zone: 0 },
       { label: "❄️ Zăpadă", zone: 1 },
       { label: "💨 Nori", zone: 2 }
+    ],
+    pool: [
+      { label: "🥤 Suc în pahar", zone: 0 },
+      { label: "🧊 Gheață de la înghețată", zone: 1 },
+      { label: "♨️ Abur de la supă", zone: 2 },
+      { label: "🌊 Apă din fântână", zone: 0 },
+      { label: "❄️ Gheață pe geam", zone: 1 },
+      { label: "💨 Abur de la ceainic", zone: 2 }
     ]
   },
   questions: [
@@ -1366,6 +1939,17 @@ const ACTIVITIES = [
 },
 {
   id: "sci-5", subject: "sci", num: 5, title: "Corpul meu", icon: "🫀", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „viața practică”: te ocupi de corpul tău. Corpul tău e un instrument pe care îl poți atinge și folosi.",
+    materials: [
+      { icon: "🫀", name: "Hartă a corpului", how: "Desenează-ți corpul: cap, brațe, picioare. Unde e inima? Unde sunt plămânii?" },
+      { icon: "🔍", name: "Vânătoare de corp", how: "Atinge-ți corpul: cap, umeri, genunchi, degete. Ce simți?" },
+    ],
+    tips: [
+      "Corpul tău e un instrument. Te ocupi de el în fiecare zi.",
+      "Uită-te mai întâi la părțile ușoare, apoi la cele grele.",
+    ]
+  },
   objectives: [
     "Să recunoască organele principale",
     "Să înțeleagă rolul fiecărui organ",
@@ -1386,6 +1970,14 @@ const ACTIVITIES = [
       { q: "Ce organ gândește?", options: ["Creierul", "Inima", "Stomacul"], answer: 0 },
       { q: "Ce organ digeră mâncarea?", options: ["Plămânii", "Stomacul", "Creierul"], answer: 1 },
       { q: "Ce se întâmplă cu inima când dormi?", options: ["Se oprește", "Continuă să bată", "Dispare"], answer: 1 }
+    ],
+    pool: [
+      { q: "Ce organ ne ajută să auzim?", options: ["Urechile", "Ochii", "Mâinile"], answer: 0 },
+      { q: "Ce organ ne ajută să vedem?", options: ["Ochii", "Urechile", "Nasul"], answer: 0 },
+      { q: "Ce organ simte mirosurile?", options: ["Nasul", "Ochii", "Inima"], answer: 0 },
+      { q: "Ce organ simte gustul mâncării?", options: ["Limba", "Inima", "Creierul"], answer: 0 },
+      { q: "Ce organ ne ajută să ne mișcăm?", options: ["Mușchii", "Oasele", "Plămânii"], answer: 0 },
+      { q: "Ce ne susține corpul ca pe un schelet?", options: ["Oasele", "Mușchii", "Plămânii"], answer: 0 }
     ]
   },
   questions: [
@@ -1406,6 +1998,17 @@ const ACTIVITIES = [
 },
 {
   id: "sci-6", subject: "sci", num: 6, title: "Numărăm în natură", icon: "🌳", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „materiale vii”: numeri lucruri reale în natură. Natura e o clasă mare.",
+    materials: [
+      { icon: "🌳", name: "Numărare în natură", how: "Ieși afară și numără 5 copaci, 5 flori, 5 pietre. Câte sunt?" },
+      { icon: "🔍", name: "Vânătoare în natură", how: "Ieși afară și găsește 3 lucruri rotunde. Ce au în comun?" },
+    ],
+    tips: [
+      "Natura e plină de numere. Numără copacii, florile, pietrele.",
+      "Numără mai întâi lucruri ușoare, apoi mai grele.",
+    ]
+  },
   objectives: [
     "Să numere elemente din natură",
     "Să observe și să compare cantități",
@@ -1440,6 +2043,17 @@ const ACTIVITIES = [
 },
 {
   id: "sci-7", subject: "sci", num: 7, title: "Cele 5 simțuri", icon: "👀", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „materiale senzoriale”: folosești cele 5 simțuri ca să înveți. Simțurile sunt instrumente pe care le poți atinge și folosi.",
+    materials: [
+      { icon: "👀", name: "Joc de simțuri", how: "Folosește cele 5 simțuri: vezi, auzi, mirosi, gusti, atingi. Ce observi?" },
+      { icon: "🔍", name: "Vânătoare de simțuri", how: "Ieși afară și folosește cele 5 simțuri. Ce vezi, auzi, mirosi, gusti, atingi?" },
+    ],
+    tips: [
+      "Cele 5 simțuri sunt instrumente. Le folosești ca să înveți despre lume.",
+      "Folosește mai întâi simțurile ușoare, apoi pe cele grele.",
+    ]
+  },
   objectives: [
     "Să recunoască cele 5 simțuri",
     "Să asocieze fiecare simț cu organul său",
@@ -1482,6 +2096,17 @@ const ACTIVITIES = [
 /* ==================== EDUCAȚIE CIVICĂ ==================== */
 {
   id: "civ-1", subject: "civ", num: 1, title: "Familia mea", icon: "👨‍👩‍👧", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „viața practică”: înveți despre familia ta. Familia ta e o societate mică pe care o poți observa.",
+    materials: [
+      { icon: "👨‍👩‍👧", name: "Copac familial", how: "Desenează-ți familia: mamă, tată, frați. Cine e cel mai mare? Cine e cel mai mic?" },
+      { icon: "🔍", name: "Vânătoare familială", how: "Întreabă familia: ce le place să facă? Ce meserii au?" },
+    ],
+    tips: [
+      "Familia ta e o societate mică. Înveți unii de la alții.",
+      "Întreabă mai întâi întrebări ușoare, apoi mai grele.",
+    ]
+  },
   objectives: [
     "Să recunoască membrii familiei",
     "Să înțeleagă rolurile din familie",
@@ -1522,6 +2147,17 @@ const ACTIVITIES = [
 },
 {
   id: "civ-2", subject: "civ", num: 2, title: "Prietenii", icon: "🤝", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „viața socială”: înveți despre prietenii tăi. Prietenii tăi sunt oameni de la care poți învăța.",
+    materials: [
+      { icon: "🤝", name: "Joc de prietenie", how: "Joculește cu prietenii: rândul, împarte, ajută. Ce face un prieten bun?" },
+      { icon: "🔍", name: "Vânătoare de prieteni", how: "Întreabă prietenii: ce le place să facă? Ce hobby-uri au?" },
+    ],
+    tips: [
+      "Prietenii tăi sunt oameni de la care înveți. Vă ajutați unii pe alții.",
+      "Fă mai întâi lucruri ușoare, apoi mai grele.",
+    ]
+  },
   objectives: [
     "Să recunoască comportamente de prieten",
     "Să distingă prietenul bun de cel rău",
@@ -1544,6 +2180,14 @@ const ACTIVITIES = [
       { label: "🙈 Te ignoră", zone: 1 },
       { label: "😊 Se bucură cu tine", zone: 0 },
       { label: "😈 Te face glume răutăcioase", zone: 1 }
+    ],
+    pool: [
+      { label: "🤝 Împarte cu tine", zone: 0 },
+      { label: "😠 Te strigă", zone: 1 },
+      { label: "🎁 Îți dă un cadou", zone: 0 },
+      { label: "🙄 Te ignoră", zone: 1 },
+      { label: "👏 Te laudă", zone: 0 },
+      { label: "😈 Te face glume răutăcioase", zone: 1 }
     ]
   },
   questions: [
@@ -1564,6 +2208,17 @@ const ACTIVITIES = [
 },
 {
   id: "civ-3", subject: "civ", num: 3, title: "Reguli la școală", icon: "🏫", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „viața socială”: înveți despre regulile școlii. Școala e o societate mică pe care o poți observa.",
+    materials: [
+      { icon: "🏫", name: "Reguli de școală", how: "Scrie regulile școlii: 1. Ascultă. 2. Ridică mâna. 3. Fii drăguț. Urmează regulile." },
+      { icon: "🔍", name: "Vânătoare de reguli", how: "Mergi prin școală și găsește 3 reguli. Ce spun ele?" },
+    ],
+    tips: [
+      "Regulile școlii sunt ca un joc. Le urmezi ca să joci bine.",
+      "Urmează mai întâi regulile ușoare, apoi pe cele grele.",
+    ]
+  },
   objectives: [
     "Să recunoască reguli importante la școală",
     "Să înțeleagă de ce există reguli",
@@ -1583,7 +2238,15 @@ const ACTIVITIES = [
       { q: "Ce faci pe coridor?", options: ["Mergi liniștit", "Alergi", "Strigi"], answer: 0 },
       { q: "Cum tratezi colegii?", options: ["Cu respect", "Cu strigăt", "Cu batere"], answer: 0 },
       { q: "De ce există reguli?", options: ["Pentru a trăi bine împreună", "Pentru a fi plictisitori", "Nu există motiv"], answer: 0 },
-      { q: "Ce faci dacă un coleg te deranjează?", options: ["Spui unui profesor", "Lui bati", "Ignori"], answer: 0 }
+      { q: "Ce faci dacă un coleg te deranjează?", options: ["Spui unui profesor", "Lui bat", "Ignori"], answer: 0 }
+    ],
+    pool: [
+      { q: "Ce faci când vrei să vorbești la ora?", options: ["Ridici mâna", "Strigi", "Alergi"], answer: 0 },
+      { q: "Ce faci pe coridor?", options: ["Mergi liniștit", "Alergi", "Strigi"], answer: 0 },
+      { q: "Cum tratezi colegii?", options: ["Cu respect", "Cu strigăt", "Cu batere"], answer: 0 },
+      { q: "De ce există reguli?", options: ["Pentru a trăi bine împreună", "Pentru a fi plictisitori", "Nu există motiv"], answer: 0 },
+      { q: "Ce faci dacă un coleg te deranjează?", options: ["Spui unui profesor", "Lui bat", "Ignori"], answer: 0 },
+      { q: "Ce faci când primești un lucru de la profesor?", options: ["Mulțumesc", "Strig", "Ignor"], answer: 0 }
     ]
   },
   questions: [
@@ -1604,6 +2267,17 @@ const ACTIVITIES = [
 },
 {
   id: "civ-4", subject: "civ", num: 4, title: "Ajutor reciproc", icon: "🤲", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „viața socială”: înveți despre ajutorul reciproc. Ajutarea e o abilitate pe care o poți exersa.",
+    materials: [
+      { icon: "🤲", name: "Joc de ajutor", how: "Ajută-ți prietenii: poartă-le cărțile, împarte-ți jucăriile. Ce face un ajutor bun?" },
+      { icon: "🔍", name: "Vânătoare de ajutor", how: "Mergi prin casă și găsește 3 lucruri la care poți ajuta. Ce poți face?" },
+    ],
+    tips: [
+      "Ajutarea e o abilitate. O exersezi în fiecare zi.",
+      "Ajută mai întâi cu lucruri ușoare, apoi cu cele grele.",
+    ]
+  },
   objectives: [
     "Să recunoască situații în care putem ajuta",
     "Să înțeleagă importanța ajutorului reciproc",
@@ -1626,6 +2300,16 @@ const ACTIVITIES = [
       { label: "😡 Strig la un coleg", zone: 1 },
       { label: "🍽️ Ajut mama cu farfuriile", zone: 0 },
       { label: "📱 Juc pe telefon în loc să ajut", zone: 1 }
+    ],
+    pool: [
+      { label: "🧹 Curăț camera", zone: 0 },
+      { label: "😈 Fac glume răutăcioase", zone: 1 },
+      { label: "🐕 Îmi hrănesc câinele", zone: 0 },
+      { label: "🙄 Ignor pe cineva", zone: 1 },
+      { label: "🍽️ Ajut mama cu farfuriile", zone: 0 },
+      { label: "📱 Juc pe telefon în loc să ajut", zone: 1 },
+      { label: "🛒 Ajut bunica cu cumpărături", zone: 0 },
+      { label: "😡 Strig la un coleg", zone: 1 }
     ]
   },
   questions: [
@@ -1646,6 +2330,17 @@ const ACTIVITIES = [
 },
 {
   id: "civ-5", subject: "civ", num: 5, title: "Reguli în natură", icon: "🌿", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „materiale vii”: înveți despre regulile naturii. Natura e o clasă mare pe care o poți observa.",
+    materials: [
+      { icon: "🌿", name: "Reguli de natură", how: "Învață regulile naturii: 1. Nu culege flori. 2. Nu hrăni animalele. 3. Ține parcul curat." },
+      { icon: "🔍", name: "Vânătoare de reguli", how: "Ieși afară și găsește 3 reguli de natură. Ce spun ele?" },
+    ],
+    tips: [
+      "Regulile naturii sunt ca un joc. Le urmezi ca să ții natura frumoasă.",
+      "Urmează mai întâi regulile ușoare, apoi pe cele grele.",
+    ]
+  },
   objectives: [
     "Să înțeleagă regulile de protecție a naturii",
     "Să recunoască comportamente corecte în natură",
@@ -1665,6 +2360,16 @@ const ACTIVITIES = [
       { label: "Strângi gunoiul", zone: 0 },
       { label: "Rupi o floare", zone: 1 },
       { label: "Dai apă florilor", zone: 0 },
+      { label: "Arunci gunoiul în iarbă", zone: 1 },
+      { label: "Economisești apa", zone: 0 },
+      { label: "Speri păsările", zone: 1 }
+    ],
+    pool: [
+      { label: "Plantezi un copac", zone: 0 },
+      { label: "Ard frunzele", zone: 1 },
+      { label: "Adaugi apă la flori", zone: 0 },
+      { label: "Rupi o floare", zone: 1 },
+      { label: "Strângi gunoiul", zone: 0 },
       { label: "Arunci gunoiul în iarbă", zone: 1 },
       { label: "Economisești apa", zone: 0 },
       { label: "Speri păsările", zone: 1 }
@@ -1688,6 +2393,17 @@ const ACTIVITIES = [
 },
 {
   id: "civ-6", subject: "civ", num: 6, title: "Emoțiile mele", icon: "😊", duration: "20 min",
+  montessori: {
+    intro: "Montessori are „viața socială”: înveți despre emoțiile tale. Emoțiile tale sunt instrumente pe care le folosești ca să te cunoști.",
+    materials: [
+      { icon: "😊", name: "Joc de emoții", how: "Joculește cu emoții: fericit, trist, supărat, speriat. Ce te face să le simți?" },
+      { icon: "🔍", name: "Vânătoare de emoții", how: "Mergi prin casă și găsește 3 lucruri care te fac fericit. Ce sunt ele?" },
+    ],
+    tips: [
+      "Emoțiile tale sunt instrumente. Le folosești ca să te cunoști.",
+      "Simte mai întâi emoțiile ușoare, apoi pe cele grele.",
+    ]
+  },
   objectives: [
     "Să recunoască emoțiile de bază",
     "Să asocieze emoțiile cu situații",
@@ -1708,6 +2424,15 @@ const ACTIVITIES = [
       { a: "Supărare 😠", b: "Îți ia cineva creionul" },
       { a: "Frică 😨", b: "Audi un zgomot puternic" },
       { a: "Surpriză 😲", b: "Primești un cadou neașteptat" }
+    ],
+    pool: [
+      { a: "Bucurie 😄", b: "Joci cu prietenul tău" },
+      { a: "Tristețe 😢", b: "Se strică jucăria ta" },
+      { a: "Supărare 😠", b: "Îți ia cineva creionul" },
+      { a: "Frică 😨", b: "Mergi singur în întuneric" },
+      { a: "Surpriză 😲", b: "Primești un cadou neașteptat" },
+      { a: "Bucurie 😄", b: "Mergi în parc cu familia" },
+      { a: "Tristețe 😢", b: "Pierzi o jucărie" }
     ]
   },
   questions: [

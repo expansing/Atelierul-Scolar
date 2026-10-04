@@ -206,6 +206,22 @@ ACTIVITIES.forEach(a => {
       break;
   }
 
+  /* montessori (opțional, dar validat dacă există) */
+  if (a.montessori) {
+    if (!isNonEmptyString(a.montessori.intro)) problem(ctx + ' montessori fără intro');
+    if (!isNonEmptyArray(a.montessori.materials)) problem(ctx + ' montessori fără materiale');
+    else a.montessori.materials.forEach((m, i) => {
+      if (!isNonEmptyString(m.icon)) problem(ctx + ' montessori.materials[' + i + '] fără icon');
+      if (!isNonEmptyString(m.name)) problem(ctx + ' montessori.materials[' + i + '] fără nume');
+      if (!isNonEmptyString(m.how)) problem(ctx + ' montessori.materials[' + i + '] fără descriere');
+    });
+    if (a.montessori.tips && !isNonEmptyArray(a.montessori.tips)) problem(ctx + ' montessori.tips gol');
+  }
+
+  /* pool / extra pentru jocuri generative (opțional, dar validat dacă există) */
+  if (d.pool && !isNonEmptyArray(d.pool)) problem(ctx + ' demo.pool gol');
+  if (d.extra && !isNonEmptyArray(d.extra)) problem(ctx + ' demo.extra gol');
+
   /* ortografie */
   scanTexts(a, ctx);
 });

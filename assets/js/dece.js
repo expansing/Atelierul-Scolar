@@ -63,10 +63,65 @@ const DECE_CAMPS = [
     lesson: 'Practica zilnică te face bun. Nu ești născut bun sau rău — devii bun prin exercițiu.'
   },
   {
-    icon: '🌟',
+    icon: '📖',
     num: 'Oprire 6',
+    title: 'Cititul e o călătorie',
+    owl: 'Știi ce fac cărțile? Te duc în locuri fără să te urci în avion! Fiecare pagină pe care o citești e un pas într-o aventură nouă.',
+    body: [
+      'Când citești, creierul tău învață cuvinte noi, înțelege povești și își antrenează imaginația. Cu cât citești mai mult, cu atât ai mai multe cuvinte în „pachetul” tău de cunoștințe.',
+      'Nu trebuie să citești ore întregi. Doar 10-15 minute pe zi, în fiecare zi, te fac un cititor bun. Alege cărți care ți se par interesante — povești, poezii, cărți despre animale sau spațiu.'
+    ],
+    lesson: 'Cititul zilnic, chiar și 10 minute, îți crește vocabularul și îți antrenează creierul.'
+  },
+  {
+    icon: '🌱',
+    num: 'Oprire 7',
+    title: 'Mintea ta crește ca o plantă',
+    owl: 'Iată un secret minunat: mintea ta nu e fixă, ca o piatră. Ea crește, ca o plantă, cu cât o „apari” cu apă și soare — adică cu exercițiu și răbdare!',
+    body: [
+      'Cercetătorii au descoperit că creierul se schimbă cu adevărat când înveți. Fiecare dată când exersezi, se fac „drumuri noi” în creier, ca niște poteci pe care le folosești din ce în ce mai repede.',
+      'Asta înseamnă că nu există „copii buni” și „copii răi” la un lucru. Există doar copii care au exersat mai mult. Tu poți crește la orice, dacă ești răbdător cu tine.'
+    ],
+    lesson: 'Mintea crește cu exercițiu, ca o plantă cu apă și soare. Nu ești fixat — te poți dezvolta.'
+  },
+  {
+    icon: '😊',
+    num: 'Oprire 8',
+    title: 'Greșelile sunt prietene',
+    owl: 'Spune-mi: ce faci când greșești? Mulți copii se supără. Dar eu îți spun un secret: greșelile sunt cele mai bune prietene ale învățării!',
+    body: [
+      'Fiecare greșeală îți arată exact unde trebuie să exersezi. E ca un semn de drum: „atenție, aici ai de învățat ceva nou!”. Fără greșeli, nu ai ști ce să îmbunătățești.',
+      'Când greșești, nu spune „nu pot”. Spune „nu pot încă”. Aceste două cuvinte mici schimbă totul: „încă” înseamnă că, cu practică, vei putea.'
+    ],
+    lesson: 'Greșelile te ajută să înveți. Spune „nu pot încă”, nu „nu pot”.'
+  },
+  {
+    icon: '🎯',
+    num: 'Oprire 9',
+    title: 'Cum să fii atent',
+    owl: 'Atenția e ca un arc: dacă îl ții mereu strâns, se obosește. Dar dacă știi cum să-l folosești, te ajută să prinzi exact ce contează!',
+    body: [
+      'Câteva trucuri simple: (1) Uită-te la cel care vorbește. (2) Ascultă până la final, nu întrerupe. (3) Când simți că „plutești”, respiră adânc și revino la ce se spune. (4) Întreabă-te: „ce am auzit acum?”',
+      'Atenția se antrenează ca un mușchi. Cu cât o folosești mai mult, cu atât devine mai puternică. La școală, atenția te ajută să prinzi informația de la prima dată, fără să o repeți de zece ori.'
+    ],
+    lesson: 'Atenția se antrenează: uită-te, ascultă până la final, respiră și revino la ce se spune.'
+  },
+  {
+    icon: '⏰',
+    num: 'Oprire 10',
+    title: 'Puterea micilor pași',
+    owl: 'Nu trebuie să înveți tot într-o zi. Micile pași, făcute în fiecare zi, te duc mai departe decât un maraton o singură dată!',
+    body: [
+      '10 minute de matematică în fiecare zi sunt mai bune decât 2 ore o singură dată pe săptămână. Creierul are nevoie de timp să „digeră” ce învați, ca stomacul care are nevoie de timp să digere mâncarea.',
+      'Alege-ți un mic obiectiv zilnic: o pagină de citit, 5 probleme de matematică, 10 minute de desen. Când le termini, te-ai antrenat! Micul pas zilnic te face mare, în timp.'
+    ],
+    lesson: 'Micile pași zilnice (10 min) te duc mai departe decât un maraton o singură dată.'
+  },
+  {
+    icon: '🌟',
+    num: 'Oprire 11',
     title: 'Tu poți!',
-    owl: 'Ai parcurs tot drumul! Amintește-ți cele 5 lecții: creierul crește, atenția e superputere, curiozitatea descoperă, perseverența nu te oprește, și practica te face bun. Tu poți! 🌟',
+    owl: 'Ai parcurs tot drumul! Amintește-ți lecțiile: creierul crește, atenția e superputere, curiozitatea descoperă, perseverența nu te oprește, practica te face bun, cititul e o călătorie, mintea crește ca o plantă, greșelile sunt prietene, atenția se antrenează și micile pași te duc departe. Tu poți! 🌟',
     body: [
       'Acum știi de ce învățăm: pentru că creierul tău crește, pentru că atenția te ajută, pentru că ești curios, pentru că nu te oprești, și pentru că practica te face bun.',
       'Nu ai nevoie să fii „cel mai deștept”. Ai nevoie doar să fii tu, să exersezi, să întrebi, și să nu te oprești. Asta e adevăratul secret!'
@@ -98,7 +153,7 @@ Render.dece = function () {
     '<div class="dece-hero">' +
     '<div class="dece-mascot">🦉</div>' +
     '<h1>De ce <span class="grad">învățăm</span>?</h1>' +
-    '<p>Bufnița te duce pe un drum special, cu 6 opriri. La fiecare oprire înveți ceva important despre creierul tău și despre cum devii mai bun. Nu e un test — e o aventură!</p>' +
+    '<p>Bufnița te duce pe un drum special, cu ' + DECE_CAMPS.length + ' opriri. La fiecare oprire înveți ceva important despre creierul tău și despre cum devii mai bun. Nu e un test — e o aventură!</p>' +
     '<div class="dece-meter">' +
     '<div class="dece-meter-label">🌱 Drumul tău</div>' +
     '<div class="dece-meter-bar"><i id="dece-progress"></i></div>' +
@@ -110,13 +165,18 @@ Render.dece = function () {
     '<div class="dece-finish-card">' +
     '<div class="dece-finish-emoji">🏆</div>' +
     '<h2>Bravo! Ai parcurs tot drumul!</h2>' +
-    '<p>Amintește-ți cele 5 lecții:</p>' +
+    '<p>Amintește-ți lecțiile:</p>' +
     '<ul class="dece-finish-list">' +
     '<li>🧠 Creierul tău crește cu practica</li>' +
     '<li>👀 Atenția e un superputere</li>' +
     '<li>🧐 Curiozitatea te face să descoperi</li>' +
     '<li>💪 Perseverența te face să nu te oprești</li>' +
     '<li>🏃 Practica te face bun</li>' +
+    '<li>📖 Cititul zilnic te duce în aventuri noi</li>' +
+    '<li>🌱 Mintea crește ca o plantă, cu exercițiu</li>' +
+    '<li>😊 Greșelile sunt prietene — spune „nu pot încă”</li>' +
+    '<li>🎯 Atenția se antrenează: uită-te, ascultă, respiră</li>' +
+    '<li>⏰ Micile pași zilnice te duc departe</li>' +
     '</ul>' +
     '<p class="dece-finish-big">Tu poți! 🌟</p>' +
     '<a class="btn btn-primary" href="index.html">🏠 Înapoi la activități</a>' +
@@ -151,7 +211,12 @@ const Dece = {
       case 2: return this._curiosity();
       case 3: return this._perseverance();
       case 4: return this._practice();
-      case 5: return this._celebrate();
+      case 5: return this._reading();
+      case 6: return this._growth();
+      case 7: return this._mistakes();
+      case 8: return this._focus();
+      case 9: return this._steps();
+      case 10: return this._celebrate();
       default: return '';
     }
   },
@@ -222,7 +287,63 @@ const Dece = {
       '</div>';
   },
 
-  /* Oprire 6 — celebrare */
+  /* Oprire 6 — cititul: un cuvânt nou pe zi */
+  _reading() {
+    return '' +
+      '<div class="di di-reading">' +
+      '<div class="di-reading-title">Cuvântul zilei! Apeasă pe carte ca să descoperi un cuvânt nou.</div>' +
+      '<button class="btn btn-primary di-btn di-reading-book" id="di-reading-book">📖 Deschide cartea</button>' +
+      '<div class="di-reading-word" id="di-reading-word"></div>' +
+      '<div class="di-reading-count" id="di-reading-count">Cuvinte descoperite: 0</div>' +
+      '</div>';
+  },
+
+  /* Oprire 7 — mintea crește ca o plantă */
+  _growth() {
+    return '' +
+      '<div class="di di-growth">' +
+      '<div class="di-growth-title">Apa mintea ta! Fiecare „apă” o face să crească.</div>' +
+      '<div class="di-growth-plant" id="di-growth-plant">🌱</div>' +
+      '<div class="di-growth-status" id="di-growth-status">Mintea ta e o sămânță. Apasă „Apă mintea!”</div>' +
+      '<button class="btn btn-primary di-btn" id="di-growth-btn">💧 Apă mintea!</button>' +
+      '</div>';
+  },
+
+  /* Oprire 8 — greșelile sunt prietene */
+  _mistakes() {
+    return '' +
+      '<div class="di di-mistakes">' +
+      '<div class="di-mistakes-title">Ce spui când greșești? Alege varianta care te ajută!</div>' +
+      '<div class="di-mistakes-choices">' +
+      '<button class="di-mistakes-choice" data-mist="bad">„Nu pot!” 😞</button>' +
+      '<button class="di-mistakes-choice" data-mist="good">„Nu pot încă!” 😊</button>' +
+      '</div>' +
+      '<div class="di-mistakes-answer" id="di-mistakes-answer"></div>' +
+      '</div>';
+  },
+
+  /* Oprire 9 — atenția: respiră și revino */
+  _focus() {
+    return '' +
+      '<div class="di di-focus">' +
+      '<div class="di-focus-title">Exercițiul de atenție: respiră cu cercul.</div>' +
+      '<div class="di-focus-circle" id="di-focus-circle">🎯</div>' +
+      '<div class="di-focus-status" id="di-focus-status">Apasă „Respiră” și urmărește cercul.</div>' +
+      '<button class="btn btn-primary di-btn" id="di-focus-btn">Respiră 🌬️</button>' +
+      '</div>';
+  },
+
+  /* Oprire 10 — micile pași */
+  _steps() {
+    return '' +
+      '<div class="di di-steps">' +
+      '<div class="di-steps-title">Micul tău pas de azi! Alege un obiectiv mic și termină-l.</div>' +
+      '<div class="di-steps-list" id="di-steps-list"></div>' +
+      '<div class="di-steps-status" id="di-steps-status">Alege un obiectiv mic!</div>' +
+      '</div>';
+  },
+
+  /* Oprire 11 — celebrare */
   _celebrate() {
     return '' +
       '<div class="di di-celebrate">' +
@@ -238,6 +359,11 @@ const Dece = {
     else if (i === 2) this._wireCuriosity(el);
     else if (i === 3) this._wirePerseverance(el);
     else if (i === 4) this._wirePractice(el);
+    else if (i === 5) this._wireReading(el);
+    else if (i === 6) this._wireGrowth(el);
+    else if (i === 7) this._wireMistakes(el);
+    else if (i === 8) this._wireFocus(el);
+    else if (i === 9) this._wireSteps(el);
   },
 
   _wireBrain(el) {
@@ -383,6 +509,150 @@ const Dece = {
       } else {
         status.textContent = 'Luptătorul avansează mai repede! Mai apasă „Practică o zi!”';
       }
+    });
+  },
+
+  _wireReading(el) {
+    const words = [
+      { w: 'AVENTURĂ', d: 'O călătorie plină de lucruri noi și interesante!' },
+      { w: 'CURIOZITATE', d: 'Vrea să afli mai multe despre ceva. E un superputere al creierului!' },
+      { w: 'PERSEVERENȚĂ', d: 'Să nu te oprești când e greu. Să încerci din nou și din nou!' },
+      { w: 'VOCABULAR', d: 'Pachetul de cuvinte pe care le știi. Cu cât citești, cu cât crește!' },
+      { w: 'ATENȚIE', d: 'Superputerea de a te uita și a asculta exact ce contează.' },
+      { w: 'OBIECTIV', d: 'Un lucru mic pe care vrei să-l termini. De exemplu: o pagină de citit.' }
+    ];
+    const btn = el.querySelector('#di-reading-book');
+    const word = el.querySelector('#di-reading-word');
+    const count = el.querySelector('#di-reading-count');
+    let found = 0;
+    const used = new Set();
+    btn.addEventListener('click', () => {
+      let idx;
+      do { idx = Math.floor(Math.random() * words.length); } while (used.has(idx) && used.size < words.length);
+      used.add(idx);
+      found++;
+      word.innerHTML = '<span class="di-reading-word-big">' + words[idx].w + '</span><p>' + words[idx].d + '</p>';
+      word.classList.add('show');
+      count.textContent = 'Cuvinte descoperite: ' + found;
+      Sound.good();
+      if (found >= 3) Confetti.burst();
+    });
+  },
+
+  _wireGrowth(el) {
+    const stages = ['🌱', '🌿', '🪴', '🌳', '🌳✨'];
+    const msgs = [
+      'Mintea ta e o sămânță. Apasă „Apă mintea!”',
+      'Aproape! Sămânța dă radăcină.',
+      'Crește! Mintea ta învață din ce în ce mai repede.',
+      'E o plantă zdravănă! Exercițiul o face puternică.',
+      '🎉 Mintea ta e un copac înalt! Ai înțeles: crește cu exercițiu!'
+    ];
+    const plant = el.querySelector('#di-growth-plant');
+    const status = el.querySelector('#di-growth-status');
+    const btn = el.querySelector('#di-growth-btn');
+    let stage = 0;
+    btn.addEventListener('click', () => {
+      stage = Math.min(stages.length - 1, stage + 1);
+      plant.textContent = stages[stage];
+      plant.style.transform = 'scale(' + (1 + stage * 0.25) + ')';
+      status.textContent = msgs[stage];
+      Sound.good();
+      if (stage === stages.length - 1) {
+        btn.disabled = true;
+        btn.textContent = 'Copacul e gata! 🌳';
+        Confetti.burst();
+      }
+    });
+  },
+
+  _wireMistakes(el) {
+    const answer = el.querySelector('#di-mistakes-answer');
+    el.querySelectorAll('[data-mist]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.mist === 'good') {
+          answer.textContent = '🎉 Corect! „Nu pot încă” înseamnă că, cu practică, vei putea. Greșelile sunt prietene!';
+          answer.classList.add('show', 'good');
+          Sound.good();
+          Confetti.burst();
+        } else {
+          answer.textContent = 'Hmm... „Nu pot” te oprește. Încearcă varianta care te ajută să continui!';
+          answer.classList.add('show', 'bad');
+          Sound.bad();
+        }
+      });
+    });
+  },
+
+  _wireFocus(el) {
+    const circle = el.querySelector('#di-focus-circle');
+    const status = el.querySelector('#di-focus-status');
+    const btn = el.querySelector('#di-focus-btn');
+    let running = false;
+    btn.addEventListener('click', () => {
+      if (running) return;
+      running = true;
+      btn.disabled = true;
+      const phases = [
+        ['Respiri adânc... (cercul crește)', 1.8],
+        ['Ții aerul... (cercul e mare)', 1.2],
+        ['Expiri lent... (cercul scade)', 1.8],
+        ['Gata! Ești atent și calm. 🎯', 0]
+      ];
+      let pi = 0;
+      const runPhase = () => {
+        if (pi >= phases.length) {
+          running = false;
+          btn.disabled = false;
+          status.textContent = '🎉 Ai exersat atenția! Mai poți respira o dată.';
+          return;
+        }
+        status.textContent = phases[pi][0];
+        const dur = phases[pi][1];
+        if (dur === 0) {
+          circle.style.transform = 'scale(1)';
+          pi++;
+          setTimeout(runPhase, 600);
+          return;
+        }
+        const grow = pi === 0;
+        circle.style.transition = 'transform ' + dur + 's ease-in-out';
+        circle.style.transform = 'scale(' + (grow ? 1.8 : 0.7) + ')';
+        pi++;
+        setTimeout(runPhase, dur * 1000);
+      };
+      runPhase();
+    });
+  },
+
+  _wireSteps(el) {
+    const steps = [
+      { e: '📖', t: 'Citește o pagină' },
+      { e: '🔢', t: 'Rezolvă 5 probleme' },
+      { e: '🎨', t: 'Desenează 10 minute' },
+      { e: '🧩', t: 'Joc de logică 10 min' },
+      { e: '✍️', t: 'Scrie 3 propoziții' }
+    ];
+    const list = el.querySelector('#di-steps-list');
+    const status = el.querySelector('#di-steps-status');
+    let doneCount = 0;
+    steps.forEach((s, idx) => {
+      const b = document.createElement('button');
+      b.className = 'di-steps-item';
+      b.innerHTML = '<span class="di-steps-emoji">' + s.e + '</span> ' + s.t;
+      b.addEventListener('click', () => {
+        if (b.classList.contains('done')) return;
+        b.classList.add('done');
+        doneCount++;
+        Sound.good();
+        if (doneCount >= steps.length) {
+          status.textContent = '🎉 Ai terminat toate micile pași de azi! Ești un campion al practicii!';
+          Confetti.burst();
+        } else {
+          status.textContent = '✅ Gata! Mai ai ' + (steps.length - doneCount) + ' pași mici de făcut.';
+        }
+      });
+      list.appendChild(b);
     });
   },
 
