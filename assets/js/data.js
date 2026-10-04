@@ -1122,7 +1122,7 @@ const ACTIVITIES = [
   montessori: {
     intro: "Montessori are „jocuri de clasificare”: sortezi obiecte după culoare, mărime sau formă. Sortarea e cum creierul organizează lumea.",
     materials: [
-      { icon: "🗂️", name: "Cutii de sortare", how: "Sortează nasturii după culoare: roșii într-o cutie, albaștri în alta. Încearcă cu alte lucruri." },
+      { icon: "🗂️", name: "Cutii de sortare", how: "Sortează nasturii după culoare: roșii într-o cutie, albaștri în altă. Încearcă cu alte lucruri." },
       { icon: "🧱", name: "Blocuri", how: "Sortează blocurile după mărime: mic, mediu, mare. Pune-le în ordine." },
     ],
     tips: [
