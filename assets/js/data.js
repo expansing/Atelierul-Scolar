@@ -1186,7 +1186,7 @@ const ACTIVITIES = [
     intro: "Montessori are „jocuri logice”: rezolvi probleme cu obiecte reale. Problema e un puzzle pe care îl poți atinge.",
     materials: [
       { icon: "🧩", name: "Puzzle", how: "Rezolvă un puzzle cu 10 piese. Începe cu marginile, apoi completează mijlocul." },
-      { icon: "🧱", name: "Blocuri", how: "Construiește o turn cu 5 blocuri. Câte blocuri ai nevoie ca să fie mai înalt?" },
+      { icon: "🧱", name: "Blocuri", how: "Construiește un turn cu 5 blocuri. Câte blocuri ai nevoie ca să fie mai înalt?" },
     ],
     tips: [
       "O problemă e un puzzle. Caută piesa care se potrivește.",
@@ -1470,20 +1470,20 @@ const ACTIVITIES = [
     intro: "Montessori are „jocuri de secvențe”: faci lucruri în ordine. Un algoritm e o listă de pași pe care îi urmezi.",
     materials: [
       { icon: "📋", name: "Rețetă", how: "Scrie o rețetă pentru a face un sandviș: 1. Ia pâinea. 2. Pune brânza. 3. Închide-l. Urmează pașii." },
-      { icon: "🧱", name: "Blocuri", how: "Construiește o turn: 1. Ia un bloc. 2. Pune-l pe masă. 3. Pune alt bloc deasupra. Urmează pașii." },
+      { icon: "🧱", name: "Blocuri", how: "Construiește un turn: 1. Ia un bloc. 2. Pune-l pe masă. 3. Pune alt bloc deasupra. Urmează pașii." },
     ],
     tips: [
-      "Un algoritm e o listă de pași. Ii faci în ordine.",
-      "Scrie mai întâi pași ușori, apoi mai greli.",
+      "Un algoritm e o listă de pași. Îi faci în ordine.",
+      "Scrie mai întâi pași ușori, apoi mai grei.",
     ]
   },
   objectives: [
     "Să înțeleagă ce este un algoritm",
-    "Să pună pașii în ordine corectă",
+    "Să pună pașii în ordinea corectă",
     "Să creeze un algoritm simplu"
   ],
   explanation: [
-    "Un algoritm este o listă de pași, în ordine, care te ajută să faci ceva. De exemplu: „Cum fac ceai”: 1. Pun apă în ceainic. 2. Aștept să fiarbă. 3. Pun punga de ceai. 4. Aștept 3 minute. 5. Toarn în ceașcă.",
+    "Un algoritm este o listă de pași, în ordine, care te ajută să faci ceva. De exemplu: „Cum fac ceai”: 1. Pun apă în ceainic. 2. Aștept să fiarbă. 3. Pun punga de ceai. 4. Aștept 3 minute. 5. Toarnă în ceașcă.",
     "Calculatorul urmează algoritmi: pași clari, în ordine, fără să sară nimic. Dacă un pas lipsește, calculatorul nu știe ce să facă.",
     "Un truc: un algoritm bun are pași clari, în ordine, și se termină cu un rezultat."
   ],
@@ -1498,7 +1498,7 @@ const ACTIVITIES = [
     ],
     extra: [
       { words: ["Mă trezesc", "Mă spăl", "Mănânc", "Merg la școală"], answer: "Mă trezesc, Mă spăl, Mănânc, Merg la școală" },
-      { words: ["Pun apă", "Aștept să fiarbă", "Pun ceaiul", "Toarn în ceașcă"], answer: "Pun apă, Aștept să fiarbă, Pun ceaiul, Toarn în ceașcă" },
+      { words: ["Pun apă", "Aștept să fiarbă", "Pun ceaiul", "Toarnă în ceașcă"], answer: "Pun apă, Aștept să fiarbă, Pun ceaiul, Toarnă în ceașcă" },
       { words: ["Iau hainele", "Mă îmbrac", "Mă pieptănez", "Merg afară"], answer: "Iau hainele, Mă îmbrac, Mă pieptănez, Merg afară" }
     ]
   },
@@ -1549,14 +1549,14 @@ const ACTIVITIES = [
       { q: "Algoritm: „Iau pâine, pun brânza, închid sandvișul”. Ce lipsește?", options: ["Roșia", "Mâncatul", "Nimic"], answer: 0 },
       { q: "Algoritm: „Mă trezesc, merg la școală, mă spăl”. Ce este greșit?", options: ["Ordinea", "Nimic", "Lipsește un pas"], answer: 0 },
       { q: "Ce este un „bug”?", options: ["Un pas lipsă", "Un program bun", "Un calculator"], answer: 0 },
-      { q: "Algoritm: „Pun apă, aștept să fiarbă, pun ceaiul”. Ce lipsește?", options: ["Toarn în ceașcă", "Nimic", "Un alt ceainic"], answer: 0 },
+      { q: "Algoritm: „Pun apă, aștept să fiarbă, pun ceaiul”. Ce lipsește?", options: ["Toarnă în ceașcă", "Nimic", "Un alt ceainic"], answer: 0 },
       { q: "Cum găsești un bug?", options: ["Verifici pașii", "Nu poți", "Ștergi tot"], answer: 0 }
     ],
     pool: [
       { q: "Algoritm: „Iau pâine, pun brânza, închid sandvișul”. Ce lipsește?", options: ["Mâncatul", "Roșia", "Nimic"], answer: 1 },
       { q: "Algoritm: „Mă trezesc, merg la școală, mă spăl”. Ce este greșit?", options: ["Lipsește un pas", "Ordinea", "Nimic"], answer: 1 },
       { q: "Ce este un „bug”?", options: ["Un program bun", "Un pas lipsă", "Un calculator"], answer: 1 },
-      { q: "Algoritm: „Pun apă, aștept să fiarbă, pun ceaiul”. Ce lipsește?", options: ["Un alt ceainic", "Toarn în ceașcă", "Nimic"], answer: 1 },
+      { q: "Algoritm: „Pun apă, aștept să fiarbă, pun ceaiul”. Ce lipsește?", options: ["Un alt ceainic", "Toarnă în ceașcă", "Nimic"], answer: 1 },
       { q: "Cum găsești un bug?", options: ["Nu poți", "Verifici pașii", "Ștergi tot"], answer: 1 }
     ]
   },
@@ -1568,7 +1568,7 @@ const ACTIVITIES = [
   parent: {
     watch: ["Copilul descompune sarcini în pași", "Găsește erori"],
     help: ["Jocați „găsește bug-ul” cu algoritmi", "Descompuneți împreună sarcini simple"],
-    redflags: ["Nu vede erorile — repetați cu algoritmi scurte"]
+    redflags: ["Nu vede erorile — repetați cu algoritmi scurți"]
   },
   pass: [
     "Explică ce este un bug",
@@ -1649,7 +1649,7 @@ const ACTIVITIES = [
     ],
     tips: [
       "Ziua ta e un algoritm. Făci lucrurile în ordine.",
-      "Scrie mai întâi pașii ușori, apoi pe cei greli.",
+      "Scrie mai întâi pașii ușori, apoi pe cei grei.",
     ]
   },
   objectives: [
@@ -1715,7 +1715,7 @@ const ACTIVITIES = [
   ],
   explanation: [
     "Corpul nostru este ca o mașină: are nevoie de „combustibil” bun (mâncare sănătoasă), „odihnă” (somn) și „mișcare” (exerciții). Dacă îi dăm lucruri bune, funcționează bine.",
-    "Obiceiurile sănătoase includ: mâncare frumosă, somn suficient, mișcare, spălat pe mâini. Cele nesănătoase: prea mult zahăr, prea puțin somn, prea mult ecran.",
+    "Obiceiurile sănătoase includ: mâncare sănătoasă, somn suficient, mișcare, spălat pe mâini. Cele nesănătoase: prea mult zahăr, prea puțin somn, prea mult ecran.",
     "Un truc: corpul tău îți mulțumește când faci lucruri bune — te simți energic și fericit."
   ],
   demo: {
@@ -1763,7 +1763,7 @@ const ACTIVITIES = [
   montessori: {
     intro: "Montessori are „materiale vii”: te ocupi de o plantă reală. Planta crește și o vezi cum se schimbă.",
     materials: [
-      { icon: "🌱", name: "Plantă", how: "Plantează o sămânță: 1. Pune sâmbăna în pământ. 2. Ud-o. 3. Pune-o la soare. Uite-o cum crește." },
+      { icon: "🌱", name: "Plantă", how: "Plantează o sămânță: 1. Pune sămânța în pământ. 2. Ud-o. 3. Pune-o la soare. Uită-te cum crește." },
       { icon: "🔍", name: "Vânătoare de plante", how: "Ieși afară și găsește 3 plante. Ce au în comun?" },
     ],
     tips: [
@@ -1820,13 +1820,13 @@ const ACTIVITIES = [
 {
   id: "sci-3", subject: "sci", num: 3, title: "Animalele", icon: "🦁", duration: "20 min",
   montessori: {
-    intro: "Montessori are „materiale vii”: înveți despre animale reale. Animalul e un lucru viu pe care îl poți observa.",
+    intro: "Montessori are „materiale vii”: înveți despre animale reale. Animalul e o ființă vie pe care o poți observa.",
     materials: [
       { icon: "🦁", name: "Cartonașe de animale", how: "Uită-te la cartonașe de animale: leu, elefant, pasăre. Ce mănâncă? Unde locuiesc?" },
       { icon: "🔍", name: "Vânătoare de animale", how: "Ieși afară și găsește 3 animale. Ce au în comun?" },
     ],
     tips: [
-      "Animalele sunt lucruri vii. Mănâncă, cresc și se mișcă.",
+      "Animalele sunt ființe vii. Mănâncă, cresc și se mișcă.",
       "Uită-te mai întâi la animalele ușoare, apoi la cele grele.",
     ]
   },
@@ -1881,7 +1881,7 @@ const ACTIVITIES = [
   montessori: {
     intro: "Montessori are „viața practică”: faci lucruri reale cu apă. Apa se schimbă de formă și o poți vedea.",
     materials: [
-      { icon: "💧", name: "Apă", how: "Pune apă într-o cană: 1. Încălzește-o. 2. Devine abur. 3. Răcește-o. 4. Devine gheață. Uite-o cum se schimbă." },
+      { icon: "💧", name: "Apă", how: "Pune apă într-o cană: 1. Încălzește-o. 2. Devine abur. 3. Răcește-o. 4. Devine gheață. Uită-te cum se schimbă." },
       { icon: "🔍", name: "Vânătoare de apă", how: "Găsește 3 lucruri care sunt apă: ploaie, rouă, abur. Ce au în comun?" },
     ],
     tips: [
@@ -2150,7 +2150,7 @@ const ACTIVITIES = [
   montessori: {
     intro: "Montessori are „viața socială”: înveți despre prietenii tăi. Prietenii tăi sunt oameni de la care poți învăța.",
     materials: [
-      { icon: "🤝", name: "Joc de prietenie", how: "Joculește cu prietenii: rândul, împarte, ajută. Ce face un prieten bun?" },
+      { icon: "🤝", name: "Joc de prietenie", how: "Joacă cu prietenii: rândul, împarte, ajută. Ce face un prieten bun?" },
       { icon: "🔍", name: "Vânătoare de prieteni", how: "Întreabă prietenii: ce le place să facă? Ce hobby-uri au?" },
     ],
     tips: [
@@ -2166,7 +2166,7 @@ const ACTIVITIES = [
   explanation: [
     "Un prieten bun te ascultă, te ajută, te respectă și te tratează frumos. Un prieten rău te strigă, te ignoră sau te face să te simți prost.",
     "Prietenia înseamnă reciprocitate: eu te ajut, tu mă ajuți. Înseamnă și respect: nu strig, nu bat, nu fac glume răutăcioase.",
-    "Un truc: un prieten bun este ca o oglindă — te reflectă frumos, nu te distorsionează."
+    "Un truc: un prieten bun este ca o oglindă — te reflectă frumos, nu te deformează."
   ],
   demo: {
     type: "classify",
@@ -2226,7 +2226,7 @@ const ACTIVITIES = [
   ],
   explanation: [
     "Regulile la școală ne ajută să trăim bine împreună. De exemplu: ridicăm mâna când vrem să vorbim, nu alergăm pe coridor, respectăm profesorii și colegii.",
-    "Regulile există pentru că, fără ele, ar fi haos. Dacă toată lumea ar vorbi în același timp, nimeni nu ar auzi. Dacă toată lumea ar alerga, am face accident.",
+    "Regulile există pentru că, fără ele, ar fi haos. Dacă toată lumea ar vorbi în același timp, nimeni nu ar auzi. Dacă toată lumea ar alerga, am face un accident.",
     "Un truc: regulile sunt ca semnalele de trafic — ne ajută să ne mișcăm în siguranță."
   ],
   demo: {
@@ -2285,7 +2285,7 @@ const ACTIVITIES = [
   ],
   explanation: [
     "Ajutorul reciproc înseamnă să ne ajutăm unii pe alții. Când ajut pe cineva, mă simt bine. Când primesc ajutor, mă simt iubit. Este un cerc virtuos.",
-    "Putem ajuta în multe feluri: ajut un coleg cu o temă, ajut un bunici cu cumpărături, ajut mama cu menajul. Ajutorul nu trebuie să fie mare — chiar și un zâmbet ajută.",
+    "Putem ajuta în multe feluri: ajut un coleg cu o temă, ajut un bunic cu cumpărături, ajut mama cu treburile casnice. Ajutorul nu trebuie să fie mare — chiar și un zâmbet ajută.",
     "Un truc: ajutorul este ca o lumină — cu cât o dai mai mult, cu atât devine mai puternică."
   ],
   demo: {
@@ -2396,7 +2396,7 @@ const ACTIVITIES = [
   montessori: {
     intro: "Montessori are „viața socială”: înveți despre emoțiile tale. Emoțiile tale sunt instrumente pe care le folosești ca să te cunoști.",
     materials: [
-      { icon: "😊", name: "Joc de emoții", how: "Joculește cu emoții: fericit, trist, supărat, speriat. Ce te face să le simți?" },
+      { icon: "😊", name: "Joc de emoții", how: "Joacă cu emoții: fericit, trist, supărat, speriat. Ce te face să le simți?" },
       { icon: "🔍", name: "Vânătoare de emoții", how: "Mergi prin casă și găsește 3 lucruri care te fac fericit. Ce sunt ele?" },
     ],
     tips: [

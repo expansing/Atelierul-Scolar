@@ -13,7 +13,7 @@ const DECE_CAMPS = [
     title: 'Creierul tău crește',
     owl: 'Salut! Eu sunt Bufnița. Hai să vedem un secret: creierul tău e ca un mușchi. Cu cât îl antrenezi, cu atât devine mai puternic!',
     body: [
-      'Fiecare dată când înveți ceva nou — o literă, un număr, o regulă — creierul tău se antrenează.',
+      'De fiecare dată când înveți ceva nou — o literă, un număr, o regulă — creierul tău se antrenează.',
       'La început e greu, dar cu practica devine mai ușor. Exact ca atunci când înveți să pedalezi la bicicletă: la început tremuri, apoi mergi singur!'
     ],
     lesson: 'Învațarea = antrenament pentru creier. Cu cât exersezi mai mult, cu atât creierul crește mai tare.'
@@ -21,13 +21,13 @@ const DECE_CAMPS = [
   {
     icon: '👀',
     num: 'Oprire 2',
-    title: 'Atenția e un superputere',
-    owl: 'Știi de ce te rog să fii atent la școală? Pentru că atenția e ca un superputere. Fără ea, informația se scurge ca apa prin degete!',
+    title: 'Atenția e o superputere',
+    owl: 'Știi de ce te rog să fii atent la școală? Pentru că atenția e ca o superputere. Fără ea, informația se scurge ca apa prin degete!',
     body: [
       'Când te uiți și asculți, creierul tău „prinde” ce învați. Dacă te joci cu degetele sau te uiți în altă parte, informația nu ajunge la tine.',
-      'Atenția nu e o pedeapsă — e un cadou pe care ți-l faci ție. Cu cât ești mai atent, cu atât înveți mai repede și te simți mai bine.'
+      'Atenția nu e o pedeapsă — e un cadou pe care ți-l faci. Cu cât ești mai atent, cu atât înveți mai repede și te simți mai bine.'
     ],
-    lesson: 'Atenția la școală te ajută să prinzi informația. E un superputere pe care îl folosești pentru tine.'
+    lesson: 'Atenția la școală te ajută să prinzi informația. E o superputere pe care o folosești pentru tine.'
   },
   {
     icon: '🧐',
@@ -77,9 +77,9 @@ const DECE_CAMPS = [
     icon: '🌱',
     num: 'Oprire 7',
     title: 'Mintea ta crește ca o plantă',
-    owl: 'Iată un secret minunat: mintea ta nu e fixă, ca o piatră. Ea crește, ca o plantă, cu cât o „apari” cu apă și soare — adică cu exercițiu și răbdare!',
+    owl: 'Iată un secret minunat: mintea ta nu e fixă, ca o piatră. Ea crește, ca o plantă, cu cât o „apezi” cu apă și soare — adică cu exercițiu și răbdare!',
     body: [
-      'Cercetătorii au descoperit că creierul se schimbă cu adevărat când înveți. Fiecare dată când exersezi, se fac „drumuri noi” în creier, ca niște poteci pe care le folosești din ce în ce mai repede.',
+      'Cercetătorii au descoperit că creierul se schimbă cu adevărat când înveți. De fiecare dată când exersezi, se fac „drumuri noi” în creier, ca niște poteci pe care le folosești din ce în ce mai repede.',
       'Asta înseamnă că nu există „copii buni” și „copii răi” la un lucru. Există doar copii care au exersat mai mult. Tu poți crește la orice, dacă ești răbdător cu tine.'
     ],
     lesson: 'Mintea crește cu exercițiu, ca o plantă cu apă și soare. Nu ești fixat — te poți dezvolta.'
@@ -110,21 +110,21 @@ const DECE_CAMPS = [
     icon: '⏰',
     num: 'Oprire 10',
     title: 'Puterea micilor pași',
-    owl: 'Nu trebuie să înveți tot într-o zi. Micile pași, făcute în fiecare zi, te duc mai departe decât un maraton o singură dată!',
+    owl: 'Nu trebuie să înveți tot într-o zi. Pașii mici, făcuți în fiecare zi, te duc mai departe decât un maraton o singură dată!',
     body: [
       '10 minute de matematică în fiecare zi sunt mai bune decât 2 ore o singură dată pe săptămână. Creierul are nevoie de timp să „digeră” ce învați, ca stomacul care are nevoie de timp să digere mâncarea.',
       'Alege-ți un mic obiectiv zilnic: o pagină de citit, 5 probleme de matematică, 10 minute de desen. Când le termini, te-ai antrenat! Micul pas zilnic te face mare, în timp.'
     ],
-    lesson: 'Micile pași zilnice (10 min) te duc mai departe decât un maraton o singură dată.'
+    lesson: 'Pașii mici zilnici (10 min) te duc mai departe decât un maraton o singură dată.'
   },
   {
     icon: '🌟',
     num: 'Oprire 11',
     title: 'Tu poți!',
-    owl: 'Ai parcurs tot drumul! Amintește-ți lecțiile: creierul crește, atenția e superputere, curiozitatea descoperă, perseverența nu te oprește, practica te face bun, cititul e o călătorie, mintea crește ca o plantă, greșelile sunt prietene, atenția se antrenează și micile pași te duc departe. Tu poți! 🌟',
+    owl: 'Ai parcurs tot drumul! Amintește-ți lecțiile: creierul crește, atenția e o superputere, curiozitatea descoperă, perseverența nu te oprește, practica te face bun, cititul e o călătorie, mintea crește ca o plantă, greșelile sunt prietene, atenția se antrenează și pașii mici te duc departe. Tu poți! 🌟',
     body: [
       'Acum știi de ce învățăm: pentru că creierul tău crește, pentru că atenția te ajută, pentru că ești curios, pentru că nu te oprești, și pentru că practica te face bun.',
-      'Nu ai nevoie să fii „cel mai deștept”. Ai nevoie doar să fii tu, să exersezi, să întrebi, și să nu te oprești. Asta e adevăratul secret!'
+      'Nu trebuie să fii „cel mai deștept”. Ai nevoie doar să fii tu, să exersezi, să întrebi, și să nu te oprești. Asta e adevăratul secret!'
     ],
     lesson: 'Tu poți deveni bun la orice, dacă exersezi, întrebi, ești atent și nu te oprești.'
   }
@@ -168,7 +168,7 @@ Render.dece = function () {
     '<p>Amintește-ți lecțiile:</p>' +
     '<ul class="dece-finish-list">' +
     '<li>🧠 Creierul tău crește cu practica</li>' +
-    '<li>👀 Atenția e un superputere</li>' +
+    '<li>👀 Atenția e o superputere</li>' +
     '<li>🧐 Curiozitatea te face să descoperi</li>' +
     '<li>💪 Perseverența te face să nu te oprești</li>' +
     '<li>🏃 Practica te face bun</li>' +
@@ -176,7 +176,7 @@ Render.dece = function () {
     '<li>🌱 Mintea crește ca o plantă, cu exercițiu</li>' +
     '<li>😊 Greșelile sunt prietene — spune „nu pot încă”</li>' +
     '<li>🎯 Atenția se antrenează: uită-te, ascultă, respiră</li>' +
-    '<li>⏰ Micile pași zilnice te duc departe</li>' +
+    '<li>⏰ Pașii mici zilnici te duc departe</li>' +
     '</ul>' +
     '<p class="dece-finish-big">Tu poți! 🌟</p>' +
     '<a class="btn btn-primary" href="index.html">🏠 Înapoi la activități</a>' +
@@ -256,7 +256,7 @@ const Dece = {
     });
     return '' +
       '<div class="di di-curiosity">' +
-      '<div class="di-curiosity-title">Ce te face curios? Apeasă pe un lucru!</div>' +
+      '<div class="di-curiosity-title">Ce te face curios? Apasă pe un lucru!</div>' +
       '<div class="di-curiosity-grid">' + cards + '</div>' +
       '<div class="di-curiosity-answer" id="di-curiosity-answer">Alege un lucru și descoperă răspunsul! 🧐</div>' +
       '</div>';
@@ -291,7 +291,7 @@ const Dece = {
   _reading() {
     return '' +
       '<div class="di di-reading">' +
-      '<div class="di-reading-title">Cuvântul zilei! Apeasă pe carte ca să descoperi un cuvânt nou.</div>' +
+      '<div class="di-reading-title">Cuvântul zilei! Apasă pe carte ca să descoperi un cuvânt nou.</div>' +
       '<button class="btn btn-primary di-btn di-reading-book" id="di-reading-book">📖 Deschide cartea</button>' +
       '<div class="di-reading-word" id="di-reading-word"></div>' +
       '<div class="di-reading-count" id="di-reading-count">Cuvinte descoperite: 0</div>' +
@@ -302,7 +302,7 @@ const Dece = {
   _growth() {
     return '' +
       '<div class="di di-growth">' +
-      '<div class="di-growth-title">Apa mintea ta! Fiecare „apă” o face să crească.</div>' +
+      '<div class="di-growth-title">Apă mintea ta! Fiecare „apă” o face să crească.</div>' +
       '<div class="di-growth-plant" id="di-growth-plant">🌱</div>' +
       '<div class="di-growth-status" id="di-growth-status">Mintea ta e o sămânță. Apasă „Apă mintea!”</div>' +
       '<button class="btn btn-primary di-btn" id="di-growth-btn">💧 Apă mintea!</button>' +
@@ -348,7 +348,7 @@ const Dece = {
     return '' +
       '<div class="di di-celebrate">' +
       '<div class="di-celebrate-emoji">🎉</div>' +
-      '<div class="di-celebrate-text">Ai ajuns la finalul drumului! Apasă „Am înțeles!” de la fiecare oprire pentru a-ți umple metru de creștere.</div>' +
+      '<div class="di-celebrate-text">Ai ajuns la finalul drumului! Apasă „Am înțeles!” de la fiecare oprire pentru a-ți umple metrul de creștere.</div>' +
       '</div>';
   },
 
@@ -418,7 +418,7 @@ const Dece = {
             Sound.good();
             setTimeout(() => {
               if (round >= total) {
-                status.textContent = '🎉 Ai găsit toate bufnițele! Atenția ta e superputere!';
+                status.textContent = '🎉 Ai găsit toate bufnițele! Atenția ta e o superputere!';
                 Confetti.burst();
               } else {
                 startRound();
@@ -515,10 +515,10 @@ const Dece = {
   _wireReading(el) {
     const words = [
       { w: 'AVENTURĂ', d: 'O călătorie plină de lucruri noi și interesante!' },
-      { w: 'CURIOZITATE', d: 'Vrea să afli mai multe despre ceva. E un superputere al creierului!' },
+      { w: 'CURIOZITATE', d: 'Vrea să afli mai multe despre ceva. E o superputere a creierului!' },
       { w: 'PERSEVERENȚĂ', d: 'Să nu te oprești când e greu. Să încerci din nou și din nou!' },
-      { w: 'VOCABULAR', d: 'Pachetul de cuvinte pe care le știi. Cu cât citești, cu cât crește!' },
-      { w: 'ATENȚIE', d: 'Superputerea de a te uita și a asculta exact ce contează.' },
+      { w: 'VOCABULAR', d: 'Pachetul de cuvinte pe care le știi. Cu cât citești, cu atât crește!' },
+      { w: 'ATENȚIE', d: 'Superputerea de a vedea și de a auzi exact ce contează.' },
       { w: 'OBIECTIV', d: 'Un lucru mic pe care vrei să-l termini. De exemplu: o pagină de citit.' }
     ];
     const btn = el.querySelector('#di-reading-book');
@@ -646,7 +646,7 @@ const Dece = {
         doneCount++;
         Sound.good();
         if (doneCount >= steps.length) {
-          status.textContent = '🎉 Ai terminat toate micile pași de azi! Ești un campion al practicii!';
+          status.textContent = '🎉 Ai terminat toți pașii mici de azi! Ești un campion al practicii!';
           Confetti.burst();
         } else {
           status.textContent = '✅ Gata! Mai ai ' + (steps.length - doneCount) + ' pași mici de făcut.';

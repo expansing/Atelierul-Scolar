@@ -862,7 +862,7 @@ const Engines = {
 
   /* ---------- TYPE (scriere) ---------- */
   /* ---------- TYPE (scriere) ----------
-     Generativ: la fiecare rundă se alege aleator un prompt dintr-o pool de
+     Generativ: la fiecare rundă se alege aleator un prompt dintr-un pool de
      propoziții de completat. Copilul scrie, primește feedback și poate
      continua cu alt prompt. */
   type(container, demo, onDone) {
