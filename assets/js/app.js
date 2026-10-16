@@ -1,258 +1,280 @@
-/* ============================================================
-   ATELIERUL ȘCOLAR — Aplicație
-   Rutare, taburi, temă, sunet, inițializare joc.
-   ============================================================ */
-
 (function () {
   'use strict';
-
-  const page = document.body.dataset.page; // 'home' | 'subject' | 'activity'
   const params = new URLSearchParams(location.search);
+  const activity = ACTIVITIES.find(a => a.id === params.get('activity'));
+  let game = null, level = 0, toastTimer;
 
-  /* ---------- temă ---------- */
-  function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    const btn = document.getElementById('btn-theme');
-    if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
-    try { localStorage.setItem('atelier-scolar-theme', theme); } catch (e) {}
+  function message(text, error) {
+    let toast = document.getElementById('notification');
+    if (!toast) {
+      toast = document.createElement('div'); toast.id = 'notification'; toast.className = 'notification';
+      toast.setAttribute('role', 'status'); document.body.appendChild(toast);
+    }
+    clearTimeout(toastTimer);
+    toast.textContent = text; toast.hidden = false;
+    toast.classList.toggle('notification-error', !!error);
+    if (!error) toastTimer = setTimeout(() => { toast.hidden = true; }, 7000);
   }
-  function initTheme() {
-    let saved = null;
-    try { saved = localStorage.getItem('atelier-scolar-theme'); } catch (e) {}
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+  function updateProgress() {
+    const stars = document.getElementById('stars-chip');
+    if (stars) {
+      const count = Progress.totalStars();
+      stars.textContent = '⭐ ' + count;
+      stars.setAttribute('aria-label', Engines.quantity(count, 'stea câștigată', 'stele câștigate'));
+    }
+    const status = document.getElementById('activity-status'), results = document.getElementById('level-results');
+    if (activity && status) status.textContent = Progress.label(activity.id);
+    if (activity && results) results.innerHTML = Render.results(activity.id);
   }
-
-  /* ---------- sunet ---------- */
-  function initSound() {
-    const btn = document.getElementById('btn-sound');
-    if (!btn) return;
-    btn.textContent = Sound.enabled ? '🔊' : '🔇';
-    btn.addEventListener('click', () => {
-      const on = Sound.toggle();
-      btn.textContent = on ? '🔊' : '🔇';
+  function startGame() {
+    const area = document.getElementById('game-area');
+    if (!activity || !area || game) return;
+    try {
+      game = Engines.start(area, activity.demo, level, result => {
+        const saved = Progress.record(activity.id, result);
+        updateProgress();
+        if (saved.newStar) { Sound.win(); Confetti.burst(); }
+        if (saved.saved) message(saved.newStar ? 'Ai câștigat o stea: minimum 80% din prima, fără indicii!' : 'Rundă înregistrată. Ai exersat și ai verificat pașii.');
+      });
+    } catch (error) {
+      console.error('Jocul nu a putut fi pornit.', error);
+      area.textContent = 'Jocul nu a putut fi pornit. Poți continua explicația; anunță adultul care întreține atelierul.';
+      message('A apărut o eroare la pornirea jocului.', true);
+    }
+  }
+  function activateTab(id, focus) {
+    document.querySelectorAll('[role="tab"]').forEach(tab => {
+      const active = tab.dataset.tab === id;
+      tab.classList.toggle('active', active); tab.setAttribute('aria-selected', String(active)); tab.tabIndex = active ? 0 : -1;
+      if (active && focus) tab.focus();
     });
+    document.querySelectorAll('[role="tabpanel"]').forEach(panel => {
+      const active = panel.dataset.panel === id; panel.hidden = !active; panel.classList.toggle('active', active);
+    });
+    if (id === 'joc') startGame();
+    if (focus) {
+      const selected = document.querySelector('[role="tab"][aria-selected="true"]');
+      if (selected) selected.focus();
+    }
+    if (id !== 'explicatie' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const read = document.getElementById('read-lesson'), stop = document.getElementById('stop-reading');
+      if (read && stop && !stop.hidden) { read.disabled = false; stop.hidden = true; }
+    }
   }
-
-  /* ---------- taburi ---------- */
   function initTabs() {
-    const tabs = document.querySelectorAll('.tab');
-    if (tabs.length === 0) return;
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const target = tab.dataset.tab;
-        tabs.forEach(t => t.classList.toggle('active', t === tab));
-        document.querySelectorAll('.panel').forEach(p => {
-          p.classList.toggle('active', p.dataset.panel === target);
-        });
-        // Dacă e tabul de joc, pornim motorul
-        if (target === 'joc') startGame();
+    const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activateTab(tab.dataset.tab, false));
+      tab.addEventListener('keydown', event => {
+        let next;
+        if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+        else if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = tabs.length - 1;
+        if (next !== undefined) { event.preventDefault(); activateTab(tabs[next].dataset.tab, true); }
       });
     });
+    document.querySelectorAll('[data-open-game]').forEach(button => button.addEventListener('click', () => activateTab('joc', true)));
+    document.querySelectorAll('[data-level]').forEach(button => button.addEventListener('click', () => {
+      level = Number(button.dataset.level);
+      if (game) game.dispose(); game = null;
+      document.querySelectorAll('[data-level]').forEach(node => {
+        const active = node === button; node.classList.toggle('selected', active); node.setAttribute('aria-pressed', String(active));
+      });
+      startGame();
+    }));
   }
-
-  /* ---------- joc ---------- */
-  let gameStarted = false;
-  function startGame() {
-    if (gameStarted) return;
-    const a = ACTIVITIES.find(x => x.id === params.get('activity'));
-    const area = document.getElementById('game-area');
-    if (!a || !area) return;
-    gameStarted = true;
-
-    const onDone = (pct) => {
-      if (pct >= 60) {
-        const first = Progress.complete(a.id, 1);
-        if (first) {
-          Sound.win();
-          Confetti.burst();
-          showToast('⭐ Ai câștigat o stea!');
-          updateStars();
-          // Actualizăm butonul de finalizare
-          const btn = document.getElementById('btn-complete');
-          if (btn) {
-            btn.textContent = '🏆 Activitate finalizată!';
-            btn.disabled = true;
-          }
+  function confirmAction(title, text, action) {
+    const previous = document.activeElement;
+    const overlay = document.createElement('div'); overlay.className = 'modal-overlay show';
+    overlay.innerHTML = '<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirm-title"><h2 id="confirm-title">' +
+      Engines.escape(title) + '</h2><p>' + Engines.escape(text) + '</p><div class="modal-actions">' +
+      '<button class="btn" id="confirm-cancel">Renunță</button><button class="btn btn-primary" id="confirm-accept">Confirmă</button></div></div>';
+    document.body.appendChild(overlay);
+    const close = () => { overlay.remove(); document.removeEventListener('keydown', keys); if (previous && previous.isConnected) previous.focus(); };
+    const keys = event => {
+      if (event.key === 'Escape') close();
+      if (event.key === 'Tab') {
+        const buttons = overlay.querySelectorAll('button'), first = buttons[0], last = buttons[buttons.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener('keydown', keys);
+    overlay.querySelector('#confirm-cancel').addEventListener('click', close);
+    overlay.querySelector('#confirm-accept').addEventListener('click', () => { close(); action(); });
+    overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
+    overlay.querySelector('#confirm-cancel').focus();
+  }
+  function renderPage() {
+    if (game) game.dispose(); game = null;
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    applyPreferences();
+    level = Preferences.get(Progress.profile()).level;
+    const main = document.getElementById('main');
+    const page = document.body.dataset.page;
+    main.innerHTML = page === 'home' ? Render.home() : page === 'subject' ? Render.subject(params.get('subject')) :
+      page === 'activity' ? Render.activity(params.get('activity')) : page === 'dece' ? Render.dece() :
+        page === 'settings' ? Render.settings() : Render.invalid('Pagina nu a fost găsită.');
+    if (activity) document.title = activity.title + ' — Atelierul Școlar';
+    Discovery.init(main);
+    initTabs(); initProfiles(); initSettings(); initReading(); updateProgress();
+    if (typeof Dece !== 'undefined') Dece.init();
+    const complete = document.getElementById('btn-complete');
+    if (complete && activity) complete.addEventListener('click', () => {
+      const saved = Progress.markViewed(activity.id); updateProgress();
+      if (saved) message('Explicație marcată ca parcursă. Jocul și competențele se înregistrează separat.');
+    });
+  }
+  function initProfiles() {
+    const select = document.getElementById('profile-select'), form = document.getElementById('profile-form');
+    if (!select || !form) return;
+    select.addEventListener('change', () => { Progress.selectProfile(select.value); renderPage(); });
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      try { Progress.addProfile(document.getElementById('profile-name').value); renderPage(); }
+      catch (error) { console.error('Profilul nu a putut fi creat.', error); message(error.message, true); }
+    });
+    document.getElementById('export-progress').addEventListener('click', () => {
+      const url = URL.createObjectURL(new Blob([Progress.exportData()], { type: 'application/json' }));
+      const link = document.createElement('a'); link.href = url; link.download = 'atelier-progres.json'; link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      message('Copia de progres a fost pregătită pentru descărcare.');
+    });
+    const input = document.getElementById('import-progress');
+    input.addEventListener('change', async () => {
+      const file = input.files[0];
+      if (!file) return;
+      if (file.size > 2000000) { message('Fișierul depășește limita de 2 MB.', true); input.value = ''; return; }
+      try {
+        const text = await file.text();
+        Progress.validate(JSON.parse(text));
+        confirmAction('Înlocuiești progresul local?', 'Toate profilurile locale vor fi înlocuite cu cele din fișier. Exportă mai întâi o copie dacă vrei să păstrezi datele actuale.', () => {
+          try { const saved = Progress.importData(text); renderPage(); if (saved) message('Progres importat și salvat pe dispozitiv.'); }
+          catch (error) { console.error('Import eșuat.', error); message('Importul a eșuat: ' + error.message, true); }
+        });
+      } catch (error) { console.error('Fișier de progres invalid.', error); message('Fișierul nu a fost importat: ' + error.message, true); }
+      input.value = '';
+    });
+  }
+  function initReading() {
+    const button = document.getElementById('read-lesson'), stop = document.getElementById('stop-reading');
+    if (!button || !activity) return;
+    if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+      button.disabled = true; button.textContent = 'Citirea vocală nu este disponibilă în acest browser'; return;
+    }
+    button.addEventListener('click', () => {
+      window.speechSynthesis.cancel();
+      const voices = window.speechSynthesis.getVoices(), voice = voices.find(v => /^ro(?:-|_)/i.test(v.lang) || v.lang === 'ro');
+      if (!voice) { message('Browserul nu are o voce română disponibilă. Poți instala una din setările dispozitivului; textul rămâne disponibil pentru citire.', true); return; }
+      if (!voice.localService) { message('Vocea română disponibilă folosește un serviciu online. Atelierul nu pornește această voce, pentru a păstra textul pe dispozitiv.', true); return; }
+      const speech = new SpeechSynthesisUtterance([activity.title].concat(activity.explanation, activity.guided).join('. '));
+      speech.lang = 'ro-RO'; speech.voice = voice; speech.rate = 0.85;
+      speech.onend = () => { stop.hidden = true; button.disabled = false; };
+      speech.onerror = event => {
+        stop.hidden = true; button.disabled = false;
+        if (event.error !== 'canceled' && event.error !== 'interrupted') message('Citirea vocală a eșuat. Textul poate fi citit în continuare pe pagină.', true);
+      };
+      stop.hidden = false; button.disabled = true; window.speechSynthesis.speak(speech);
+    });
+    stop.addEventListener('click', () => { window.speechSynthesis.cancel(); stop.hidden = true; button.disabled = false; });
+  }
+  function initPreferences() {
+    const theme = document.getElementById('btn-theme'), sound = document.getElementById('btn-sound');
+    theme.addEventListener('click', () => changePreferences({ theme: document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark' }));
+    sound.addEventListener('click', () => changePreferences({ sound: !Sound.enabled }));
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (Preferences.get(Progress.profile()).theme === 'auto') applyPreferences();
+    });
+  }
+  function applyPreferences() {
+    const profile = Progress.profile();
+    Preferences.apply(profile);
+    const theme = document.getElementById('btn-theme'), sound = document.getElementById('btn-sound'), link = document.getElementById('settings-link');
+    const dark = document.documentElement.dataset.theme === 'dark';
+    theme.textContent = dark ? '☀️' : '🌙';
+    theme.setAttribute('aria-label', dark ? 'Activează tema luminoasă' : 'Activează tema întunecată');
+    sound.textContent = Sound.enabled ? '🔊' : '🔇';
+    sound.setAttribute('aria-label', Sound.enabled ? 'Oprește sunetul' : 'Pornește sunetul');
+    sound.setAttribute('aria-pressed', String(Sound.enabled));
+    if (link) { link.textContent = Preferences.avatars[Preferences.get(profile).avatar] + ' Setări'; link.setAttribute('aria-label', 'Setări pentru ' + profile.name); }
+    const avatar = document.getElementById('profile-avatar');
+    if (avatar) avatar.textContent = Preferences.avatars[Preferences.get(profile).avatar];
+  }
+  function changePreferences(changes) {
+    const profile = Progress.profile(), next = Object.assign({}, Preferences.get(profile), changes);
+    const saved = Progress.updateProfile(profile.name, next);
+    applyPreferences();
+    Object.keys(next).forEach(key => {
+      const field = document.getElementById('setting-' + key);
+      if (field) field.value = typeof next[key] === 'boolean' ? (next[key] ? 'on' : 'off') : String(next[key]);
+    });
+    return saved;
+  }
+  function initSettings() {
+    const form = document.getElementById('preferences-form'), rename = document.getElementById('rename-profile');
+    if (!form || !rename) return;
+    const save = event => {
+      event.preventDefault();
+      const value = key => document.getElementById('setting-' + key).value;
+      try {
+        const saved = changePreferences({ font: value('font'), size: Number(value('size')), theme: value('theme'),
+          sound: value('sound') === 'on', motion: value('motion') === 'on', level: Number(value('level')), avatar: value('avatar') });
+        if (saved) message('Setările profilului au fost salvate.');
+      } catch (error) { console.error('Setările nu au putut fi salvate.', error); message(error.message, true); }
+    };
+    form.addEventListener('change', save);
+    form.addEventListener('submit', save);
+    document.getElementById('reset-preferences').addEventListener('click', () => {
+      const saved = changePreferences(Preferences.defaults());
+      if (saved) message('Setările inițiale au fost restabilite. Progresul și pseudonimul au rămas neschimbate.');
+    });
+    rename.addEventListener('submit', event => {
+      event.preventDefault();
+      try {
+        const saved = Progress.updateProfile(document.getElementById('settings-name').value, Preferences.get(Progress.profile()));
+        applyPreferences();
+        document.querySelector('#profile-select option:checked').textContent = Progress.profile().name;
+        document.getElementById('settings-name').value = Progress.profile().name;
+        if (saved) message('Pseudonimul profilului a fost salvat.');
+      } catch (error) { console.error('Pseudonimul nu a putut fi salvat.', error); message(error.message, true); }
+    });
+  }
+  function boot() {
+    window.addEventListener('atelier-storage-error', event => message(event.detail, true));
+    initPreferences(); renderPage();
+    if (Progress.lastError) message(Progress.lastError, true);
+    const reset = document.getElementById('btn-reset-progress');
+    reset.textContent = 'Resetează progresul profilului activ';
+    reset.title = 'Șterge doar progresul profilului activ. Setările rămân.';
+    reset.addEventListener('click', () => confirmAction(Progress.readOnly ? 'Înlocuiești datele locale care nu pot fi citite?' : 'Resetezi profilul activ?',
+      Progress.readOnly ? 'Fișierul local existent nu a putut fi citit. Resetarea îl va înlocui cu datele din această sesiune, fără posibilitatea de a recupera aici profilurile necunoscute. Poți renunța și importa o copie validă.' :
+        'Se șterg rezultatele, stelele și traseul profilului activ. Setările și celelalte profiluri rămân. Poți exporta o copie din Setări.', () => {
+      const saved = Progress.reset(); renderPage(); if (saved) message('Profilul activ a fost resetat.');
+    }));
+    window.addEventListener('storage', event => {
+      if (event.key === Progress.key() || event.key === null) {
+        const previous = Progress.cache;
+        Progress.cache = null; Progress.readOnly = false; Progress.lastError = '';
+        const current = Progress.load(), before = previous && previous.profiles[previous.active], after = current.profiles[current.active];
+        const sameProgress = before && previous.active === current.active &&
+          JSON.stringify(before.activities) === JSON.stringify(after.activities) &&
+          JSON.stringify(before.journey) === JSON.stringify(after.journey) && before.legacyStars === after.legacyStars;
+        const changedPreferences = before && (before.name !== after.name ||
+          JSON.stringify(Preferences.get(before)) !== JSON.stringify(Preferences.get(after)));
+        if (game && sameProgress && changedPreferences && !Progress.readOnly) {
+          applyPreferences(); updateProgress();
+          message('Setările profilului au fost actualizate din altă filă. Runda curentă continuă.');
+        } else {
+          renderPage();
+          if (Progress.lastError) message(Progress.lastError, true);
+          else message('Progresul local s-a schimbat în altă filă. Pagina a fost actualizată; runda neîncheiată a fost oprită.');
         }
       }
-    };
-
-    const demo = a.demo;
-    switch (demo.type) {
-      case 'quiz':     Engines.quiz(area, demo, onDone); break;
-      case 'count':    Engines.count(area, demo, onDone); break;
-      case 'match':    Engines.match(area, demo, onDone); break;
-      case 'arrange':  Engines.arrange(area, demo, onDone); break;
-      case 'classify': Engines.classify(area, demo, onDone); break;
-      case 'memory':   Engines.memory(area, demo, onDone); break;
-      case 'clock':    Engines.clock(area, demo, onDone); break;
-      case 'shapes':   Engines.shapes(area, demo, onDone); break;
-      case 'type':     Engines.type(area, demo, onDone); break;
-      case 'balance':  Engines.balance(area, demo, onDone); break;
-      case 'shop':     Engines.shop(area, demo, onDone); break;
-      case 'gen':      Engines.gen(area, demo, onDone); break;
-      default:
-        area.innerHTML = '<div class="g-status bad">Jocul nu este disponibil.</div>';
-    }
-  }
-
-  /* ---------- finalizare manuală ---------- */
-  function initComplete() {
-    const btn = document.getElementById('btn-complete');
-    if (!btn) return;
-    const a = ACTIVITIES.find(x => x.id === params.get('activity'));
-    if (!a) return;
-    if (Progress.isCompleted(a.id)) {
-      btn.textContent = '🏆 Activitate finalizată!';
-      btn.disabled = true;
-    }
-    btn.addEventListener('click', () => {
-      const first = Progress.complete(a.id, 1);
-      if (first) {
-        Sound.win();
-        Confetti.burst();
-        showToast('⭐ Ai câștigat o stea!');
-        updateStars();
-      } else {
-        Sound.good();
-        showToast('Bine ai făcut!');
-      }
-      btn.textContent = '🏆 Activitate finalizată!';
-      btn.disabled = true;
-      // Actualizăm panoul de trecere
-      const panel = document.querySelector('[data-panel="trecere"]');
-      if (panel && !panel.querySelector('.callout')) {
-        const c = document.createElement('div');
-        c.className = 'callout';
-        c.style.borderColor = 'var(--success)';
-        c.innerHTML = '<div class="co-title">🏆 Felicitări!</div><p>Această activitate este finalizată. Poți reveni oricând pentru a exersa din nou.</p>';
-        panel.appendChild(c);
-      }
     });
+    window.addEventListener('pagehide', () => { if (game) game.dispose(); if ('speechSynthesis' in window) window.speechSynthesis.cancel(); });
   }
-
-  /* ---------- toast ---------- */
-  function showToast(msg) {
-    let t = document.querySelector('.toast');
-    if (!t) {
-      t = document.createElement('div');
-      t.className = 'toast';
-      document.body.appendChild(t);
-    }
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2600);
-  }
-
-  /* ---------- stele ---------- */
-  function updateStars() {
-    const chip = document.getElementById('stars-chip');
-    if (chip) chip.textContent = '⭐ ' + Progress.totalStars();
-  }
-
-  /* ---------- resetare progres ---------- */
-  function initReset() {
-    const btn = document.getElementById('btn-reset-progress');
-    if (!btn) return;
-    btn.addEventListener('click', () => {
-      const stars = Progress.totalStars();
-      const done = Progress.totalCompleted();
-      if (stars === 0 && done === 0) {
-        showToast('Nu ai niciun progres de resetat. 🌱');
-        return;
-      }
-      showResetModal();
-    });
-  }
-
-  function showResetModal() {
-    // Elimină un modal deja deschis
-    const old = document.getElementById('reset-modal');
-    if (old) old.remove();
-
-    const overlay = document.createElement('div');
-    overlay.id = 'reset-modal';
-    overlay.className = 'modal-overlay';
-    overlay.innerHTML =
-      '<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="reset-title">' +
-        '<div class="modal-emoji">🦉</div>' +
-        '<h2 id="reset-title">Sigur vrei să resetezi?</h2>' +
-        '<p>Se vor șterge <strong>toate stelele</strong> și <strong>activitățile finalizate</strong> de pe acest dispozitiv. Nu se poate anula.</p>' +
-        '<div class="modal-actions">' +
-          '<button id="reset-cancel" class="btn btn-ghost" type="button">Nu, rămân</button>' +
-          '<button id="reset-confirm" class="btn btn-danger" type="button">Da, resetează</button>' +
-        '</div>' +
-      '</div>';
-    document.body.appendChild(overlay);
-
-    // Animare de intrare
-    requestAnimationFrame(() => overlay.classList.add('show'));
-
-    const close = () => {
-      overlay.classList.remove('show');
-      setTimeout(() => overlay.remove(), 200);
-    };
-
-    overlay.querySelector('#reset-cancel').addEventListener('click', close);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
-    document.addEventListener('keydown', function esc(e) {
-      if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
-    });
-
-    overlay.querySelector('#reset-confirm').addEventListener('click', () => {
-      Progress.reset();
-      location.reload();
-    });
-  }
-
-  /* ---------- injectare conținut ---------- */
-  function injectContent() {
-    const main = document.getElementById('main');
-    if (!main) return;
-    let html = '';
-    if (page === 'home') {
-      html = Render.home();
-    } else if (page === 'subject') {
-      html = Render.subject(params.get('subject'));
-    } else if (page === 'activity') {
-      html = Render.activity(params.get('activity'));
-    } else if (page === 'dece') {
-      html = Render.dece();
-    }
-    main.innerHTML = html;
-  }
-
-  /* ---------- pornire ---------- */
-  function boot() {
-    initTheme();
-    initSound();
-    injectContent();
-    initTabs();
-    initComplete();
-    initReset();
-    updateStars();
-    if (typeof Dece !== 'undefined') Dece.init();
-
-    // Buton temă
-    const themeBtn = document.getElementById('btn-theme');
-    if (themeBtn) {
-      themeBtn.addEventListener('click', () => {
-        const cur = document.documentElement.getAttribute('data-theme');
-        applyTheme(cur === 'dark' ? 'light' : 'dark');
-      });
-    }
-
-    // Dacă pagina e de activitate și tabul activ e deja joc, pornim
-    const activeTab = document.querySelector('.tab.active');
-    if (page === 'activity' && activeTab && activeTab.dataset.tab === 'joc') {
-      startGame();
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else {
-    boot();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();

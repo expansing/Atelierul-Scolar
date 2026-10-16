@@ -1,240 +1,110 @@
-/* ============================================================
-   ATELIERUL ȘCOLAR — Validator de date
-   Verifică structura din assets/js/data.js:
-   - subiecte și activități complete
-   - tipuri de demo valide și structuri corecte
-   - ortografie românească (fără diacritice lipsă)
-   ============================================================ */
 const fs = require('fs');
 const path = require('path');
+const vm = require('vm');
 
-const nodeMajor = Number(process.versions.node.split('.')[0]);
-if (nodeMajor < 12) {
-  console.error('Validatorul necesita Node.js 12 sau mai nou. Versiune detectata: ' + process.versions.node);
-  process.exit(1);
-}
-
-const base = path.join(__dirname, 'assets', 'js');
-const src = fs.readFileSync(path.join(base, 'data.js'), 'utf8')
-  .replace(/^const SUBJECTS =/m, 'global.SUBJECTS =')
-  .replace(/^const ACTIVITIES =/m, 'global.ACTIVITIES =')
-  .replace(/^const ACTIVITIES_BY_SUBJECT =/m, 'global.ACTIVITIES_BY_SUBJECT =');
-(0, eval)(src);
-
-const SUBJECTS = global.SUBJECTS;
-const ACTIVITIES = global.ACTIVITIES;
-const ACTIVITIES_BY_SUBJECT = global.ACTIVITIES_BY_SUBJECT;
-
-const SUPPORTED_DEMO_TYPES = new Set(['quiz', 'count', 'match', 'arrange', 'classify', 'memory', 'clock', 'shapes', 'type', 'balance', 'shop', 'gen']);
-
-const FORBIDDEN_WORDS = {
-  'Apasa': 'Apasă', 'apasa': 'apasă', 'Daca': 'Dacă', 'daca': 'dacă',
-  'Fara': 'Fără', 'fara': 'fără', 'Inainte': 'Înainte', 'inainte': 'înainte',
-  'afiseaza': 'afișează', 'Afiseaza': 'Afișează', 'protejeaza': 'protejează',
-  'cauta': 'caută', 'Cauta': 'Caută', 'foloseste': 'folosește', 'Foloseste': 'Folosește',
-  'intelege': 'înțelege', 'Intelege': 'Înțelege', 'intelegere': 'înțelegere',
-  'invata': 'învață', 'Invata': 'Învață', 'invatare': 'învățare', 'Invatare': 'Învățare',
-  'masina': 'mașina', 'Masina': 'Mașina', 'genereaza': 'generează', 'Genereaza': 'Generează',
-  'scoala': 'școala', 'Scoala': 'Școala', 'impreuna': 'împreună', 'Impreuna': 'Împreună',
-  'romana': 'română', 'Romana': 'Română', 'depaseste': 'depășește', 'Depaseste': 'Depășește',
-  'incepe': 'începe', 'Incepe': 'începe', 'inceput': 'început', 'Inceput': 'început',
-  'intrebare': 'întrebare', 'Intrebare': 'Întrebare', 'Urmeaza': 'Urmează', 'urmeaza': 'urmează',
-  'Dupa': 'După', 'dupa': 'după', 'aparea': 'apărea', 'Aparea': 'Apărea',
-  'gasesti': 'găsești', 'Gasesti': 'Găsești', 'Imagineaza': 'Imaginează', 'imagineaza': 'imaginează',
-  'hotaraste': 'hotărăște', 'Hotaraste': 'Hotărăște', 'controleaza': 'controlează', 'Controleaza': 'Controlează',
-  'urias': 'uriaș', 'Urias': 'Uriaș', 'stim': 'știm', 'Stim': 'Știm',
-  'reala': 'reală', 'Reala': 'Reală', 'informatia': 'informația', 'Informatia': 'Informația',
-  'informatie': 'informație', 'Informatie': 'Informație', 'solutia': 'soluția', 'Solutia': 'Soluția',
-  'solutie': 'soluție', 'Solutie': 'Soluție', 'pozitiile': 'pozițiile', 'Pozitiile': 'Pozițiile',
-  'pozitia': 'poziția', 'Pozitia': 'Poziția', 'biti': 'biți', 'Biti': 'Biți',
-  'pastrat': 'păstrat', 'Pastrat': 'Păstrat', 'pastreaza': 'păstrează', 'Pastreaza': 'Păstrează',
-  'construiesti': 'construiești', 'Construiesti': 'Construiești', 'siguranta': 'siguranță',
-  'Siguranta': 'Siguranță', 'retea': 'rețea', 'Retea': 'Rețea', 'pastram': 'păstrăm',
-  'Pastram': 'Păstrăm', 'temporara': 'temporară', 'Temporara': 'Temporară',
-  'strain': 'străin', 'Strain': 'Străin', 'intamplat': 'întâmplat', 'Intamplat': 'Întâmplat',
-  'indemana': 'îndemână', 'Indemana': 'Îndemână'
-};
-
-let bad = 0;
-function problem(message) {
-  console.log('❌ ' + message);
-  bad++;
-}
-
-function isNonEmptyString(v) {
-  return typeof v === 'string' && v.trim().length > 0;
-}
-function isNonEmptyArray(v) {
-  return Array.isArray(v) && v.length > 0;
-}
-
-function scanForbiddenWords(text, context) {
-  Object.keys(FORBIDDEN_WORDS).forEach(word => {
-    const re = new RegExp('(^|[^A-Za-zĂÂÎȘȚăâîșț])' + word + '([^A-Za-zĂÂÎȘȚăâîșț]|$)');
-    if (re.test(text)) {
-      problem('Ortografie: folosește „' + FORBIDDEN_WORDS[word] + '” în loc de „' + word + '” la ' + context);
-    }
+function loadContent(extra) {
+  const context = Object.assign({ console }, extra || {});
+  vm.createContext(context);
+  ['data', 'engines', 'math-games', 'discovery', 'preferences', 'progress', 'render', 'dece'].forEach(name => {
+    vm.runInContext(fs.readFileSync(path.join(__dirname, 'assets/js', name + '.js'), 'utf8'), context, { filename: name + '.js' });
   });
+  return vm.runInContext('({ SUBJECTS, ACTIVITIES, ACTIVITIES_BY_SUBJECT, LEVELS, Engines, MathWorkshop, Discovery, Preferences, Progress, Render, DECE_CAMPS })', context);
 }
 
-function scanTexts(obj, context) {
-  if (typeof obj === 'string') {
-    scanForbiddenWords(obj, context);
-  } else if (Array.isArray(obj)) {
-    obj.forEach((v, i) => scanTexts(v, context + '[' + i + ']'));
-  } else if (obj && typeof obj === 'object') {
-    Object.keys(obj).forEach(k => scanTexts(obj[k], context + '.' + k));
-  }
-}
-
-console.log('Subiecte:', SUBJECTS.length, '| Activitati:', ACTIVITIES.length);
-
-/* ---------- subiecte ---------- */
-const subjectIds = new Set();
-SUBJECTS.forEach(s => {
-  if (!isNonEmptyString(s.id)) problem('Subiect fără id');
-  if (!isNonEmptyString(s.title)) problem('Subiect ' + s.id + ' fără titlu');
-  if (!isNonEmptyString(s.icon)) problem('Subiect ' + s.id + ' fără icon');
-  if (!isNonEmptyString(s.desc)) problem('Subiect ' + s.id + ' fără descriere');
-  subjectIds.add(s.id);
-});
-
-/* ---------- activități ---------- */
-const actIds = new Set();
-ACTIVITIES.forEach(a => {
-  const ctx = 'activitatea ' + a.id;
-  if (!isNonEmptyString(a.id)) { problem('Activitate fără id'); return; }
-  if (actIds.has(a.id)) problem('ID duplicat: ' + a.id);
-  actIds.add(a.id);
-  if (!isNonEmptyString(a.title)) problem(ctx + ' fără titlu');
-  if (!isNonEmptyString(a.icon)) problem(ctx + ' fără icon');
-  if (!isNonEmptyString(a.duration)) problem(ctx + ' fără durată');
-  if (!subjectIds.has(a.subject)) problem(ctx + ' cu subiect necunoscut: ' + a.subject);
-  if (!isNonEmptyArray(a.objectives)) problem(ctx + ' fără obiective');
-  if (!isNonEmptyArray(a.explanation)) problem(ctx + ' fără explicație');
-  if (!isNonEmptyArray(a.questions)) problem(ctx + ' fără întrebări');
-  if (!isNonEmptyArray(a.pass)) problem(ctx + ' fără criterii de trecere');
-  if (!a.parent || !isNonEmptyArray(a.parent.watch) || !isNonEmptyArray(a.parent.help) || !isNonEmptyArray(a.parent.redflags)) {
-    problem(ctx + ' fără secțiune completă pentru părinți');
-  }
-
-  /* demo */
-  const d = a.demo;
-  if (!d || !isNonEmptyString(d.type)) { problem(ctx + ' fără demo'); return; }
-  if (!SUPPORTED_DEMO_TYPES.has(d.type)) problem(ctx + ' cu tip demo nesuportat: ' + d.type);
-  if (!isNonEmptyString(d.title)) problem(ctx + ' demo fără titlu');
-
-  switch (d.type) {
-    case 'quiz':
-      if (!isNonEmptyArray(d.questions)) problem(ctx + ' quiz fără întrebări');
-      else d.questions.forEach((q, i) => {
-        if (!isNonEmptyString(q.q)) problem(ctx + ' quiz[' + i + '] fără întrebare');
-        if (!isNonEmptyArray(q.options) || q.options.length < 2) problem(ctx + ' quiz[' + i + '] cu opțiuni insuficiente');
-        if (typeof q.answer !== 'number' || q.answer < 0 || q.answer >= q.options.length) problem(ctx + ' quiz[' + i + '] cu index de răspuns invalid');
-      });
-      break;
-    case 'count':
-      if (!isNonEmptyArray(d.items)) problem(ctx + ' count fără itemi');
-      else d.items.forEach((it, i) => {
-        if (!isNonEmptyString(it.emoji)) problem(ctx + ' count[' + i + '] fără emoji');
-        if (typeof it.count !== 'number' || it.count < 1) problem(ctx + ' count[' + i + '] cu număr invalid');
-        if (!isNonEmptyArray(it.options) || !it.options.includes(it.count)) problem(ctx + ' count[' + i + '] nu conține răspunsul corect în opțiuni');
-      });
-      break;
-    case 'match':
-      if (!isNonEmptyArray(d.pairs)) problem(ctx + ' match fără perechi');
-      else d.pairs.forEach((p, i) => {
-        if (!isNonEmptyString(p.a) || !isNonEmptyString(p.b)) problem(ctx + ' match[' + i + '] incompletă');
-      });
-      break;
-    case 'arrange':
-      if (!isNonEmptyArray(d.questions)) problem(ctx + ' arrange fără întrebări');
-      else d.questions.forEach((q, i) => {
-        if (!isNonEmptyArray(q.words)) problem(ctx + ' arrange[' + i + '] fără cuvinte');
-        if (!isNonEmptyString(q.answer)) problem(ctx + ' arrange[' + i + '] fără răspuns');
-        if (q.pool && !isNonEmptyArray(q.pool)) problem(ctx + ' arrange[' + i + '] cu pool invalid');
-      });
-      break;
-    case 'classify':
-      if (!isNonEmptyArray(d.zones) || d.zones.length < 2) problem(ctx + ' classify cu zone insuficiente');
-      if (!isNonEmptyArray(d.items)) problem(ctx + ' classify fără itemi');
-      else d.items.forEach((it, i) => {
-        if (!isNonEmptyString(it.label)) problem(ctx + ' classify[' + i + '] fără etichetă');
-        if (typeof it.zone !== 'number' || it.zone < 0 || it.zone >= d.zones.length) problem(ctx + ' classify[' + i + '] cu zonă invalidă');
-      });
-      break;
-    case 'memory':
-      if (!isNonEmptyArray(d.pairs) || d.pairs.length < 3) problem(ctx + ' memory cu perechi insuficiente');
-      else {
-        const uniq = new Set(d.pairs);
-        if (uniq.size !== d.pairs.length) problem(ctx + ' memory cu emoji duplicate');
+function validate(data) {
+  const { SUBJECTS, ACTIVITIES, ACTIVITIES_BY_SUBJECT, LEVELS, Engines, DECE_CAMPS } = data;
+  const errors = [];
+  const requireValue = (condition, message) => { if (!condition) errors.push(message); };
+  const text = value => typeof value === 'string' && value.trim().length > 0;
+  const texts = value => Array.isArray(value) && value.length > 0 && value.every(text);
+  const unique = values => new Set(values).size === values.length;
+  const integer = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
+  requireValue(SUBJECTS.length === 6, 'Sunt necesare șase discipline.');
+  requireValue(ACTIVITIES.length >= 60 && ACTIVITIES.length <= 72, 'Inventarul trebuie să aibă între 60 și 72 de activități.');
+  requireValue(LEVELS.length === 3, 'Sunt necesare trei niveluri.');
+  requireValue(unique(SUBJECTS.map(s => s.id)), 'ID-uri duplicate de discipline.');
+  requireValue(unique(ACTIVITIES.map(a => a.id)), 'ID-uri duplicate de activități.');
+  const validSubjects = new Set(SUBJECTS.map(s => s.id));
+  SUBJECTS.forEach(subject => {
+    ['id', 'title', 'icon', 'color', 'desc', 'tagline', 'age'].forEach(key => requireValue(text(subject[key]), subject.id + ': lipsește ' + key));
+    const acts = ACTIVITIES_BY_SUBJECT[subject.id];
+    requireValue(Array.isArray(acts) && acts.length >= 9, subject.id + ': prea puține activități.');
+    if (Array.isArray(acts)) requireValue(acts.every((a, i) => a.subject === subject.id && a.num === i + 1), subject.id + ': index sau numerotare incorectă.');
+  });
+  const oldCounts = { mat: 9, lim: 7, log: 7, inf: 6, sci: 7, civ: 6 };
+  Object.keys(oldCounts).forEach(subject => {
+    for (let i = 1; i <= oldCounts[subject]; i++) requireValue(ACTIVITIES.some(a => a.id === subject + '-' + i), 'Legătură veche pierdută: ' + subject + '-' + i);
+  });
+  const checkQuestion = (question, context) => {
+    requireValue(text(question.prompt) && text(question.explain) && text(question.hint), context + ': cerință, indiciu sau explicație lipsă.');
+    requireValue(texts(question.options) && question.options.length >= 2 && unique(question.options), context + ': opțiuni insuficiente sau duplicate.');
+    requireValue(integer(question.answer, 0, (question.options || []).length - 1), context + ': răspuns invalid.');
+  };
+  ACTIVITIES.forEach(activity => {
+    const id = activity.id;
+    requireValue(validSubjects.has(activity.subject), id + ': disciplină necunoscută.');
+    ['title', 'icon', 'duration'].forEach(key => requireValue(text(activity[key]), id + ': lipsește ' + key));
+    ['objectives', 'explanation', 'guided', 'questions', 'pass'].forEach(key => requireValue(texts(activity[key]) && activity[key].length >= 2, id + ': secțiune incompletă: ' + key));
+    requireValue(activity.explanation.length >= 3 && activity.guided.length >= 3, id + ': lecția nu are toți pașii.');
+    requireValue(activity.practical && text(activity.practical.materials) && texts(activity.practical.steps) && text(activity.practical.check), id + ': explorare practică incompletă.');
+    requireValue(activity.parent && ['watch', 'help', 'support'].every(key => texts(activity.parent[key])), id + ': sprijinul adultului este incomplet.');
+    const demo = activity.demo;
+    requireValue(demo && Engines.types.includes(demo.type), id + ': motor necunoscut.');
+    if (!demo || !Array.isArray(demo.levels)) { errors.push(id + ': niveluri lipsă.'); return; }
+    requireValue(demo.levels.length === 3, id + ': nu are trei niveluri.');
+    requireValue(new Set(demo.levels.map(level => JSON.stringify(level))).size === 3 || !['quiz', 'arrange', 'match', 'classify'].includes(demo.type), id + ': niveluri identice.');
+    demo.levels.forEach((config, level) => {
+      const context = id + ' / ' + level;
+      if (config.review) {
+        requireValue(Array.isArray(config.review) && config.review.length >= 2, context + ': verificare conceptuală incompletă.');
+        if (Array.isArray(config.review)) config.review.forEach(question => checkQuestion(question, context));
       }
-      break;
-    case 'clock':
-      if (!isNonEmptyArray(d.questions)) problem(ctx + ' clock fără întrebări');
-      else d.questions.forEach((q, i) => {
-        if (typeof q.hour !== 'number' || q.hour < 1 || q.hour > 12) problem(ctx + ' clock[' + i + '] cu oră invalidă');
-        if (typeof q.minute !== 'number' || q.minute < 0 || q.minute > 59) problem(ctx + ' clock[' + i + '] cu minute invalide');
-        if (!isNonEmptyArray(q.options)) problem(ctx + ' clock[' + i + '] fără opțiuni');
-      });
-      break;
-    case 'shapes':
-      if (!isNonEmptyArray(d.questions)) problem(ctx + ' shapes fără întrebări');
-      else d.questions.forEach((q, i) => {
-        if (!isNonEmptyString(q.shape)) problem(ctx + ' shapes[' + i + '] fără formă');
-        if (!isNonEmptyString(q.name)) problem(ctx + ' shapes[' + i + '] fără nume');
-        if (!isNonEmptyArray(q.options) || !q.options.includes(q.name)) problem(ctx + ' shapes[' + i + '] nu conține numele corect în opțiuni');
-      });
-      break;
-    case 'type':
-      if (!isNonEmptyString(d.prompt)) problem(ctx + ' type fără prompt');
-      if (!isNonEmptyArray(d.examples)) problem(ctx + ' type fără exemple');
-      break;
-    case 'balance':
-      // joc generativ: doar titlu, intro și opțional rounds/emoji
-      if (typeof d.rounds !== 'undefined' && (typeof d.rounds !== 'number' || d.rounds < 1)) problem(ctx + ' balance cu rounds invalid');
-      break;
-    case 'shop':
-      if (typeof d.rounds !== 'undefined' && (typeof d.rounds !== 'number' || d.rounds < 1)) problem(ctx + ' shop cu rounds invalid');
-      if (d.items && !isNonEmptyArray(d.items)) problem(ctx + ' shop cu itemi invalid');
-      else if (d.items) d.items.forEach((it, i) => {
-        if (!isNonEmptyString(it.name) || !isNonEmptyString(it.emoji)) problem(ctx + ' shop.items[' + i + '] incomplet');
-      });
-      break;
-    case 'gen':
-      if (typeof d.rounds !== 'undefined' && (typeof d.rounds !== 'number' || d.rounds < 1)) problem(ctx + ' gen cu rounds invalid');
-      break;
-  }
-
-  /* montessori (opțional, dar validat dacă există) */
-  if (a.montessori) {
-    if (!isNonEmptyString(a.montessori.intro)) problem(ctx + ' montessori fără intro');
-    if (!isNonEmptyArray(a.montessori.materials)) problem(ctx + ' montessori fără materiale');
-    else a.montessori.materials.forEach((m, i) => {
-      if (!isNonEmptyString(m.icon)) problem(ctx + ' montessori.materials[' + i + '] fără icon');
-      if (!isNonEmptyString(m.name)) problem(ctx + ' montessori.materials[' + i + '] fără nume');
-      if (!isNonEmptyString(m.how)) problem(ctx + ' montessori.materials[' + i + '] fără descriere');
+      if (demo.type === 'quiz') {
+        requireValue(Array.isArray(config.questions) && config.questions.length >= 3, context + ': minimum trei întrebări distincte.');
+        (config.questions || []).forEach(question => checkQuestion(question, context));
+        requireValue(unique((config.questions || []).map(q => q.prompt)), context + ': întrebări duplicate.');
+      } else if (demo.type === 'arrange') {
+        requireValue(Array.isArray(config.questions) && config.questions.length >= 2, context + ': minimum două ordonări.');
+        (config.questions || []).forEach(q => requireValue(text(q.prompt) && texts(q.tokens) && q.tokens.length >= 2 && text(q.explain) && text(q.hint), context + ': ordonare incompletă.'));
+      } else if (demo.type === 'match') {
+        requireValue(Array.isArray(config.pairs) && config.pairs.length >= 3, context + ': prea puține perechi.');
+        const pairs = config.pairs || [];
+        requireValue(pairs.every(p => text(p.a) && text(p.b)) && unique(pairs.map(p => p.a)) && unique(pairs.map(p => p.b)), context + ': perechi incomplete sau ambigue.');
+      } else if (demo.type === 'classify') {
+        requireValue(texts(config.zones) && unique(config.zones), context + ': grupe invalide.');
+        requireValue(Array.isArray(config.items) && config.items.length >= 4 &&
+          config.items.every(item => text(item.label) && integer(item.zone, 0, config.zones.length - 1)), context + ': item de clasificare invalid.');
+      } else requireValue(integer(config.rounds, 1, 12), context + ': număr de runde invalid.');
+      try {
+        const rounds = Engines.rounds(demo, level);
+        requireValue(rounds.length > 0 && rounds.length <= 12, context + ': rundă goală sau prea lungă.');
+        rounds.forEach(round => {
+          requireValue(text(round.prompt) && text(round.explain) && text(round.hint), context + ': sarcină generată incompletă.');
+          if (round.options) checkQuestion(round, context);
+        });
+      } catch (error) { errors.push(context + ': generator eșuat: ' + error.message); }
     });
-    if (a.montessori.tips && !isNonEmptyArray(a.montessori.tips)) problem(ctx + ' montessori.tips gol');
-  }
-
-  /* pool / extra pentru jocuri generative (opțional, dar validat dacă există) */
-  if (d.pool && !isNonEmptyArray(d.pool)) problem(ctx + ' demo.pool gol');
-  if (d.extra && !isNonEmptyArray(d.extra)) problem(ctx + ' demo.extra gol');
-
-  /* ortografie */
-  scanTexts(a, ctx);
-});
-
-/* ---------- index pe subiect ---------- */
-SUBJECTS.forEach(s => {
-  const acts = ACTIVITIES_BY_SUBJECT[s.id];
-  if (!isNonEmptyArray(acts)) problem('Subiectul ' + s.id + ' nu are activități în index');
-});
-
-if (bad === 0) {
-  console.log('✅ Toate datele sunt valide: ' + SUBJECTS.length + ' subiecte, ' + ACTIVITIES.length + ' activități.');
-} else {
-  console.log('\n⚠️  ' + bad + ' problemă(e) găsite.');
-  process.exit(1);
+  });
+  requireValue(DECE_CAMPS.length === 11, 'Traseul de reflecție trebuie să aibă 11 opriri.');
+  DECE_CAMPS.forEach((camp, index) => {
+    requireValue(['title', 'body', 'question', 'explain'].every(key => text(camp[key])) && texts(camp.options) && integer(camp.answer, 0, camp.options.length - 1), 'Oprire incompletă: ' + index);
+  });
+  const textScan = value => {
+    if (typeof value === 'string') {
+      requireValue(!/[\u015e\u015f\u0162\u0163]/.test(value), 'Diacritice cu sedilă în loc de virgulă: ' + value);
+      requireValue(!/\b(?:Învațăm|învațăm|casuță|superputer|prédicție)\b/.test(value), 'Formulare de revizuit: ' + value);
+    } else if (Array.isArray(value)) value.forEach(textScan);
+    else if (value && typeof value === 'object') Object.keys(value).forEach(key => textScan(value[key]));
+  };
+  textScan({ SUBJECTS, ACTIVITIES, DECE_CAMPS });
+  return errors;
 }
+
+if (require.main === module) {
+  const content = loadContent();
+  const errors = validate(content);
+  errors.forEach(error => console.error('✗ ' + error));
+  if (errors.length) process.exitCode = 1;
+  else console.log('✓ ' + content.SUBJECTS.length + ' discipline, ' + content.ACTIVITIES.length + ' activități, ' + content.ACTIVITIES.length * content.LEVELS.length + ' niveluri și 11 opriri valide structural. Revizia lingvistică și factuală rămâne și o responsabilitate editorială.');
+}
+module.exports = { loadContent, validate };

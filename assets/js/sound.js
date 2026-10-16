@@ -12,11 +12,15 @@ const Sound = {
       try {
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
       } catch (e) {
+        console.warn('Sunetul nu este disponibil în acest browser.', e);
         this.enabled = false;
       }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(error => {
+        console.warn('Browserul nu a permis pornirea sunetului.', error);
+        this.enabled = false;
+      });
     }
   },
 

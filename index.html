@@ -4,14 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Atelierul Școlar — Învață jucând!</title>
-  <meta name="description" content="Atelierul Școlar: jocuri educative în limba română pentru copii de 6-8 ani (clasa 1-2). Matematică, Limba Română, Logică, Informatică, Științe și Educație Civică.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="description" content="Atelierul Școlar: jocuri educative în limba română pentru copii de 6-8 ani. Matematică, limba română, logică, informatică, științe și dezvoltare personală.">
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦉</text></svg>">
 </head>
 <body data-page="home">
+  <a class="skip-link" href="#main">Sari la conținut</a>
   <div class="bg-bubbles" aria-hidden="true">
     <span></span><span></span><span></span><span></span><span></span><span></span>
   </div>
@@ -21,6 +19,7 @@
       <a class="logo" href="index.html"><span class="mascot">🦉</span> Atelierul <strong>Școlar</strong></a>
       <nav class="nav">
         <a class="nav-link active" href="index.html">🏠 Acasă</a>
+        <a class="nav-link" id="settings-link" href="settings.html">⚙️ Setări</a>
         <span class="chip stars-chip" id="stars-chip" title="Stele câștigate">⭐ 0</span>
         <button class="btn-sound" id="btn-sound" title="Sunet">🔊</button>
         <button class="btn-theme" id="btn-theme" title="Temă">🌙</button>
@@ -28,7 +27,7 @@
     </div>
   </header>
 
-  <main id="main">
+  <main id="main" tabindex="-1">
     <!-- conținut injectat de render.js -->
   </main>
 
@@ -38,10 +37,13 @@
   </footer>
 
   <script src="assets/js/data.js"></script>
+  <script src="assets/js/preferences.js"></script>
   <script src="assets/js/progress.js"></script>
   <script src="assets/js/sound.js"></script>
   <script src="assets/js/confetti.js"></script>
   <script src="assets/js/engines.js"></script>
+  <script src="assets/js/math-games.js"></script>
+  <script src="assets/js/discovery.js"></script>
   <script src="assets/js/render.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
