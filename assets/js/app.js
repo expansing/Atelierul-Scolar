@@ -1,8 +1,9 @@
 (function () {
   'use strict';
+  const assetVersion = new URL(document.currentScript.src).searchParams.get('v');
   const params = new URLSearchParams(location.search);
   const activity = ACTIVITIES.find(a => a.id === params.get('activity'));
-  let game = null, level = 0, toastTimer;
+  let game = null, level = 0, focusGame = '', missionMode = '', toastTimer;
 
   function message(text, error) {
     let toast = document.getElementById('notification');
@@ -30,7 +31,13 @@
     const area = document.getElementById('game-area');
     if (!activity || !area || game) return;
     try {
-      game = Engines.start(area, activity.demo, level, result => {
+      const practiceOnly = !!focusGame || !!missionMode;
+      const demo = missionMode ? MissionGames.demo(activity.id, missionMode) : Object.assign({}, activity.demo, { focus: focusGame });
+      game = Engines.start(area, demo, level, result => {
+        if (practiceOnly) {
+          message('Practică încheiată. Stelele și progresul salvat au rămas neschimbate. Revino la jocul inițial pentru înregistrarea progresului lecției.');
+          return;
+        }
         const saved = Progress.record(activity.id, result);
         updateProgress();
         if (saved.newStar) { Sound.win(); Confetti.burst(); }
@@ -82,8 +89,52 @@
       document.querySelectorAll('[data-level]').forEach(node => {
         const active = node === button; node.classList.toggle('selected', active); node.setAttribute('aria-pressed', String(active));
       });
+      updateGameMenu();
       startGame();
     }));
+    const select = document.getElementById('game-select');
+    if (select) select.addEventListener('change', () => {
+      missionMode = '';
+      focusGame = select.value;
+      if (game) game.dispose(); game = null;
+      updateGameMenu();
+      startGame();
+    });
+    document.querySelectorAll('[data-mission-game]').forEach(button => button.addEventListener('click', () => {
+      missionMode = button.dataset.missionGame; focusGame = '';
+      if (game) game.dispose(); game = null;
+      updateGameMenu(); startGame();
+    }));
+    updateGameMenu();
+  }
+  function updateGameMenu() {
+    const title = document.getElementById('selected-game-title');
+    if (!activity || !title) return;
+    document.querySelectorAll('[data-mission-game]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.missionGame === missionMode && !focusGame));
+    });
+    const mission = MissionGames.options(activity.id).find(option => option.mode === missionMode);
+    title.textContent = mission ? mission.title : 'Jocul lecției';
+    document.getElementById('selected-game-description').textContent = mission ?
+      mission.description + ' Practică fără stele. Fiecare nivel are o altă situație; reluarea repetă cazul ales.' :
+      'Încearcă, corectează și citește explicația. „Continuă” apare după rezolvare.';
+    const select = document.getElementById('game-select');
+    if (!select) return;
+    const options = Engines.gameOptions(activity.demo);
+    options.forEach(option => {
+      select.querySelector('option[value="' + option.id + '"]').disabled = level < (option.minLevel || 0);
+    });
+    const chosen = options.find(option => option.id === focusGame);
+    if (chosen && level < (chosen.minLevel || 0)) {
+      focusGame = '';
+      document.querySelector('[data-mission-game=""]').setAttribute('aria-pressed', 'true');
+      message('Acest joc începe de la nivelul Exersez. La Descopăr am selectat runda completă.');
+    }
+    select.value = focusGame;
+    document.getElementById('game-selection-note').textContent = missionMode ?
+      'Ai ales unul dintre jocurile noi. Acest selector te poate readuce la o variantă a jocului inițial.' : focusGame ?
+      chosen.description + ' Practică fără stele: nu modifică progresul salvat. Schimbarea jocului reîncepe runda.' :
+      'Runda completă combină mecanicile lecției și păstrează evaluarea obișnuită. Jocurile alese separat sunt practică fără stele și nu modifică progresul salvat. Schimbarea jocului reîncepe runda.';
   }
   function confirmAction(title, text, action) {
     const previous = document.activeElement;
@@ -112,6 +163,8 @@
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     applyPreferences();
     level = Preferences.get(Progress.profile()).level;
+    focusGame = '';
+    missionMode = '';
     const main = document.getElementById('main');
     const page = document.body.dataset.page;
     main.innerHTML = page === 'home' ? Render.home() : page === 'subject' ? Render.subject(params.get('subject')) :
@@ -121,6 +174,12 @@
     Discovery.init(main);
     initTabs(); initProfiles(); initSettings(); initReading(); updateProgress();
     if (typeof Dece !== 'undefined') Dece.init();
+    if (assetVersion) document.querySelectorAll('a[href]').forEach(link => {
+      if (!/^[a-z-]+\.html(?:[?#]|$)/.test(link.getAttribute('href'))) return;
+      const url = new URL(link.href);
+      url.searchParams.set('v', assetVersion);
+      link.href = url.href;
+    });
     const complete = document.getElementById('btn-complete');
     if (complete && activity) complete.addEventListener('click', () => {
       const saved = Progress.markViewed(activity.id); updateProgress();
@@ -169,7 +228,7 @@
       const voices = window.speechSynthesis.getVoices(), voice = voices.find(v => /^ro(?:-|_)/i.test(v.lang) || v.lang === 'ro');
       if (!voice) { message('Browserul nu are o voce română disponibilă. Poți instala una din setările dispozitivului; textul rămâne disponibil pentru citire.', true); return; }
       if (!voice.localService) { message('Vocea română disponibilă folosește un serviciu online. Atelierul nu pornește această voce, pentru a păstra textul pe dispozitiv.', true); return; }
-      const speech = new SpeechSynthesisUtterance([activity.title].concat(activity.explanation, activity.guided).join('. '));
+      const speech = new SpeechSynthesisUtterance(Discovery.readingText(activity));
       speech.lang = 'ro-RO'; speech.voice = voice; speech.rate = 0.85;
       speech.onend = () => { stop.hidden = true; button.disabled = false; };
       speech.onerror = event => {
@@ -199,6 +258,8 @@
     sound.setAttribute('aria-label', Sound.enabled ? 'Oprește sunetul' : 'Pornește sunetul');
     sound.setAttribute('aria-pressed', String(Sound.enabled));
     if (link) { link.textContent = Preferences.avatars[Preferences.get(profile).avatar] + ' Setări'; link.setAttribute('aria-label', 'Setări pentru ' + profile.name); }
+    const activeProfile = document.getElementById('active-profile');
+    if (activeProfile) activeProfile.textContent = Preferences.avatars[Preferences.get(profile).avatar] + ' Profil activ: ' + profile.name;
     const avatar = document.getElementById('profile-avatar');
     if (avatar) avatar.textContent = Preferences.avatars[Preferences.get(profile).avatar];
   }

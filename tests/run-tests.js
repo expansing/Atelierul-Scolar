@@ -282,7 +282,8 @@ test('Corrupt stored progress is protected against accidental overwrite', () => 
 test('Imported names are escaped, and navigation stays within the discipline', () => {
   const { Progress: p, Render: render } = fixture();
   p.addProfile('<img src=x onerror=alert(1)>');
-  assert(!render.home().includes('<img src=x')); assert(render.home().includes('&lt;img'));
+  assert(!render.settings().includes('<img src=x')); assert(render.settings().includes('&lt;img'));
+  assert(!render.home().includes('profile-panel') && !render.home().includes('profile-select'));
   const lastMath = render.activity('mat-12');
   assert(!lastMath.includes('activity=lim-1')); assert(lastMath.includes('subject=mat'));
 });
@@ -290,6 +291,102 @@ test('Journey completion is profile-scoped and idempotent', () => {
   const { Progress: p } = fixture();
   p.journeyComplete(1); p.journeyComplete(1); assert.strictEqual(p.profile().journey.length, 1);
   p.addProfile('Ariciul'); assert.strictEqual(p.profile().journey.length, 0);
+});
+test('All lessons have specific vocabulary, visible worked steps, four goals and supported reflection', () => {
+  const explanations = new Set(), checks = new Set();
+  data.ACTIVITIES.forEach(activity => {
+    const detail = activity.detail, html = data.Render.activity(activity.id), speech = data.Discovery.readingText(activity);
+    explanations.add(detail.explain); checks.add(detail.check);
+    assert.strictEqual(activity.objectives.length, 4);
+    assert.strictEqual(activity.reflection.length, 4);
+    [detail.explain, detail.check].concat(detail.worked, detail.words.reduce((all, pair) => all.concat(pair), [])).forEach(text => {
+      assert(html.includes(data.Engines.escape(text)), activity.id + ': rendered teaching detail');
+      assert(speech.includes(text), activity.id + ': spoken teaching detail');
+    });
+    activity.reflection.forEach(item => {
+      assert(html.includes(data.Engines.escape(item.question)) && html.includes(data.Engines.escape(item.support)), activity.id);
+    });
+    assert.strictEqual((html.match(/class="discovery-column"/g) || []).length, 2);
+    assert(!html.includes('<details><summary>Desfacem'), 'Worked steps should not start hidden');
+  });
+  assert.strictEqual(explanations.size, 72);
+  assert.strictEqual(checks.size, 72);
+});
+test('Selected games produce only the chosen mechanic at every supported level', () => {
+  const expected = { draw: 'geoboard', symmetry: 'symmetry', mosaic: 'mosaic', properties: 'shape-select',
+    garden: 'calculation', build: 'placevalue', decompose: 'calculation', exchange: 'calculation',
+    line: 'numberline', unknown: 'calculation', family: 'calculation', story: 'calculation',
+    route: 'robot', debug: 'robot', repeat: 'robot' };
+  data.ACTIVITIES.forEach(activity => {
+    const options = data.Engines.gameOptions(activity.demo);
+    assert.strictEqual(new Set(options.map(option => option.id)).size, options.length);
+    options.forEach(option => {
+      for (let level = 0; level < 3; level++) {
+        const demo = Object.assign({}, activity.demo, { focus: option.id });
+        if (level < (option.minLevel || 0)) { assert.throws(() => data.Engines.rounds(demo, level), /disponibil/); continue; }
+        for (let sample = 0; sample < 20; sample++) {
+          const rounds = data.Engines.rounds(demo, level);
+          assert.strictEqual(rounds.length, demo.levels[level].rounds);
+          rounds.forEach(q => {
+            assert.strictEqual(q.kind, expected[option.id], activity.id + '/' + option.id);
+            if (option.id === 'unknown') assert.strictEqual(q.fields.length, 1);
+            if (option.id === 'family' || option.id === 'story') assert.strictEqual(q.fields.length, 2);
+            if (option.id === 'draw') assert(data.MathWorkshop.validPolygon(q.solution, q.goal));
+            if (q.kind === 'robot') {
+              assert.strictEqual(q.debug, option.id === 'debug');
+              assert.strictEqual(q.repeat, option.id === 'repeat');
+            }
+          });
+        }
+      }
+    });
+    assert.throws(() => data.Engines.rounds(Object.assign({}, activity.demo, { focus: 'invalid' }), 0), /disponibil/);
+    if (options.length) assert(data.Render.gameMenu(activity.demo).includes('fără stele'));
+  });
+});
+test('Every lesson adds three genuinely distinct mechanics with three authored situations', () => {
+  assert.strictEqual(Object.keys(data.GAME_MISSIONS).length, 72);
+  let cases = 0, sessions = 0;
+  const contexts = new Set();
+  data.ACTIVITIES.forEach(activity => {
+    const mission = data.GAME_MISSIONS[activity.id];
+    assert.strictEqual(mission.cases.length, 3); cases += mission.cases.length;
+    mission.cases.forEach(scenario => contexts.add(scenario.context));
+    assert.strictEqual(new Set(mission.cases.map(item => item.context)).size, 3);
+    assert.strictEqual((data.Render.gameCards(activity).match(/data-mission-game=/g) || []).length, 4);
+    const kinds = new Set();
+    data.MissionGames.modes.forEach(mode => {
+      const demo = data.MissionGames.demo(activity.id, mode);
+      for (let level = 0; level < 3; level++) {
+        const rounds = data.Engines.rounds(demo, level);
+        assert.strictEqual(rounds.length, 1);
+        assert.strictEqual(rounds[0].scenario.context, mission.cases[level].context);
+        assert.strictEqual(rounds[0].kind, 'mission-' + mode);
+        assert(rounds[0].explain.includes(mission.cases[level].check.correct));
+        assert(rounds[0].passage && rounds[0].hint && rounds[0].prompt);
+        kinds.add(rounds[0].kind); sessions++;
+      }
+    });
+    assert.strictEqual(kinds.size, 3);
+  });
+  assert.strictEqual(cases, 216); assert.strictEqual(contexts.size, 216); assert.strictEqual(sessions, 648);
+  assert.throws(() => data.MissionGames.demo('missing', 'evidence'), /necunoscut/);
+  assert.throws(() => data.MissionGames.demo('mat-1', 'unknown'), /necunoscut/);
+  assert.throws(() => data.MissionGames.rounds({ activityId: 'mat-1', mode: 'plan' }, 3), /inexistent/);
+});
+test('Missing missions, duplicate goals and ambiguous case choices fail structural validation', () => {
+  const broken = fixture();
+  delete broken.GAME_MISSIONS['mat-1'];
+  assert(validate(broken).some(error => error.includes('acopere exact toate lecțiile')));
+  const mission = broken.GAME_MISSIONS['mat-2'], scenario = mission.cases[0];
+  mission.titles.repair = mission.titles.evidence;
+  scenario.facts[0].text = scenario.facts[1].text;
+  scenario.error.wrong = scenario.plan[scenario.error.index];
+  scenario.check.wrong[0] = scenario.check.correct;
+  const errors = validate(broken);
+  ['minimum trei jocuri noi', 'dovezi incomplete', 'reparație invalidă', 'verificări incomplete'].forEach(text => {
+    assert(errors.some(error => error.includes(text)), text);
+  });
 });
 test('Personal development preserves old IDs and adds six authored three-level lessons', () => {
   assert.strictEqual(data.SUBJECTS.find(subject => subject.id === 'civ').title, 'Dezvoltare personală');
@@ -380,8 +477,26 @@ test('Every app page exposes settings and loads preferences before progress', ()
   ['index', 'subject', 'activity', 'dece', 'settings'].forEach(name => {
     const html = fs.readFileSync(path.join(__dirname, '..', name + '.html'), 'utf8');
     assert(html.includes('href="settings.html"'));
-    assert(html.indexOf('src="assets/js/preferences.js"') < html.indexOf('src="assets/js/progress.js"'));
+    assert(html.includes('id="active-profile"'));
+    const scripts = Array.from(html.matchAll(/<script src="([^"]+)"/g), match => match[1].split('?')[0]);
+    assert(scripts.indexOf('assets/js/lesson-details.js') > scripts.indexOf('assets/js/data.js'));
+    assert(scripts.indexOf('assets/js/lesson-details.js') < scripts.indexOf('assets/js/discovery.js'));
+    assert(scripts.indexOf('assets/js/preferences.js') < scripts.indexOf('assets/js/progress.js'));
   });
+});
+test('All app pages and the browser harness request the same explicit asset release', () => {
+  const fs = require('fs'), path = require('path'), versions = new Set();
+  ['index.html', 'subject.html', 'activity.html', 'dece.html', 'settings.html', 'tests/browser.html'].forEach(name => {
+    const html = fs.readFileSync(path.join(__dirname, '..', name), 'utf8');
+    const assets = Array.from(html.matchAll(/(?:src|href)="([^"]+\.(?:js|css)(?:\?[^"]*)?)"/g), match => match[1]);
+    assert(assets.length >= 11, name + ': missing assets');
+    assets.forEach(asset => {
+      assert(/\?v=[A-Za-z0-9-]+$/.test(asset), name + ': unversioned asset ' + asset);
+      versions.add(asset.split('?v=')[1]);
+      assert(fs.existsSync(path.resolve(__dirname, '..', path.dirname(name), asset.split('?')[0])), asset);
+    });
+  });
+  assert.strictEqual(versions.size, 1, 'Mixed releases can break lesson rendering and the active profile header');
 });
 test('Thinking pathway preserves existing lessons and connects four logic and two personal lessons', () => {
   assert.strictEqual(data.ACTIVITIES_BY_SUBJECT.log.length, 14);

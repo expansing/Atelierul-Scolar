@@ -24,9 +24,9 @@ Fișierele pot fi deschise și direct în browser. Pentru salvare predictibilă,
 | Științe și natură | 10 |
 | Dezvoltare personală | 17 |
 
-Fiecare lecție include o idee de pornire, un exemplu rezolvat, pași ghidați, explorare cu materiale concrete, autocontrol, o capcană de evitat, reflecție și îndrumări pentru adulți. Copilul poate alege materiale, repeta și schimba nivelul fără blocaje sau cronometru.
+Fiecare dintre cele 72 de lecții include explicații suplimentare proprii, cel puțin două noțiuni definite, o rezolvare în minimum trei pași vizibili, patru obiective concrete și patru întrebări de reflecție cu sprijin pentru formularea răspunsului. Sunt păstrate explorarea cu materiale, pașii ghidați, autocontrolul, capcana de evitat și îndrumările pentru adulți. Copilul poate alege materiale, repeta și schimba nivelul fără blocaje sau cronometru.
 
-„Descoperă” este un caiet vizual: copertă ilustrată, cartonașe tematice, masă de explorare, exemplu cu pași extensibili, notiță de verificare și activitate practică. Ilustrațiile SVG sunt originale și locale. La matematică, copilul poate desface un grup de zece, roti o formă, muta reperele riglei, regla ceasul, echilibra cantități, modifica un buget sau colora optimi. Aceste explorări nu dau stele. La celelalte discipline, opririle interactive invită la predicție, reprezentare și explicarea pașilor lecției. Toate barele numerice au și butoane plus/minus de minimum 48 px; valorile, pașii și limitele sunt aceleași prin atingere, tragere sau tastatură.
+„Descoperă” este un caiet vizual: copertă ilustrată, cartonașe tematice, masă de explorare, rezolvare cu pași vizibili, notiță de verificare și activitate practică. Ilustrațiile SVG sunt originale și locale. La matematică, copilul poate desface un grup de zece, roti o formă, muta reperele riglei, regla ceasul, echilibra cantități, modifica un buget sau colora optimi. Aceste explorări nu dau stele. La celelalte discipline, opririle interactive invită la predicție, reprezentare și explicarea pașilor lecției. Toate barele numerice au și butoane plus/minus de minimum 48 px; valorile, pașii și limitele sunt aceleași prin atingere, tragere sau tastatură.
 
 Explorările precizează acum ce avem la început, ce control folosim și ce observăm. Activitățile de reflecție nu cer schimbarea unei imagini: afișează situația concretă, materialele opționale și butoane cu instrucțiunile reale ale pașilor. Primul pas este deschis de la început. Copilul poate răspunde oral, prin desen sau cu obiecte, fără să introducă text și fără să dezvăluie experiențe personale.
 
@@ -66,7 +66,7 @@ Motoarele noi includ:
 - matrici și clasificare după două proprietăți;
 - robot pe grilă, obstacole, depanare și repetări.
 
-Sunt păstrate și dezvoltate asocierea, ordonarea cu posibilitate de corectare, memoria, clasificarea, formele, balanța, magazinul cu buget, problemele în doi pași și ceasul. Balanța poate fi în echilibru sau înclinată în oricare direcție; la nivelurile avansate apar mase necunoscute. Magazinul cere un bon, restul sau cantitatea maximă permisă de buget. La ceas, nivelul intermediar permite reglarea acelor; nivelul avansat cere calculul unui interval. Catalogul suportă 22 de motoare, dintre care 21 sunt folosite în lecțiile actuale; motorul de numărare simplă rămâne testat și disponibil.
+Sunt păstrate și dezvoltate asocierea, ordonarea cu posibilitate de corectare, memoria, clasificarea, formele, balanța, magazinul cu buget, problemele în doi pași și ceasul. Balanța poate fi în echilibru sau înclinată în oricare direcție; la nivelurile avansate apar mase necunoscute. Magazinul cere un bon, restul sau cantitatea maximă permisă de buget. La ceas, nivelul intermediar permite reglarea acelor; nivelul avansat cere calculul unui interval. Catalogul suportă 23 de tipuri de joc, inclusiv motorul cu cele trei mecanici de investigație, reparație și planificare. Tipul de numărare simplă rămâne testat și disponibil, fără să fie folosit de lecțiile actuale.
 
 Geometria alternează mecanici în aceeași sesiune. Desenarea are instrucțiuni vizibile, un exemplu de legare a două puncte și colțuri numerotate în ordinea alegerii. Copilul apasă punctele, închide conturul prin buton sau apăsând din nou primul punct, apoi verifică figura. Nu este necesară tragerea cu degetul. Verificarea construcțiilor ține cont de laturi, unghiuri, contur simplu și, când este cerută, suprafață; nu compară desenul cu o singură listă de puncte. Mozaicurile sunt generate împreună cu o pavare validă, dar acceptă orice acoperire completă fără suprapunere. La măsurare și fracții se păstrează și o verificare conceptuală: de exemplu, de ce două bucăți inegale nu sunt jumătăți.
 
@@ -74,7 +74,28 @@ Balanța desenează exact numărul de cuburi din cerință, iar talerul mai greu
 
 Indiciile au două trepte: orientare, apoi explicația verificării. După o greșeală copilul poate corecta. Avansarea se face explicit, prin „Continuă”.
 
+### Alegerea jocului
+
+**Fiecare dintre cele 72 de lecții are minimum patru jocuri distincte**, afișate prin cartonașe cu titlu și obiectiv:
+
+1. Jocul inițial al lecției, cu mecanicile și evaluarea deja existente.
+2. **Investigație:** copilul alege toate informațiile relevante pentru întrebarea dintr-o poveste și lasă deoparte detaliile adevărate, dar fără legătură.
+3. **Reparație:** găsește unicul pas greșit dintr-o rezolvare și alege o înlocuire corectă. Identificarea locului și corectarea sunt verificate separat în aceeași încercare.
+4. **Construcție și verificare:** construiește un plan în trei pași din patru cartonașe, apoi alege o verificare a rezultatului. Un plan corect nu încheie jocul fără verificarea finală.
+
+Cele trei mecanici noi au titluri și situații redactate pentru fiecare lecție: **216 jocuri noi**, susținute de **216 cazuri distincte** (trei cazuri pentru fiecare lecție, câte unul pentru fiecare nivel). Cele trei mecanici lucrează diferit asupra cazului ales. Reluarea repetă același caz, cu opțiuni reordonate; schimbarea nivelului aduce altă situație, nu doar o amestecare a răspunsurilor. Nu promitem generare infinită de cazuri.
+
+Investigațiile, reparațiile și planurile sunt practică fără stele și nu modifică rezultatele salvate. Cazurile de dezvoltare personală verifică informații și acțiuni din povești fictive, nu emoțiile, preferințele, supunerea ori experiențele copilului. Planurile urmăresc dependențe explicite sau ordinea anunțată în poveste; nu impun o singură rutină pentru toate familiile.
+
+Lecțiile cu mai multe mecanici păstrează și selectorul de variante suplimentare ale jocului inițial: geometrie (construcție, simetrie, mozaic, proprietăți și suprafață/contur), zeci și unități (construire, descompunere, schimb), adunare/scădere (axă, număr ascuns, operații inverse, problemă în doi pași) și robot (traseu, depanare, repetări). Aceste variante reutilizează mecanicile existente și sunt suplimentare celor patru cartonașe principale. Suprafața și conturul se aleg de la nivelul Exersez; revenirea la Descopăr selectează explicit runda completă.
+
+**Runda completă** rămâne opțiunea inițială și păstrează evaluarea și verificările conceptuale existente. **Jocul ales separat** este practică fără stele: nu salvează o rundă și nu modifică rezultatele sau competențele deja obținute. Schimbarea jocului ori nivelului abandonează încercarea în curs. Alegerea jocului se păstrează la schimbarea nivelului dacă este disponibilă; schimbarea profilului revine la runda completă.
+
+Cartonașele din Descoperă sunt organizate în două coloane verticale independente, cu distanțe constante între vecini, nu în rânduri întinse de înălțimea explorării. Pe telefon, explicația și rezolvarea preced explorarea și activitatea practică. Citirea vocală include și vocabularul, explicațiile noi, rezolvarea și criteriul de verificare.
+
 ## Setări pentru fiecare profil
+
+Gestionarea profilurilor, crearea lor și importul/exportul sunt numai în Setări, nu pe pagina principală. În antetul tuturor celor cinci pagini apare vizibil avatarul și pseudonimul profilului activ, cu legătură spre Setări. Indicatorul se actualizează la redenumire, schimbarea profilului și import.
 
 Pagina [Setări](settings.html) este accesibilă din antetul tuturor paginilor. Permite:
 
@@ -120,6 +141,8 @@ Erorile de stocare sunt afișate. Dacă salvarea nu funcționează, progresul r�
 
 ## Verificare
 
+Fișierele JavaScript și CSS sunt încărcate cu aceeași versiune explicită în toate cele cinci pagini și în pagina testelor. Aplicația transmite versiunea și în legăturile interne, păstrând parametrii lecției sau disciplinei, pentru a evita și paginile HTML vechi din cache. La publicarea modificărilor acestor fișiere, actualizează parametrul `v` peste tot: astfel, browserul nu combină un motor de joc vechi din cache cu noua pagină. Testele verifică prezența și consistența versiunilor. Această versiune nu schimbă cheia progresului local și nu șterge profilurile.
+
 Necesită Node.js 12 sau mai nou. Nu sunt necesare instalări.
 
 ```bash
@@ -132,17 +155,22 @@ Pentru verificările DOM, deschide [tests/browser.html](tests/browser.html) prin
 
 Testele Node verifică 21.600 de eșantioane lecție–nivel, soluțiile și limitele grilelor, pavarea completă, operațiile în pași, rigla, fracțiile, bugetele și prezența efectivă a glifelor ĂăÂâÎîȘșȚț în font. Verifică și izolarea preferințelor între profiluri, păstrarea progresului la redenumire, persistența, migrarea, importul/exportul, respingerea setărilor invalide și structura traseului de gândire.
 
+Suita DOM parcurge 216 runde complete, 111 variante suplimentare și 648 sesiuni ale celor trei mecanici noi: **975 de sesiuni în total**. Verifică și corectarea dovezilor, locul și înlocuirea erorii, eliminarea unui pas nepotrivit, ordinea planului și verificarea finală obligatorie. Verifică marcarea practicii fără stele, vocabularul și rezolvările vizibile pentru toate lecțiile, cele patru obiective/reflecții și distanțele reale dintre cartonașele din stânga. Testele Node verifică și că selecția produce exclusiv mecanica cerută, respectă limitele de nivel și respinge explicit opțiunile inexistente.
+
 Validatorul verifică structura, consistența răspunsurilor și anumite regresii de text. **Nu este un corector gramatical complet și nu certifică adevărul științific.** Conținutul trebuie revizuit editorial când se adaugă sau se schimbă lecții.
 
 ## Structură
 
 ```text
-index.html              Pagina de acasă, recomandări și profiluri
+index.html              Pagina de acasă și recomandări
 subject.html            Inventarul unei discipline
 activity.html           Lecția, atelierul și progresul pe niveluri
 dece.html               Traseul despre cum învățăm
 settings.html           Preferințe de citire, aspect și profil
 assets/js/data.js       Lecții, niveluri și întrebări redactate
+assets/js/lesson-details.js Vocabular, explicații, rezolvări, obiective și reflecții pentru fiecare lecție
+assets/js/mission-games.js Investigație, reparație și planificare cu verificare
+assets/js/game-missions-*.js Cele 216 situații redactate pentru toate cele 72 de lecții
 assets/js/engines.js    Generatoare, controale și evaluare pe rundă
 assets/js/math-games.js Matematică vizuală, grile și verificări geometrice
 assets/js/discovery.js  Caietul ilustrat și explorările fără notă

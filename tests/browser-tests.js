@@ -21,13 +21,22 @@
     test('All ' + ACTIVITIES.length * 3 + ' lesson-level interfaces initialize without an exception', () => {
       ACTIVITIES.forEach(activity => { for (let level = 0; level < 3; level++) { const game = start(activity.demo, level); assert(fixture.querySelector('.game-prompt'), activity.id); game.dispose(); } });
     });
-    test('All ' + ACTIVITIES.length * 3 + ' lesson-level sessions can be completed through their real controls', () => {
+    test('All complete rounds and selected game sessions can be completed through their real controls', () => {
       const factory = Engines.rounds;
       let questions;
       Engines.rounds = function (demo, level) { questions = factory.call(this, demo, level); return questions; };
       try {
-        ACTIVITIES.forEach(activity => {
+        const sessions = ACTIVITIES.slice();
+        ACTIVITIES.forEach(activity => Engines.gameOptions(activity.demo).forEach(option => {
+          sessions.push({ id: activity.id + '/' + option.id, demo: Object.assign({}, activity.demo, { focus: option.id }), minLevel: option.minLevel || 0 });
+        }));
+        ACTIVITIES.forEach(activity => MissionGames.modes.forEach(mode => {
+          sessions.push({ id: activity.id + '/mission-' + mode, demo: MissionGames.demo(activity.id, mode) });
+        }));
+        let completed = 0;
+        sessions.forEach(activity => {
           for (let level = 0; level < 3; level++) {
+            if (level < (activity.minLevel || 0)) continue;
             let result;
             const game = start(activity.demo, level, value => { result = value; });
             questions.forEach(q => {
@@ -42,6 +51,18 @@
                 assert(Number(band.getAttribute('width')) === (q.ruler.end - q.ruler.start) * 20, activity.id + ': lungimea desenată');
                 const labels = fixture.querySelectorAll('.measurement-readings strong');
                 assert(labels[0].textContent === q.ruler.start + ' cm' && labels[1].textContent === q.ruler.end + ' cm', activity.id + ': repere lizibile');
+              }
+              if (q.kind === 'mission-evidence') {
+                q.scenario.facts.forEach((fact, i) => { if (fact.relevant) fixture.querySelector('[data-fact="' + i + '"]').click(); });
+                click('Verifică dovezile');
+              } else if (q.kind === 'mission-repair') {
+                fixture.querySelector('[data-repair-step="' + q.scenario.error.index + '"]').click();
+                fixture.querySelector('[data-correct="true"]').click(); click('Verifică reparația');
+              } else if (q.kind === 'mission-plan') {
+                for (let i = 0; i < 3; i++) fixture.querySelector('[data-plan-token="' + i + '"]').click();
+                click('Verifică planul construit');
+                assert(fixture.querySelector('#game-next').hidden, 'Planul singur nu încheie jocul înainte de verificarea rezultatului');
+                fixture.querySelector('[data-correct="true"]').click(); click('Verifică rezultatul planului');
               }
               if (q.kind === 'shape-select') {
                 fixture.querySelectorAll('.shape-card svg').forEach((svg, i) => {
@@ -137,18 +158,76 @@
                   if (!hide.hidden) hide.click();
                 }
                 assert(safety < 100, 'Memoria poate fi încheiată');
-              } else throw new Error('Tip netestat: ' + q.kind);
+              } else if (q.kind.indexOf('mission-') !== 0) throw new Error('Tip netestat: ' + q.kind);
               assert(!fixture.querySelector('#game-next').hidden, activity.id + ': rezolvarea este acceptată');
               click('Continuă');
             });
             assert(result && result.level === level && result.total === questions.length, activity.id + ': rezultat complet');
-            Progress.record(activity.id, result);
+            if (activity.demo.focus || activity.demo.type === 'mission') {
+              assert(result.evaluation === 'practice', 'Selected games cannot certify the whole lesson');
+              assert(fixture.textContent.includes('fără modificarea progresului salvat'), 'Practice outcome is explicit');
+            } else Progress.record(activity.id, result);
+            completed++;
             game.dispose();
           }
         });
+        window.workshopCompletedSessions = completed;
       } finally { Engines.rounds = factory; }
     });
     test('The remaining count engine also has a functional interface', () => { const game = start(Content.task('count', 'count'), 2); assert(fixture.querySelectorAll('.quiz-opt').length === 3, 'count options'); game.dispose(); });
+    test('Evidence selection allows correction, freezes on success and restarts without changing progress', () => {
+      const before = Progress.exportData(), scenario = GAME_MISSIONS['mat-1'].cases[0];
+      let result;
+      const game = start(MissionGames.demo('mat-1', 'evidence'), 0, value => { result = value; });
+      click('Verifică dovezile'); assert(fixture.querySelector('#game-next').hidden, 'Alegerea goală nu este acceptată');
+      const irrelevant = scenario.facts.findIndex(fact => !fact.relevant);
+      fixture.querySelector('[data-fact="' + irrelevant + '"]').click(); click('Verifică dovezile');
+      assert(fixture.querySelector('#game-next').hidden, 'Un detaliu irelevant nu este dovadă');
+      fixture.querySelector('[data-fact="' + irrelevant + '"]').click();
+      scenario.facts.forEach((fact, i) => { if (fact.relevant) fixture.querySelector('[data-fact="' + i + '"]').click(); });
+      click('Un indiciu'); click('Verifică dovezile');
+      assert(fixture.querySelector('fieldset').disabled, 'Dovezile rezolvate nu mai pot fi schimbate');
+      click('Continuă');
+      assert(result.errors === 2 && result.hints === 1 && result.evaluation === 'practice', 'Corectările și ajutorul rămân vizibile');
+      click('Reia acest caz');
+      assert(fixture.querySelectorAll('input:checked').length === 0, 'Reluarea șterge doar alegerile cazului');
+      assert(before === Progress.exportData(), 'Practica nu modifică progresul');
+      game.dispose();
+    });
+    test('Repair requires both the faulty step and its correct replacement', () => {
+      const scenario = GAME_MISSIONS['mat-1'].cases[0];
+      let result;
+      const game = start(MissionGames.demo('mat-1', 'repair'), 0, value => { result = value; });
+      fixture.querySelector('[data-repair-step="' + ((scenario.error.index + 1) % 3) + '"]').click();
+      fixture.querySelector('[data-correct="true"]').click(); click('Verifică reparația');
+      assert(fixture.querySelector('#game-next').hidden, 'O înlocuire potrivită la locul greșit nu repară eroarea');
+      fixture.querySelector('[data-repair-step="' + scenario.error.index + '"]').click();
+      assert(!fixture.querySelector('input:checked'), 'Schimbarea pasului cere o alegere nouă');
+      fixture.querySelector('[data-correct="false"]').click(); click('Verifică reparația');
+      assert(fixture.querySelector('#game-next').hidden, 'Pasul greșit nu este suficient fără corectare');
+      fixture.querySelector('[data-correct="true"]').click(); click('Verifică reparația'); click('Continuă');
+      assert(result.errors === 2 && result.percent === 0 && result.evaluation === 'practice', 'Repararea păstrează încercările reale');
+      game.dispose();
+    });
+    test('Planning rejects distractors and wrong order, and requires a final valid check', () => {
+      let result;
+      const game = start(MissionGames.demo('mat-1', 'plan'), 0, value => { result = value; });
+      [3, 1, 2].forEach(i => fixture.querySelector('[data-plan-token="' + i + '"]').click());
+      click('Verifică planul construit');
+      assert(fixture.querySelector('fieldset').hidden, 'Pasul nepotrivit nu deschide verificarea finală');
+      for (let i = 0; i < 3; i++) fixture.querySelector('.mission-plan-selected button').click();
+      [2, 1, 0].forEach(i => fixture.querySelector('[data-plan-token="' + i + '"]').click());
+      click('Verifică planul construit'); assert(fixture.querySelector('#game-next').hidden, 'Ordinea contează');
+      for (let i = 0; i < 3; i++) fixture.querySelector('.mission-plan-selected button').click();
+      [0, 1, 2].forEach(i => fixture.querySelector('[data-plan-token="' + i + '"]').click());
+      click('Verifică planul construit');
+      assert(!fixture.querySelector('fieldset').hidden && fixture.querySelector('#game-next').hidden, 'Planul corect mai cere verificarea rezultatului');
+      fixture.querySelector('[data-correct="false"]').click(); click('Verifică rezultatul planului');
+      assert(fixture.querySelector('#game-next').hidden, 'Un control fără legătură nu încheie jocul');
+      fixture.querySelector('[data-correct="true"]').click(); click('Verifică rezultatul planului'); click('Continuă');
+      assert(result.errors === 3 && result.evaluation === 'practice', 'Etapele sunt verificate, nu doar numărul de cartonașe');
+      game.dispose();
+    });
     test('Wrong choice, hints, correction and explicit continuation affect real scoring', () => {
       let result;
       const demo = Content.quiz([[Q('Test', ['Corect', 'Greșit'], 0, 'Explicație.', 'Indiciu.')], [], []]);
@@ -222,8 +301,19 @@
         assert(fixture.querySelectorAll('[role=tab]').length === 6, activity.id + ': taburi');
         assert(fixture.querySelector('.hands-on'), activity.id + ': explorare');
         assert(fixture.querySelectorAll('[data-level]').length === 3, activity.id + ': niveluri');
+        assert(fixture.querySelectorAll('[data-mission-game]').length === 4, activity.id + ': minimum patru jocuri vizibile');
+        MissionGames.options(activity.id).forEach(option => assert(fixture.textContent.includes(option.title), activity.id + ': titlu propriu pentru joc'));
+        assert(fixture.querySelectorAll('.lesson-words dt').length >= 2, activity.id + ': vocabular explicat');
+        assert(fixture.querySelectorAll('.example-card > ol > li').length >= 3, activity.id + ': rezolvare vizibilă');
+        assert(fixture.querySelectorAll('#panel-obiective > ul > li').length === 4, activity.id + ': patru obiective');
+        assert(fixture.querySelectorAll('.reflection-prompts > article').length === 4, activity.id + ': patru întrebări cu sprijin');
+        const column = fixture.querySelector('.discovery-column'), cards = Array.from(column.children);
+        const gap = parseFloat(getComputedStyle(column).rowGap);
+        cards.slice(1).forEach((card, i) => assert(Math.abs(card.getBoundingClientRect().top - cards[i].getBoundingClientRect().bottom - gap) < 1, activity.id + ': fără spații întinse între casete'));
       });
       fixture.innerHTML = Render.home(); assert(fixture.querySelectorAll('.subject-card').length === 6, 'Discipline');
+      assert(!fixture.querySelector('.profile-panel'), 'Profilurile se gestionează numai în Setări');
+      fixture.innerHTML = Render.settings(); assert(fixture.querySelector('.profile-panel'), 'Setările păstrează gestionarea profilurilor');
       fixture.innerHTML = Render.dece(); assert(fixture.querySelectorAll('.journey-stop').length === 11, 'Opriri');
     });
     test('Every discovery workbench initializes and changes its observation without grading', () => {

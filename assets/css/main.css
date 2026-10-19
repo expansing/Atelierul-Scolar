@@ -228,11 +228,36 @@ legend { font-weight: bold; max-width: 100%; }
 .discovery-picture svg { width: 100%; height: auto; max-height: 250px; display: block; margin: auto; }
 .discovery-picture figcaption { font-size: 1.1rem; text-align: center; padding: 0.4rem; }
 .discovery-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; padding-top: 1.5rem; align-items: start; }
+.discovery-column { display: grid; gap: 1rem; min-width: 0; }
+.lesson-words dt { font-weight: bold; margin-top: 0.8rem; }
+.lesson-words dd { margin: 0.25rem 0 0; }
+.reflection-prompts { display: grid; gap: 1rem; }
+.game-menu { display: grid; gap: 0.5rem; margin-block: 1rem; }
+.game-menu label { font-weight: bold; }
+.game-menu select { width: 100%; min-width: 0; min-height: 48px; }
+.lesson-game-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-block: 1rem 1.5rem; }
+.lesson-game-card { display: grid; align-content: start; gap: 0.6rem; text-align: start; min-width: 0; padding: 1rem; color: var(--text); background: var(--bg-card); border: 2px solid var(--border); border-radius: 16px; }
+.lesson-game-card[aria-pressed="true"] { border-color: var(--focus); box-shadow: inset 0 0 0 2px var(--focus); background: var(--bg-soft); }
+.lesson-game-card strong { font-size: 1.2rem; }
+.game-card-icon { font-size: 1.8rem; }
+.lesson-game-card .eyebrow { margin: 0; }
+.mission-instructions { padding: 1rem; border-inline-start: 4px solid var(--focus); background: var(--bg-soft); }
+.mission-fact { display: flex; gap: 0.6rem; align-items: start; padding: 0.8rem; margin-block: 0.5rem; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-soft); }
+.mission-fact input { flex-shrink: 0; width: 24px; height: 24px; margin-top: 0.25rem; }
+.mission-step { width: 100%; text-align: start; padding: 0.8rem; border: 2px solid var(--border); border-radius: 10px; color: var(--text); background: var(--bg-card); }
+.mission-step[aria-pressed="true"] { border-color: var(--focus); background: var(--bg-soft); }
+.mission-plan-pool { display: grid; gap: 0.6rem; margin-block: 1rem; }
+.mission-plan-selected { padding: 0.7rem 0.7rem 0.7rem 2rem; min-height: 4rem; border: 2px dashed var(--border); border-radius: 12px; }
+.mission-plan-selected button { width: 100%; text-align: start; }
+#round-content fieldset { min-width: 0; max-width: 100%; margin-block: 1rem; border: 1px solid var(--border); border-radius: 12px; }
+#round-content legend { max-width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 760px) { .lesson-game-cards { grid-template-columns: 1fr; } }
+.active-profile { max-width: 100%; overflow-wrap: anywhere; white-space: normal; }
 .discovery-card { padding: clamp(1rem, 3vw, 1.5rem); border: 1px solid var(--border); border-radius: 18px; min-width: 0; background: var(--bg); }
 .discovery-card h3 { font-size: 1.5rem; margin-top: 0; }
 .discovery-card p:last-child { margin-bottom: 0; }
 .idea-card { border-top: 6px solid #75ae9f; }
-.discovery-workbench { grid-column: 2; grid-row: span 2; border: 2px solid var(--border); background: var(--bg-soft); }
+.discovery-workbench { border: 2px solid var(--border); background: var(--bg-soft); }
 .example-card { border-top: 6px solid #9badd7; }
 .detective-note { border-inline-start: 6px solid #d9a24e; background: repeating-linear-gradient(transparent 0 31px, var(--border) 32px, transparent 33px); }
 .discovery-layout .hands-on { margin: 0; background: var(--bg-soft); border: 2px dashed var(--border); border-top: 6px solid #75ae9f; }
@@ -323,7 +348,6 @@ legend { font-weight: bold; max-width: 100%; }
   .discovery-cover { grid-template-columns: 1fr; }
   .discovery-picture { max-width: 420px; margin-inline: auto; transform: none; }
   .discovery-layout { grid-template-columns: 1fr; }
-  .discovery-workbench { grid-column: auto; grid-row: auto; }
   .drawing-guide { grid-template-columns: 1fr; }
 }
 @media (max-width: 420px) {

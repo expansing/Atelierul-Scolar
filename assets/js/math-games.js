@@ -125,9 +125,9 @@ const MathWorkshop = {
       explain: 'Ai colorat ' + target + ' din ' + parts + ' părți egale. ' + (target * 2 === parts ? 'Acestea formează o jumătate.' : target * 4 === parts ? 'Aceasta este un sfert.' : 'Părțile colorate reprezintă trei sferturi.'),
       hint: 'Toate părțile sunt egale. Numără câte părți trebuie să fie colorate în total, nu doar câte adaugi.' };
   },
-  geometry(mode, level, index) {
+  geometry(mode, level, index, selectedVariant) {
     const offset = mode === 'objects' ? 1 : mode === 'riddle' ? 2 : 0;
-    const variant = (index + offset) % (level === 0 ? 4 : 5);
+    const variant = selectedVariant === undefined ? (index + offset) % (level === 0 ? 4 : 5) : selectedVariant;
     if (variant === 0) {
       const target = level === 0 ? 'triangle' : index % 2 ? 'rectangle' : 'square', size = level === 0 ? 4 : 6;
       const width = Engines.randInt(2, size - 1), height = target === 'square' ? width : Engines.randInt(1, size - 2);

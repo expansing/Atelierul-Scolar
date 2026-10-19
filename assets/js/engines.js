@@ -1,12 +1,13 @@
 /* Motoare fără cronometru: încercare, indiciu, corectare, explicație, continuare. */
 const Engines = {
-  types: ['quiz', 'count', 'match', 'arrange', 'classify', 'memory', 'clock', 'shapes', 'type', 'balance', 'shop', 'gen', 'placevalue', 'numberline', 'wordbuilder', 'reading', 'experiment', 'story', 'matrix', 'robot', 'measurement', 'fractions'],
+  types: ['quiz', 'count', 'match', 'arrange', 'classify', 'memory', 'clock', 'shapes', 'type', 'balance', 'shop', 'gen', 'placevalue', 'numberline', 'wordbuilder', 'reading', 'experiment', 'story', 'matrix', 'robot', 'measurement', 'fractions', 'mission'],
   modes: {
     count: ['count'], memory: ['pairs'], clock: ['time'], shapes: ['properties', 'objects', 'riddle'], type: ['story'],
     balance: ['equal'], shop: ['budget'], gen: ['two-step', 'nature'], placevalue: ['build', 'exchange'], numberline: ['add', 'subtract'],
     wordbuilder: ['syllables', 'diacritics'], reading: ['park', 'clues', 'observations'], experiment: ['plants', 'water', 'fair'],
     story: ['conditions', 'digital', 'health', 'family', 'friends', 'school', 'help', 'nature', 'emotions', 'conflict', 'boundaries', 'group'],
-    matrix: ['sequence', 'classification', 'grid', 'growth'], robot: ['route', 'debug', 'repeat'], measurement: ['ruler'], fractions: ['parts']
+    matrix: ['sequence', 'classification', 'grid', 'growth'], robot: ['route', 'debug', 'repeat'], measurement: ['ruler'], fractions: ['parts'],
+    mission: ['evidence', 'repair', 'plan']
   },
   shuffle(items) {
     const result = items.slice();
@@ -71,11 +72,52 @@ const Engines = {
     const correct = question.options[question.answer], options = this.shuffle(question.options);
     return this.choice(question.prompt, options, options.indexOf(correct), question.explain, question.hint);
   },
+  gameOptions(demo) {
+    if (demo.type === 'shapes') return [
+      { id: 'draw', title: 'Construiesc figuri pe grilă', description: 'Alegi vârfurile în ordine, închizi conturul și verifici proprietățile figurii.' },
+      { id: 'symmetry', title: 'Completez imaginea în oglindă', description: 'Colorezi pătrățelele la aceeași distanță de axa verticală.' },
+      { id: 'mosaic', title: 'Acopăr un mozaic', description: 'Rotești și așezi piese de două pătrățele, fără goluri sau suprapuneri.' },
+      { id: 'properties', title: 'Aleg după proprietăți', description: 'Selectezi toate figurile care respectă cerința, indiferent de rotire sau culoare.' },
+      { id: 'garden', title: 'Compar suprafața și conturul', minLevel: 1, description: 'Numeri pătrățelele din interior și laturile mici de pe margine. Disponibil de la Exersez.' }
+    ];
+    if (demo.type === 'placevalue') return [
+      { id: 'build', title: 'Construiesc un număr', description: 'Alegi grupurile de câte zece și unitățile necesare numărului cerut.' },
+      { id: 'decompose', title: 'Descompun numărul', description: 'Scrii separat valoarea cifrei zecilor și unitățile rămase.' },
+      { id: 'exchange', title: 'Schimb zece unități', description: 'Regrupezi unitățile în grupuri de câte zece, păstrând totalul.' }
+    ];
+    if (demo.type === 'numberline') return [
+      { id: 'line', title: 'Mă deplasez pe axă', description: 'Pornești de la numărul dat și urmărești saltul cerut.' },
+      { id: 'unknown', title: 'Găsesc numărul ascuns', description: 'Folosești legătura dintre adunare și scădere pentru numărul lipsă.' },
+      { id: 'family', title: 'Leg adunarea de scădere', description: 'Completezi operații care folosesc aceleași părți și același întreg.' },
+      { id: 'story', title: 'Rezolv o poveste în doi pași', description: 'Păstrezi rezultatul primei schimbări și continui cu a doua.' }
+    ];
+    if (demo.type === 'robot') return [
+      { id: 'route', title: 'Planific traseul robotului', description: 'Alegi comenzile care duc la țintă, fără obstacole.' },
+      { id: 'debug', title: 'Repar programul robotului', description: 'Compari programul dat cu traseul și corectezi comenzile nepotrivite.' },
+      { id: 'repeat', title: 'Folosesc repetări', description: 'Alegi comanda și numărul de repetări, verificând fiecare căsuță traversată.' }
+    ];
+    return [];
+  },
   rounds(demo, level) {
     if (!this.types.includes(demo.type)) throw new Error('Tip de joc necunoscut: ' + demo.type);
     if (this.modes[demo.type] && !this.modes[demo.type].includes(demo.mode)) throw new Error('Variantă de joc necunoscută: ' + demo.mode);
     const config = demo.levels[level];
     if (!config) throw new Error('Nivel de joc inexistent.');
+    if (demo.type === 'mission') return MissionGames.rounds(demo, level);
+    if (demo.focus) {
+      const option = this.gameOptions(demo).find(item => item.id === demo.focus);
+      if (!option || level < (option.minLevel || 0)) throw new Error('Jocul ales nu este disponibil la acest nivel.');
+      if (!Number.isInteger(config.rounds) || config.rounds < 1) throw new Error('Număr de sarcini invalid.');
+      return Array.from({ length: config.rounds }, (_, index) => {
+        if (demo.type === 'shapes') return MathWorkshop.geometry(demo.mode, level, index,
+          ['draw', 'symmetry', 'mosaic', 'properties', 'garden'].indexOf(demo.focus));
+        if (demo.type === 'placevalue') return this.generate(demo.type, demo.mode, level,
+          index * 3 + ['build', 'decompose', 'exchange'].indexOf(demo.focus));
+        if (demo.type === 'numberline') return MathWorkshop.arithmetic(demo.mode, level,
+          index * 20 + ['line', 'unknown', 'family', 'story'].indexOf(demo.focus));
+        return this.robotRound(demo.focus, level, index);
+      });
+    }
     if (demo.type === 'quiz') {
       return this.shuffle(config.questions).map(q => this.questionRound(q));
     }
@@ -462,7 +504,8 @@ const Engines = {
         content.appendChild(options);
       };
       const workshopKind = ['calculation', 'shape-select', 'geoboard', 'symmetry', 'fraction-paint', 'mosaic'].includes(q.kind);
-      if (workshopKind) MathWorkshop.render(content, q, { button, check, announce, isSolved: () => solved });
+      if (q.kind.indexOf('mission-') === 0) MissionGames.render(content, q, { button, check, announce, isSolved: () => solved });
+      else if (workshopKind) MathWorkshop.render(content, q, { button, check, announce, isSolved: () => solved });
       else if (['choice', 'story'].includes(q.kind)) {
         if (q.balance) content.insertAdjacentHTML('beforeend', MathWorkshop.balanceHTML(q.balance));
         showChoices();
@@ -633,13 +676,15 @@ const Engines = {
     const finish = () => {
       cleanup.splice(0).forEach(fn => fn());
       const self = rounds.some(q => q.evaluation === 'self');
-      const result = { level, total: rounds.length, firstCorrect, hints, errors, moves, evaluation: self ? 'self' : demo.type === 'memory' ? 'practice' : 'objective',
+      const practice = !!demo.focus || demo.type === 'mission';
+      const result = { level, total: rounds.length, firstCorrect, hints, errors, moves, evaluation: practice ? 'practice' : self ? 'self' : demo.type === 'memory' ? 'practice' : 'objective',
         percent: Math.round(firstCorrect / rounds.length * 100), finishedAt: new Date().toISOString() };
-      container.innerHTML = '<h3 tabindex="-1">Ai încheiat runda!</h3><p>' + (self ? 'Ai exersat scrierea și autoevaluarea. Cere și feedback uman.' :
+      container.innerHTML = '<h3 tabindex="-1">Ai încheiat runda!</h3><p>' + (practice ? 'Ai exersat jocul ales separat, fără stele și fără modificarea progresului salvat. Pentru înregistrarea progresului lecției, revino la jocul inițial.' :
+        self ? 'Ai exersat scrierea și autoevaluarea. Cere și feedback uman.' :
         demo.type === 'memory' ? 'Ai exersat o strategie de memorare. Numărul de încercări nu este o notă.' :
           firstCorrect + ' din ' + rounds.length + ' sarcini rezolvate din prima, fără indiciu. Ai corectat și ai parcurs toate explicațiile.') +
         '</p><p>Indicii folosite: ' + hints + '. Corectări necesare: ' + errors + '.</p><p>O pauză este binevenită. Poți relua sau poți alege alt nivel.</p>';
-      container.appendChild(button('Reia cu o rundă nouă', () => {
+      container.appendChild(button(demo.type === 'mission' ? 'Reia acest caz' : 'Reia cu o rundă nouă', () => {
         if (disposed) return;
         rounds = this.rounds(demo, level); index = 0; firstCorrect = 0; hints = 0; errors = 0; moves = 0;
         render();

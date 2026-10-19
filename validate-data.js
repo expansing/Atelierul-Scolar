@@ -5,10 +5,11 @@ const vm = require('vm');
 function loadContent(extra) {
   const context = Object.assign({ console }, extra || {});
   vm.createContext(context);
-  ['data', 'engines', 'math-games', 'discovery', 'preferences', 'progress', 'render', 'dece'].forEach(name => {
+  ['data', 'lesson-details', 'mission-games', 'game-missions-mat-lim', 'game-missions-log-inf', 'game-missions-sci-civ',
+    'engines', 'math-games', 'discovery', 'preferences', 'progress', 'render', 'dece'].forEach(name => {
     vm.runInContext(fs.readFileSync(path.join(__dirname, 'assets/js', name + '.js'), 'utf8'), context, { filename: name + '.js' });
   });
-  return vm.runInContext('({ SUBJECTS, ACTIVITIES, ACTIVITIES_BY_SUBJECT, THINKING_PATH, LEVELS, Engines, MathWorkshop, Discovery, Preferences, Progress, Render, DECE_CAMPS })', context);
+  return vm.runInContext('({ SUBJECTS, ACTIVITIES, ACTIVITIES_BY_SUBJECT, THINKING_PATH, LESSON_DETAILS, GAME_MISSIONS, MissionGames, LEVELS, Engines, MathWorkshop, Discovery, Preferences, Progress, Render, DECE_CAMPS })', context);
 }
 
 function validate(data) {
@@ -24,6 +25,10 @@ function validate(data) {
   requireValue(LEVELS.length === 3, 'Sunt necesare trei niveluri.');
   requireValue(unique(SUBJECTS.map(s => s.id)), 'ID-uri duplicate de discipline.');
   requireValue(unique(ACTIVITIES.map(a => a.id)), 'ID-uri duplicate de activități.');
+  requireValue(Object.keys(data.LESSON_DETAILS).length === ACTIVITIES.length &&
+    Object.keys(data.LESSON_DETAILS).every(id => ACTIVITIES.some(a => a.id === id)), 'Explicațiile trebuie să acopere exact toate lecțiile.');
+  requireValue(Object.keys(data.GAME_MISSIONS).length === ACTIVITIES.length &&
+    Object.keys(data.GAME_MISSIONS).every(id => ACTIVITIES.some(a => a.id === id)), 'Jocurile noi trebuie să acopere exact toate lecțiile.');
   requireValue(THINKING_PATH && text(THINKING_PATH.title) && text(THINKING_PATH.description) &&
     texts(THINKING_PATH.activities) && THINKING_PATH.activities.length === 6 &&
     unique(THINKING_PATH.activities) && THINKING_PATH.activities.every(id => ACTIVITIES.some(activity => activity.id === id)),
@@ -46,6 +51,34 @@ function validate(data) {
   };
   ACTIVITIES.forEach(activity => {
     const id = activity.id;
+    const detail = activity.detail;
+    const mission = data.GAME_MISSIONS[id];
+    requireValue(mission && mission.titles && data.MissionGames.modes.every(mode => text(mission.titles[mode])) &&
+      unique(Object.values(mission.titles)) && Array.isArray(mission.cases) && mission.cases.length === 3, id + ': minimum trei jocuri noi, fiecare cu trei cazuri.');
+    if (mission && Array.isArray(mission.cases)) {
+      requireValue(unique(mission.cases.map(scenario => scenario.context)), id + ': situații repetate între niveluri.');
+      mission.cases.forEach((scenario, level) => {
+        const label = id + '/caz-' + level;
+        requireValue(text(scenario.context) && text(scenario.question), label + ': context sau întrebare lipsă.');
+        requireValue(Array.isArray(scenario.facts) && scenario.facts.length === 4 &&
+          scenario.facts.every(fact => text(fact.text) && typeof fact.relevant === 'boolean') &&
+          scenario.facts.filter(fact => fact.relevant).length === 2 &&
+          unique(scenario.facts.map(fact => fact.text)), label + ': dovezi incomplete sau duplicate.');
+        requireValue(texts(scenario.plan) && scenario.plan.length === 3 && unique(scenario.plan), label + ': plan incomplet sau ambiguu.');
+        const error = scenario.error;
+        requireValue(error && integer(error.index, 0, 2) && text(error.wrong) && texts(error.alternatives) && error.alternatives.length === 2 &&
+          !scenario.plan.includes(error.wrong) && unique([scenario.plan[error.index], error.wrong].concat(error.alternatives)), label + ': reparație invalidă.');
+        requireValue(scenario.check && text(scenario.check.correct) && texts(scenario.check.wrong) && scenario.check.wrong.length === 2 &&
+          unique([scenario.check.correct].concat(scenario.check.wrong)), label + ': verificări incomplete sau duplicate.');
+      });
+    }
+    requireValue(detail && text(detail.explain) && text(detail.check) &&
+      texts(detail.worked) && detail.worked.length >= 3 && texts(detail.goals) && detail.goals.length === 3 &&
+      Array.isArray(detail.words) && detail.words.length >= 2 && detail.words.every(pair => pair.length === 2 && pair.every(text)) &&
+      Array.isArray(detail.reflection) && detail.reflection.length >= 2 && detail.reflection.every(pair => pair.length === 2 && pair.every(text)),
+    id + ': explicații detaliate incomplete.');
+    requireValue(activity.objectives.length === 4 && activity.reflection.length === 4 &&
+      activity.reflection.every(item => text(item.question) && text(item.support)), id + ': obiective sau reflecții incomplete.');
     requireValue(validSubjects.has(activity.subject), id + ': disciplină necunoscută.');
     ['title', 'icon', 'duration'].forEach(key => requireValue(text(activity[key]), id + ': lipsește ' + key));
     ['objectives', 'explanation', 'guided', 'questions', 'pass'].forEach(key => requireValue(texts(activity[key]) && activity[key].length >= 2, id + ': secțiune incompletă: ' + key));
@@ -100,7 +133,7 @@ function validate(data) {
     } else if (Array.isArray(value)) value.forEach(textScan);
     else if (value && typeof value === 'object') Object.keys(value).forEach(key => textScan(value[key]));
   };
-  textScan({ SUBJECTS, ACTIVITIES, THINKING_PATH, DECE_CAMPS });
+  textScan({ SUBJECTS, ACTIVITIES, THINKING_PATH, DECE_CAMPS, GAME_MISSIONS: data.GAME_MISSIONS });
   return errors;
 }
 
@@ -109,6 +142,9 @@ if (require.main === module) {
   const errors = validate(content);
   errors.forEach(error => console.error('✗ ' + error));
   if (errors.length) process.exitCode = 1;
-  else console.log('✓ ' + content.SUBJECTS.length + ' discipline, ' + content.ACTIVITIES.length + ' activități, ' + content.ACTIVITIES.length * content.LEVELS.length + ' niveluri și 11 opriri valide structural. Revizia lingvistică și factuală rămâne și o responsabilitate editorială.');
+  else console.log('✓ ' + content.SUBJECTS.length + ' discipline, ' + content.ACTIVITIES.length + ' activități, ' +
+    content.ACTIVITIES.length * (content.MissionGames.modes.length + 1) + ' jocuri principale, ' +
+    Object.values(content.GAME_MISSIONS).reduce((sum, mission) => sum + mission.cases.length, 0) +
+    ' cazuri noi și 11 opriri valide structural. Revizia lingvistică și factuală rămâne și o responsabilitate editorială.');
 }
 module.exports = { loadContent, validate };
