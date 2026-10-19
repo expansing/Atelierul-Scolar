@@ -8,11 +8,11 @@ function loadContent(extra) {
   ['data', 'engines', 'math-games', 'discovery', 'preferences', 'progress', 'render', 'dece'].forEach(name => {
     vm.runInContext(fs.readFileSync(path.join(__dirname, 'assets/js', name + '.js'), 'utf8'), context, { filename: name + '.js' });
   });
-  return vm.runInContext('({ SUBJECTS, ACTIVITIES, ACTIVITIES_BY_SUBJECT, LEVELS, Engines, MathWorkshop, Discovery, Preferences, Progress, Render, DECE_CAMPS })', context);
+  return vm.runInContext('({ SUBJECTS, ACTIVITIES, ACTIVITIES_BY_SUBJECT, THINKING_PATH, LEVELS, Engines, MathWorkshop, Discovery, Preferences, Progress, Render, DECE_CAMPS })', context);
 }
 
 function validate(data) {
-  const { SUBJECTS, ACTIVITIES, ACTIVITIES_BY_SUBJECT, LEVELS, Engines, DECE_CAMPS } = data;
+  const { SUBJECTS, ACTIVITIES, ACTIVITIES_BY_SUBJECT, THINKING_PATH, LEVELS, Engines, DECE_CAMPS } = data;
   const errors = [];
   const requireValue = (condition, message) => { if (!condition) errors.push(message); };
   const text = value => typeof value === 'string' && value.trim().length > 0;
@@ -24,6 +24,10 @@ function validate(data) {
   requireValue(LEVELS.length === 3, 'Sunt necesare trei niveluri.');
   requireValue(unique(SUBJECTS.map(s => s.id)), 'ID-uri duplicate de discipline.');
   requireValue(unique(ACTIVITIES.map(a => a.id)), 'ID-uri duplicate de activități.');
+  requireValue(THINKING_PATH && text(THINKING_PATH.title) && text(THINKING_PATH.description) &&
+    texts(THINKING_PATH.activities) && THINKING_PATH.activities.length === 6 &&
+    unique(THINKING_PATH.activities) && THINKING_PATH.activities.every(id => ACTIVITIES.some(activity => activity.id === id)),
+  'Traseul de gândire trebuie să lege șase activități existente, fără duplicate.');
   const validSubjects = new Set(SUBJECTS.map(s => s.id));
   SUBJECTS.forEach(subject => {
     ['id', 'title', 'icon', 'color', 'desc', 'tagline', 'age'].forEach(key => requireValue(text(subject[key]), subject.id + ': lipsește ' + key));
@@ -96,7 +100,7 @@ function validate(data) {
     } else if (Array.isArray(value)) value.forEach(textScan);
     else if (value && typeof value === 'object') Object.keys(value).forEach(key => textScan(value[key]));
   };
-  textScan({ SUBJECTS, ACTIVITIES, DECE_CAMPS });
+  textScan({ SUBJECTS, ACTIVITIES, THINKING_PATH, DECE_CAMPS });
   return errors;
 }
 

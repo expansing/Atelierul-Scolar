@@ -1,6 +1,15 @@
 const Render = {
   escape(text) { return Engines.escape(text); },
   list(items) { return '<ul>' + items.map(text => '<li>' + this.escape(text) + '</li>').join('') + '</ul>'; },
+  thinkingPath(currentId) {
+    return '<nav class="callout thinking-path" aria-label="' + this.escape(THINKING_PATH.title) + '"><h2>' + this.escape(THINKING_PATH.title) +
+      '</h2><p>' + this.escape(THINKING_PATH.description) + '</p><p>Un traseu între Logică și gândire și Dezvoltare personală. Poți începe cu prima activitate sau poți alege liber.</p><ol>' +
+      THINKING_PATH.activities.map(id => {
+        const activity = ACTIVITIES.find(item => item.id === id);
+        return '<li><a href="activity.html?activity=' + id + '"' + (id === currentId ? ' aria-current="page"' : '') + '>' +
+          this.escape(activity.title) + '</a>' + (id === currentId ? ' — ești aici' : '') + '</li>';
+      }).join('') + '</ol><p>Poți spune „Nu știu încă” și poți avea altă preferință. Nu trebuie să câștigi o discuție sau să povestești ceva personal.</p></nav>';
+  },
   profiles() {
     const data = Progress.load();
     return '<section class="profile-panel" aria-labelledby="profile-title"><h2 id="profile-title"><span id="profile-avatar" aria-hidden="true">' +
@@ -43,6 +52,8 @@ const Render = {
       '<div class="hero-motto">' + Engines.quantity(Progress.totalPracticed(), 'activitate exersată', 'activități exersate') + ' · ' +
       Engines.quantity(Progress.totalCompleted(), 'activitate stăpânită', 'activități stăpânite') + ' · ' + Engines.quantity(Progress.totalStars(), 'stea', 'stele') + '</div></section>' +
       '<a class="dece-banner" href="dece.html"><span aria-hidden="true">🌱</span><span><strong>Cum învățăm?</strong> Curiozitate, strategii, practică și pauze.</span></a>' +
+      '<a class="dece-banner" href="activity.html?activity=' + THINKING_PATH.activities[0] + '"><span aria-hidden="true">🔎</span><span><strong>' +
+        this.escape(THINKING_PATH.title) + '</strong> Verific dovezile și învăț să spun respectuos „Nu sunt de acord”.</span></a>' +
       (recommendations.length ? '<section class="callout"><h2>Merită să revenim</h2><p>Aici ai exersat cu ajutor sau ai avut nevoie de corectări. Poți începe de la un nivel mai simplu.</p>' +
         this.list(recommendations.map(a => a.title)) + recommendations.map(a => '<a class="btn" href="activity.html?activity=' + a.id + '">' + this.escape(a.title) + '</a>').join(' ') + '</section>' : '') +
       '<div class="subjects-grid">' + SUBJECTS.map(s => {
@@ -58,6 +69,7 @@ const Render = {
     const subject = SUBJECTS.find(s => s.id === id);
     if (!subject) return this.invalid('Disciplina nu a fost găsită.');
     return '<section class="subject-hero" style="--sc:' + subject.color + '"><div class="sh-icon" aria-hidden="true">' + subject.icon + '</div><h1>' + subject.title + '</h1><p>' + subject.desc + '</p><p>Alege liber. Poți reveni la obiecte concrete și poți schimba nivelul oricând.</p></section>' +
+      (THINKING_PATH.activities.some(activityId => ACTIVITIES_BY_SUBJECT[id].some(activity => activity.id === activityId)) ? this.thinkingPath() : '') +
       '<div class="activities-list">' + ACTIVITIES_BY_SUBJECT[id].map(a => '<a class="activity-card" href="activity.html?activity=' + a.id + '" style="--sc:' + subject.color + '">' +
         '<div class="ac-num">' + a.num + '</div><div class="ac-icon" aria-hidden="true">' + a.icon + '</div><div class="ac-body"><h2>' + a.title + '</h2><p>' + this.escape(a.objectives[0]) + '</p>' +
         '<span class="chip">' + Progress.label(a.id) + '</span> <span class="chip">3 niveluri</span></div></a>').join('') + '</div>';
@@ -85,6 +97,7 @@ const Render = {
         '<p>Scrierea liberă și memoria rămân „Exersat”: nu pretindem că un algoritm simplu certifică aceste competențe.</p>' + this.list(activity.pass) +
         '<div id="level-results">' + this.results(id) + '</div>') + '</div>' +
       '<div class="lesson-actions"><button class="btn" id="btn-complete">Am parcurs explicația (fără stea)</button></div>' +
+      (THINKING_PATH.activities.includes(id) ? this.thinkingPath(id) : '') +
       '<nav class="lesson-nav" aria-label="Alte lecții">' +
       (index > 0 ? '<a href="activity.html?activity=' + acts[index - 1].id + '">← ' + acts[index - 1].title + '</a>' : '<a href="subject.html?subject=' + subject.id + '">← Înapoi la disciplină</a>') +
       (index < acts.length - 1 ? '<a href="activity.html?activity=' + acts[index + 1].id + '">' + acts[index + 1].title + ' →</a>' : '<a href="subject.html?subject=' + subject.id + '">Înapoi la disciplină →</a>') + '</nav>';

@@ -22,8 +22,8 @@ function result(overrides) {
   return Object.assign({ level: 0, total: 5, firstCorrect: 4, percent: 80, hints: 0, errors: 1, moves: 0, evaluation: 'objective', finishedAt: '2026-10-16T12:00:00.000Z' }, overrides || {});
 }
 const data = fixture();
-test('66 activities, 198 levels and complete structural content', () => {
-  assert.strictEqual(data.ACTIVITIES.length, 66);
+test('72 activities, 216 levels and complete structural content', () => {
+  assert.strictEqual(data.ACTIVITIES.length, 72);
   assert.strictEqual(data.LEVELS.length, 3);
   assert.deepStrictEqual(validate(data), []);
 });
@@ -294,7 +294,7 @@ test('Journey completion is profile-scoped and idempotent', () => {
 test('Personal development preserves old IDs and adds six authored three-level lessons', () => {
   assert.strictEqual(data.SUBJECTS.find(subject => subject.id === 'civ').title, 'Dezvoltare personală');
   for (let i = 1; i <= 15; i++) assert(data.ACTIVITIES.some(activity => activity.id === 'civ-' + i));
-  const added = data.ACTIVITIES.filter(activity => activity.subject === 'civ' && activity.num >= 10);
+  const added = data.ACTIVITIES.filter(activity => activity.subject === 'civ' && activity.num >= 10 && activity.num <= 15);
   assert.strictEqual(added.length, 6);
   assert(new Set(added.map(activity => activity.demo.type)).size >= 3);
   added.forEach(activity => {
@@ -382,5 +382,66 @@ test('Every app page exposes settings and loads preferences before progress', ()
     assert(html.includes('href="settings.html"'));
     assert(html.indexOf('src="assets/js/preferences.js"') < html.indexOf('src="assets/js/progress.js"'));
   });
+});
+test('Thinking pathway preserves existing lessons and connects four logic and two personal lessons', () => {
+  assert.strictEqual(data.ACTIVITIES_BY_SUBJECT.log.length, 14);
+  assert.strictEqual(data.ACTIVITIES_BY_SUBJECT.civ.length, 17);
+  for (let i = 1; i <= 15; i++) assert(data.ACTIVITIES.some(activity => activity.id === 'civ-' + i));
+  for (let i = 1; i <= 10; i++) assert(data.ACTIVITIES.some(activity => activity.id === 'log-' + i));
+  assert.strictEqual(JSON.stringify(data.THINKING_PATH.activities), JSON.stringify(['log-11', 'log-12', 'log-13', 'log-14', 'civ-16', 'civ-17']));
+  ['log', 'civ'].forEach(subject => data.THINKING_PATH.activities.forEach(id => {
+    assert(data.Render.subject(subject).includes('href="activity.html?activity=' + id + '"'));
+  }));
+  assert(!data.Render.subject('mat').includes('thinking-path'));
+  data.THINKING_PATH.activities.forEach(id => {
+    const html = data.Render.activity(id);
+    assert(html.includes('href="activity.html?activity=' + id + '" aria-current="page"'));
+    assert(data.Discovery.render(data.ACTIVITIES.find(activity => activity.id === id)).includes('Povestea de la care pornim'));
+  });
+});
+test('Critical thinking lessons assess explicit cases and support independent reasoning in adult guidance', () => {
+  const prompts = new Set();
+  data.THINKING_PATH.activities.forEach(id => {
+    const activity = data.ACTIVITIES.find(item => item.id === id);
+    assert.strictEqual(activity.demo.type, 'quiz');
+    activity.demo.levels.forEach(level => {
+      assert.strictEqual(level.questions.length, 3);
+      level.questions.forEach(question => {
+        assert(!prompts.has(question.prompt), 'Repeated critical thinking question');
+        prompts.add(question.prompt);
+        assert(question.explain.length > 30 && question.hint.length > 15);
+      });
+    });
+    assert(activity.parent.help.some(text => text.includes('fără ridiculizare, pedeapsă')));
+    assert(activity.parent.help.some(text => text.includes('Nu știu încă')));
+    assert(activity.parent.support.some(text => text.includes('copilul nu trebuie să convingă')));
+  });
+  assert.strictEqual(prompts.size, 54);
+});
+test('Critical thinking correct answers include uncertainty, adult errors and independent preferences', () => {
+  const answers = id => data.ACTIVITIES.find(activity => activity.id === id).demo.levels.reduce((all, level) =>
+    all.concat(level.questions.map(question => question.options[question.answer])), []);
+  assert(answers('log-11').some(answer => answer.includes('Nu știm încă')));
+  assert(answers('log-12').some(answer => answer.includes('numărăm creioanele și putem corecta')));
+  assert(answers('log-14').some(answer => answer.includes('Nu am verificat încă suficient')));
+  assert(answers('civ-16').some(answer => answer.includes('o preferință diferită nu este o greșeală')));
+  assert(answers('civ-17').some(answer => answer.includes('Hai să verificăm. Ai dreptate, am greșit')));
+  assert(answers('civ-17').some(answer => answer.includes('să ceară ajutor unui adult')));
+});
+test('New thinking results coexist with old progress and survive export/import', () => {
+  const first = fixture().Progress, second = fixture().Progress;
+  first.record('mat-1', result());
+  first.markViewed('civ-1');
+  data.THINKING_PATH.activities.forEach(id => {
+    first.markViewed(id);
+    first.record(id, result({ level: 0, hints: 1, percent: 100 }));
+    assert.strictEqual(first.status(id), 'practiced');
+  });
+  assert.strictEqual(first.totalStars(), 1, 'Guided thinking practice does not earn independent stars');
+  second.importData(first.exportData());
+  assert.strictEqual(second.exportData(), first.exportData());
+  assert.strictEqual(second.status('civ-1'), 'viewed');
+  assert.strictEqual(second.entry('mat-1').levels[0].mastered, true);
+  data.THINKING_PATH.activities.forEach(id => assert.strictEqual(second.entry(id).levels[0].hints, 1));
 });
 console.log('\n' + total + ' groups passed. Generated content tested over ' + (data.ACTIVITIES.length * 3 * 100).toLocaleString('en-US') + ' lesson-level samples.');

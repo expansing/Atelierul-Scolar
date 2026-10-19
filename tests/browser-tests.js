@@ -428,6 +428,41 @@
         Preferences.apply(Progress.profile());
       }
     });
+    test('The thinking pathway connects both subjects and marks only the current lesson', () => {
+      ['log', 'civ'].forEach(subject => {
+        fixture.innerHTML = Render.subject(subject);
+        const links = fixture.querySelectorAll('.thinking-path a');
+        assert(links.length === 6, 'Șase opriri accesibile din ambele discipline');
+        links.forEach((link, index) => assert(link.getAttribute('href') === 'activity.html?activity=' + THINKING_PATH.activities[index], 'Ordinea traseului'));
+      });
+      THINKING_PATH.activities.forEach(id => {
+        fixture.innerHTML = Render.activity(id); Discovery.init(fixture);
+        const current = fixture.querySelectorAll('.thinking-path [aria-current="page"]');
+        assert(current.length === 1 && current[0].getAttribute('href') === 'activity.html?activity=' + id, 'Lecția curentă este marcată');
+        assert(fixture.querySelector('.exploration-stop').getAttribute('aria-pressed') === 'true', 'Explorare cu primul pas deschis');
+        assert(fixture.querySelector('#panel-parinte').textContent.includes('fără ridiculizare, pedeapsă'), 'Îndrumare explicită pentru adult');
+      });
+    });
+    test('All 54 thinking cases allow correction and explain the evidence rather than demand obedience', () => {
+      THINKING_PATH.activities.forEach(id => {
+        const activity = ACTIVITIES.find(item => item.id === id);
+        for (let level = 0; level < 3; level++) {
+          const rounds = Engines.rounds(activity.demo, level);
+          rounds.forEach(q => {
+            let result;
+            const game = singleRound(q, value => { result = value; });
+            const wrong = q.options.find((option, index) => index !== q.answer);
+            click(wrong);
+            assert(fixture.querySelector('#game-next').hidden, id + ': alegerea greșită se poate corecta');
+            click(q.options[q.answer]);
+            assert(fixture.querySelector('#game-feedback').textContent.includes(q.explain), id + ': explicația apare integral');
+            click('Continuă');
+            assert(result && result.errors === 1 && result.firstCorrect === 0, id + ': corectarea nu devine reușită din prima');
+            game.dispose();
+          });
+        }
+      });
+    });
     test('Garden cells stay inside narrow drawings with large handwriting selected', () => {
       const profile = Progress.profile(), saved = Preferences.get(profile);
       const q = MathWorkshop.calculation('Numără pătrățelele.', [{ label: 'Suprafața', answer: 24 }], '8 × 3 = 24.', 'Numără rândurile.', { garden: { width: 8, height: 3 } });

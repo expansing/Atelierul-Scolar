@@ -13,16 +13,16 @@ Fișierele pot fi deschise și direct în browser. Pentru salvare predictibilă,
 
 ## Conținut
 
-**66 de activități, fiecare cu trei niveluri deschise** — Descopăr, Exersez, Provocare — și un traseu suplimentar cu 11 opriri despre învățare.
+**72 de activități, fiecare cu trei niveluri deschise** — Descopăr, Exersez, Provocare — și un traseu suplimentar cu 11 opriri despre învățare.
 
 | Disciplină | Activități |
 |---|---:|
 | Matematică | 12 |
 | Limba română | 10 |
-| Logică și gândire | 10 |
+| Logică și gândire | 14 |
 | Informatică | 9 |
 | Științe și natură | 10 |
-| Dezvoltare personală | 15 |
+| Dezvoltare personală | 17 |
 
 Fiecare lecție include o idee de pornire, un exemplu rezolvat, pași ghidați, explorare cu materiale concrete, autocontrol, o capcană de evitat, reflecție și îndrumări pentru adulți. Copilul poate alege materiale, repeta și schimba nivelul fără blocaje sau cronometru.
 
@@ -33,6 +33,21 @@ Explorările precizează acum ce avem la început, ce control folosim și ce obs
 Dezvoltarea personală păstrează activitățile despre familie, prietenie, reguli, emoții, cooperare, conflicte și limite. Sunt adăugate șase teme: autocunoaștere, învățarea din greșeli și solicitarea ajutorului, organizare și pauze, îngrijire personală, ascultare și exprimarea nevoilor, meserii și roluri în comunitate. Exercițiile folosesc situații fictive și nu notează emoțiile sau preferințele copilului. Identificatorii `civ-1`–`civ-9` rămân neschimbați, astfel încât legăturile și rezultatele existente se păstrează.
 
 Explicațiile pornesc de la obiecte și exemple familiare: „unitate” este definit printr-un obiect numărat, iar zecile prin grupuri de câte zece. În jocul de construire a numerelor, fiecare grup desenat are zece segmente vizibile. Nu se introduce noțiunea de zecime într-o avertizare despre numărare.
+
+### Traseul „Gândesc cu mintea mea”
+
+Șase activități legate între ele, în disciplinele existente, fără o categorie nouă:
+
+1. [Ce observ și ce presupun?](activity.html?activity=log-11) — observație, explicații posibile și „Nu știu încă”.
+2. [Fapt sau preferință?](activity.html?activity=log-12) — afirmații verificabile, care pot fi și greșite, și gusturi personale care pot diferi.
+3. [Ce dovezi avem?](activity.html?activity=log-13) — dovezi relevante, măsurare, verificări separate și limitele unei concluzii.
+4. [De unde vine informația?](activity.html?activity=log-14) — sursă, dată, informație copiată și verificare sigură cu sprijin; nici un adult, nici un program nu are automat dreptate.
+5. [Pot să-mi schimb părerea](activity.html?activity=civ-16) — revizuirea unei concluzii după dovezi, nu din presiune sau rușine.
+6. [Nu sunt de acord și pot explica de ce](activity.html?activity=civ-17) — dezacord respectuos inclusiv cu un adult, fără obligația de a convinge sau de a accepta răspunsul lui.
+
+Traseul apare pe pagina de acasă, în cele două discipline și la finalul fiecărei lecții din traseu, cu marcarea opririi curente. Cele 18 sesiuni au 54 de întrebări redactate, cu explicații; explorările practice și reflecția rămân fără notă. Jocurile verifică informații și alegeri din situații fictive, nu preferințele copilului, supunerea sau o presupusă certificare a gândirii independente.
+
+Îndrumarea adultului invită explicit dezacordul, ascultarea fără pedeapsă sau ridiculizare și recunoașterea propriilor greșeli. Copilul nu trebuie să își dezvăluie experiențele, să provoace o dispută sau să convingă o persoană care îl amenință. Siguranța are prioritate; regulile de siguranță pot fi explicate fără experimente periculoase.
 
 Motoarele noi includ:
 
@@ -109,13 +124,13 @@ Necesită Node.js 12 sau mai nou. Nu sunt necesare instalări.
 
 ```bash
 npm run check         # sintaxă, structură, conținut generat, teste de regresie
-npm run validate      # 66 de lecții, 198 de niveluri, 11 opriri și legături vechi
+npm run validate      # 72 de lecții, 216 niveluri, 11 opriri și legături vechi
 npm test              # teste Node fără dependențe
 ```
 
-Pentru verificările DOM, deschide [tests/browser.html](tests/browser.html) prin același server static. Pagina rulează testele și afișează rezultatele. Testele folosesc o cheie temporară de stocare și nu modifică progresul real. Verifică inițializarea și parcurgerea tuturor celor 198 de sesiuni, corectarea răspunsurilor, indicii, reluare, ordonare, perechi, scriere, robot și memorie. Sunt testate și toate mesele de explorare, răspunsurile numerice invalide, construcțiile alternative, închiderea explicită a conturului, corectarea simetriei, rotirea/scoaterea pieselor și fracțiile cu părți nealăturate. Verificările compară și grafica efectivă cu datele: cuburi și poziția talerelor, acele ceasului, reperele riglei, vârfurile formelor, suprafața grădinii și intersecția lipsă din tabel. Pentru plus/minus se testează pașii, limitele, afișajul și dependențele dintre comenzi. Sunt verificate contextul și pașii explorărilor, controalele de setări, mărirea efectivă a textului cu 50%, nivelul preferat și grila la text mărit.
+Pentru verificările DOM, deschide [tests/browser.html](tests/browser.html) prin același server static. Pagina rulează testele și afișează rezultatele. Testele folosesc o cheie temporară de stocare și nu modifică progresul real. Verifică inițializarea și parcurgerea tuturor celor 216 sesiuni, corectarea răspunsurilor, indicii, reluare, ordonare, perechi, scriere, robot și memorie. Sunt testate și toate mesele de explorare, răspunsurile numerice invalide, construcțiile alternative, închiderea explicită a conturului, corectarea simetriei, rotirea/scoaterea pieselor și fracțiile cu părți nealăturate. Verificările compară și grafica efectivă cu datele: cuburi și poziția talerelor, acele ceasului, reperele riglei, vârfurile formelor, suprafața grădinii și intersecția lipsă din tabel. Pentru plus/minus se testează pașii, limitele, afișajul și dependențele dintre comenzi. Sunt verificate contextul și pașii explorărilor, controalele de setări, mărirea efectivă a textului cu 50%, nivelul preferat și grila la text mărit. Traseul de gândire are verificări pentru legături, oprirea curentă, îndrumarea adultului și corectarea tuturor celor 54 de întrebări prin controalele reale.
 
-Testele Node verifică 19.800 de eșantioane lecție–nivel, soluțiile și limitele grilelor, pavarea completă, operațiile în pași, rigla, fracțiile, bugetele și prezența efectivă a glifelor ĂăÂâÎîȘșȚț în font. Verifică și izolarea preferințelor între profiluri, păstrarea progresului la redenumire, persistența, migrarea, importul/exportul și respingerea setărilor invalide.
+Testele Node verifică 21.600 de eșantioane lecție–nivel, soluțiile și limitele grilelor, pavarea completă, operațiile în pași, rigla, fracțiile, bugetele și prezența efectivă a glifelor ĂăÂâÎîȘșȚț în font. Verifică și izolarea preferințelor între profiluri, păstrarea progresului la redenumire, persistența, migrarea, importul/exportul, respingerea setărilor invalide și structura traseului de gândire.
 
 Validatorul verifică structura, consistența răspunsurilor și anumite regresii de text. **Nu este un corector gramatical complet și nu certifică adevărul științific.** Conținutul trebuie revizuit editorial când se adaugă sau se schimbă lecții.
 
