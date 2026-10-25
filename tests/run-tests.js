@@ -559,14 +559,14 @@ test('New thinking results coexist with old progress and survive export/import',
   assert.strictEqual(second.entry('mat-1').levels[0].mastered, true);
   data.THINKING_PATH.activities.forEach(id => assert.strictEqual(second.entry(id).levels[0].hints, 1));
 });
-test('Romanian lessons draw a different set of tasks on replay', () => {
-  data.ACTIVITIES.filter(a => a.subject === 'lim' && a.demo.type !== 'type').forEach(activity => {
+test('Romanian and science lessons draw a different set of tasks on replay', () => {
+  data.ACTIVITIES.filter(a => ['lim', 'sci'].includes(a.subject) && a.demo.type !== 'type').forEach(activity => {
     [0, 1, 2].forEach(level => {
       const seen = new Set(), sizes = new Set();
       for (let i = 0; i < 60; i++) {
         const rounds = data.Engines.rounds(activity.demo, level);
         sizes.add(rounds.length);
-        rounds.forEach(q => seen.add(JSON.stringify([q.prompt, q.say, q.passage, q.tokens, (q.pairs || []).map(p => p.a).sort()])));
+        rounds.forEach(q => seen.add(JSON.stringify([q.prompt, q.say, q.passage, q.tokens, q.options && q.options.slice().sort(), (q.pairs || []).map(p => p.a).sort()])));
       }
       const config = activity.demo.levels[level];
       if (config.rounds && ['quiz', 'arrange', 'classify', 'wordbuilder'].includes(activity.demo.type)) assert(sizes.size === 1 && sizes.has(config.rounds), activity.id + '/' + level + ': ' + config.rounds + ' sarcini pe joc');
@@ -587,6 +587,11 @@ test('Sound questions carry a word and a picture, and rhyme levels have no rhyme
     const endings = config.pairs.map(pair => ending(pair.a));
     assert.strictEqual(new Set(endings).size, endings.length, 'lim-4/' + level + ': două perechi au același final (' + endings + ')');
   });
+});
+test('No answer in Romanian or science can be spotted by its length', () => {
+  const { quality } = require('../validate-data');
+  const found = quality(data).filter(w => ['lim', 'sci'].includes(w.subject));
+  assert.deepStrictEqual(found.map(w => w.text), []);
 });
 test('Every page applies saved preferences in the head and names the learning path consistently', () => {
   const fs = require('fs'), path = require('path');

@@ -53,7 +53,9 @@
       try {
         [true, false].forEach(voice => {
           Speech.supported = () => voice;
-          const game = start(lim1.demo, 0);
+          // setul nivelului are și întrebări fără cuvânt de ascultat: repornim până apare unul
+          let game = start(lim1.demo, 0);
+          for (let i = 0; i < 50 && !fixture.querySelector('.word-card'); i++) { game.dispose(); game = start(lim1.demo, 0); }
           const card = fixture.querySelector('.word-card'), word = card && card.querySelector('.word-text');
           assert(card && card.querySelector('.word-picture').textContent.trim(), 'lipsește imaginea cuvântului');
           assert(word.hidden && !fixture.querySelector('.game-prompt').textContent.includes(word.textContent), 'cuvântul este vizibil înainte de ascultare');

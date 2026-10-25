@@ -156,12 +156,22 @@ function quality(data) {
     const demo = activity.demo;
     if (!demo || !Array.isArray(demo.levels)) return;
     demo.levels.forEach((config, level) => {
-      const questions = [].concat(demo.type === 'quiz' ? config.questions || [] : [], config.review || []);
-      questions.forEach(q => {
-        if (!Array.isArray(q.options) || q.options.length < 3) return;
+      // se verifică întrebările așa cum le primește copilul, inclusiv cele generate (povești, experimente, lecturi)
+      const seen = new Map();
+      for (let i = 0; i < 25; i++) {
+        let rounds = [];
+        try { rounds = data.Engines.rounds(demo, level); } catch (error) { return; }
+        rounds.forEach(q => {
+          if (Array.isArray(q.options) && q.options.length >= 3 && Number.isInteger(q.answer)) {
+            seen.set(q.prompt + '|' + q.options.slice().sort().join('|'), q);
+          }
+        });
+      }
+      seen.forEach(q => {
         const lengths = q.options.map(words), longest = Math.max(...lengths);
         const where = activity.id + ' / ' + level + ': „' + q.prompt + '”';
-        if (lengths[q.answer] === longest && lengths.filter(n => n === longest).length === 1 && longest - Math.max(...lengths.filter((n, i) => i !== q.answer)) >= 2) {
+        const others = lengths.filter((n, i) => i !== q.answer);
+        if (lengths[q.answer] === longest && longest - Math.max(...others) >= 2) {
           warnings.push({ subject: activity.subject, kind: 'lungime', text: where + ' — răspunsul corect este vizibil cea mai lungă variantă.' });
         }
         if (level < 2 && longest > 8) warnings.push({ subject: activity.subject, kind: 'variante lungi', text: where + ' — variantă de ' + longest + ' cuvinte.' });

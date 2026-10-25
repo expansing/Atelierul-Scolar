@@ -336,7 +336,7 @@ const Engines = {
         ] }],
         [{ text: 'La clubul de lectură, Radu propune să aleagă cartea prin vot. Ina observă că un coleg nu vede bine literele mici. Grupul caută o ediție cu litere mari și o variantă audio. Abia apoi compară titlurile disponibile pentru toți.', questions: [
           Q('De ce nu votează imediat?', ['Verifică mai întâi accesul tuturor', 'Nu vor să citească', 'Nu există nicio carte'], 0, 'Grupul caută mai întâi formate pe care le pot folosi toți.'),
-          Q('Ce concluzie este susținută de text?', ['O alegere bună ține cont și de accesibilitate', 'Votul este întotdeauna greșit', 'Toți preferă cărțile audio'], 0, 'Textul nu respinge votul, ci arată pregătirea unei alegeri incluzive.')
+          Q('Ce concluzie este susținută de text?', ['O alegere bună ține cont și de accesibilitate', 'Votul este întotdeauna o alegere greșită', 'Toți copiii din club preferă cărțile audio'], 0, 'Textul nu respinge votul, ci arată pregătirea unei alegeri incluzive.')
         ] },
         { text: 'Victor a ajuns la școală ud leoarcă. Avea ghiozdanul în mână, dar umbrela rămăsese acasă, lângă ușă. Doamna învățătoare i-a dat un prosop.', questions: [
           Q('De ce a ajuns Victor ud?', ['Ploua și nu avea umbrela', 'A sărit într-un lac', 'S-a udat la cișmea'], 0, 'Textul nu spune direct „ploua”, dar umbrela uitată și hainele ude sunt indicii.'),
@@ -362,18 +362,42 @@ const Engines = {
         ] }
       ],
       observations: [
-        { text: 'Observații despre o plantă: luni — 2 frunze; miercuri — 3 frunze; vineri — 4 frunze. Numărăm frunzele aceleiași plante.', questions: [
+        [{ text: 'Observații despre o plantă: luni — 2 frunze; miercuri — 3 frunze; vineri — 4 frunze. Numărăm frunzele aceleiași plante.', questions: [
           Q('Câte frunze are vineri?', ['4', '3', '2'], 0, 'Valoarea de vineri este 4.'),
           Q('Cu câte frunze a crescut numărul de luni până vineri?', ['2', '4', '1'], 0, 'Calculăm diferența: 4 − 2 = 2.')
         ] },
-        { text: 'Număr de păsări observate în același loc, câte zece minute: luni — 5; marți — 8; miercuri — 6. Nu urmărim fiecare pasăre după plecare.', questions: [
-          Q('În ce zi au fost observate cele mai multe păsări?', ['Marți', 'Luni', 'Miercuri'], 0, '8 este valoarea cea mai mare.'),
-          Q('Putem spune că sunt 19 păsări diferite?', ['Nu, unele pot fi observate în mai multe zile', 'Da, sigur', 'Nu există păsări'], 0, 'Suma observațiilor nu garantează numărul de animale distincte.')
+        { text: 'Am privit cerul la prânz, trei zile la rând: luni — soare; marți — ploaie; miercuri — soare.', questions: [
+          Q('În câte zile a fost soare?', ['2', '1', '3'], 0, 'Luni și miercuri: două zile cu soare.'),
+          Q('Ce vreme a fost marți?', ['Ploaie', 'Soare', 'Ninsoare'], 0, 'Lângă „marți” scrie „ploaie”.')
         ] },
-        { text: 'Două plante asemănătoare au aceeași lumină. Planta A primește udare potrivită și crește de la 8 la 12 cm. Planta B primește prea puțină apă și crește de la 8 la 9 cm. Observăm o singură pereche de plante.', questions: [
+        { text: 'Am numărat fluturii din grădină: dimineața — 3; la prânz — 6; seara — 1.', questions: [
+          Q('Când au fost cei mai mulți fluturi?', ['La prânz', 'Dimineața', 'Seara'], 0, '6 este cel mai mare număr din listă.'),
+          Q('Câți fluturi au fost dimineața?', ['3', '6', '1'], 0, 'Lângă „dimineața” scrie 3.')
+        ] }],
+        [{ text: 'Număr de păsări observate în același loc, câte zece minute: luni — 5; marți — 8; miercuri — 6. Nu urmărim fiecare pasăre după plecare.', questions: [
+          Q('În ce zi au fost observate cele mai multe păsări?', ['Marți', 'Luni', 'Miercuri'], 0, '8 este valoarea cea mai mare.'),
+          Q('Putem spune că sunt 19 păsări diferite?', ['Nu, unele au venit în mai multe zile', 'Da, fiecare pasăre a venit o dată', 'Nu, au fost doar 8 păsări'], 0, 'Suma observațiilor nu garantează numărul de animale distincte.')
+        ] },
+        { text: 'Temperatura la ora 8, trei zile la rând: luni — 5 grade; marți — 8 grade; miercuri — 3 grade.', questions: [
+          Q('În ce zi a fost cel mai frig la ora 8?', ['Miercuri', 'Luni', 'Marți'], 0, '3 grade este temperatura cea mai mică.'),
+          Q('Cu câte grade a fost mai cald marți decât luni?', ['3', '8', '13'], 0, '8 − 5 = 3 grade.')
+        ] },
+        { text: 'Am măsurat zăpada din curte: luni — 10 cm; marți — 7 cm; miercuri — 4 cm. Nu a mai nins.', questions: [
+          Q('Ce s-a întâmplat cu stratul de zăpadă?', ['A scăzut în fiecare zi', 'A crescut în fiecare zi', 'A rămas la fel'], 0, '10, apoi 7, apoi 4: stratul s-a subțiat.'),
+          Q('Cu câți centimetri a scăzut de luni până miercuri?', ['6', '4', '14'], 0, '10 − 4 = 6 centimetri.')
+        ] }],
+        [{ text: 'Două plante asemănătoare au aceeași lumină. Planta A primește udare potrivită și crește de la 8 la 12 cm. Planta B primește prea puțină apă și crește de la 8 la 9 cm. Observăm o singură pereche de plante.', questions: [
           Q('Care este diferența dintre creșterile lor?', ['3 cm', '4 cm', '1 cm'], 0, 'A crește cu 4 cm, B cu 1 cm: 4 − 1 = 3 cm.'),
-          Q('Care concluzie este prudentă?', ['Rezultatul susține rolul apei, dar repetăm observația', 'Am demonstrat nevoile tuturor plantelor', 'Lumina nu contează niciodată'], 0, 'O singură pereche oferă un indiciu, nu o regulă universală.')
-        ] }
+          Q('Care concluzie este prudentă?', ['Rezultatul susține rolul apei, dar repetăm observația', 'Am demonstrat ce le trebuie tuturor plantelor', 'Lumina nu contează niciodată pentru plante'], 0, 'O singură pereche oferă un indiciu, nu o regulă universală.')
+        ] },
+        { text: 'Două grupe au numărat păsările de la hrănitoare, câte 10 minute. Grupa 1 a numărat la prânz: 7 păsări. Grupa 2 a numărat dimineața: 12 păsări.', questions: [
+          Q('De ce nu putem spune că grupa 2 a numărat mai atent?', ['Au numărat la ore diferite', 'Au numărat aceleași păsări', 'Grupa 2 are mai mulți copii'], 0, 'La ore diferite pot veni păsări diferite; diferența nu arată atenția.'),
+          Q('Ce ar face comparația mai corectă?', ['Numărăm la aceeași oră', 'Numărăm doar o grupă', 'Adunăm cele două numere'], 0, 'Când ora este aceeași, comparăm doar felul în care numără grupele.')
+        ] },
+        { text: 'Trei pahare cu apă au stat afară într-o noapte de iarnă. Dimineața, paharele 1 și 2, din curte, aveau gheață. Paharul 3, lângă un geam încălzit, avea apă.', questions: [
+          Q('Câte pahare au înghețat?', ['2', '3', '1'], 0, 'Paharele 1 și 2 aveau gheață.'),
+          Q('Ce concluzie este prudentă?', ['Locul poate conta; repetăm testul', 'În paharul 3 nu a fost apă', 'Apa nu îngheață lângă case'], 0, 'Un singur pahar nu ajunge pentru o regulă; repetăm cu mai multe pahare.')
+        ] }]
       ]
     };
     // un nivel poate avea mai multe texte: la fiecare joc se alege altul
@@ -382,35 +406,76 @@ const Engines = {
   },
 
   experimentRounds(mode, level) {
+    // E(întrebare, [corect, greșit, greșit], explicație, observația din model, [concluzie susținută, greșită, greșită])
+    const E = (ask, options, explain, observation, supported) => ({ ask, options, explain, observation, supported });
     const bank = {
       plants: [
-        ['Vrei să afli dacă apa influențează o plantă. Ce schimbi între două plante asemănătoare?', ['Doar cantitatea de apă', 'Apa, lumina și ghiveciul', 'Doar culoarea etichetei'], 'Schimbăm factorul studiat și păstrăm celelalte condiții relevante la fel.'],
-        ['Două plante primesc aceeași lumină. A este udată potrivit, B prea puțin. Ce prezici?', ['A are condiții mai bune de creștere', 'B nu are nevoie de apă', 'Ambele cresc sigur identic'], 'Apa este necesară, dar rezultatul se observă în timp; predicția nu este o garanție.'],
-        ['A crește 4 cm, B crește 1 cm. Ce concluzie formulăm?', ['Comparația susține rolul apei în aceste condiții', 'Orice cantitate de apă ajută', 'Lumina nu are niciun rol'], 'Rezultatul susține o concluzie limitată la condițiile testate. Prea multă apă poate dăuna.']
+        [E('Vrei să afli dacă o plantă are nevoie de apă. Ce schimbi între două plante la fel?', ['Doar cantitatea de apă', 'Apa și lumina', 'Doar culoarea ghiveciului'], 'Schimbăm un singur lucru, apa, și păstrăm restul la fel.',
+            'În model, planta udată rămâne verde; cea neudată începe să se ofilească.', ['Planta are nevoie de apă', 'Planta crește mai bine fără apă', 'Ghiveciul face planta verde']),
+          E('O plantă stă într-un dulap întunecat, alta la fereastră. Ce prezici?', ['Cea de la fereastră crește mai bine', 'Cea din dulap crește mai bine', 'Vor arăta la fel'], 'Plantele au nevoie de lumină ca să crească sănătoase.',
+            'În model, după o săptămână, planta din dulap are frunze palide și o tulpină subțire.', ['Plantele au nevoie de lumină', 'Plantele cresc mai bine la întuneric', 'Dulapul udă plantele']),
+          E('O sămânță de fasole stă pe vată. Ce îi trebuie ca să încolțească?', ['Vată udă', 'Vată uscată', 'Vată pusă la congelator'], 'Sămânța are nevoie de apă și de căldură potrivită ca să încolțească.',
+            'În model, după câteva zile, din sămânța de pe vata udă apare un firicel alb: rădăcina.', ['Sămânța are nevoie de apă', 'Sămânța încolțește în gheață', 'Vata singură face sămânța să crească'])],
+        [E('Două plante primesc aceeași lumină. A este udată potrivit, B prea puțin. Ce prezici?', ['A va crește mai bine', 'B va crește mai bine', 'Vor crește sigur la fel'], 'Apa este necesară, dar rezultatul se vede în timp; predicția nu este o garanție.',
+            'În model, A crește mai mult decât B. În realitate am repeta observația.', ['Aici, apa potrivită a ajutat creșterea', 'B a crescut mai mult decât A', 'Plantele au avut lumină diferită']),
+          E('Măsori o plantă luni: 5 cm. Vineri măsori 8 cm. Cât a crescut?', ['3 cm', '8 cm', '13 cm'], 'Scădem: 8 − 5 = 3 cm.',
+            'În model, rigla arată 5 cm luni și 8 cm vineri.', ['Planta a crescut 3 cm', 'Planta a crescut 13 cm', 'Planta a scăzut']),
+          E('Planta de pe pervaz se înclină spre geam. Ce explicație verifici?', ['Crește spre lumină', 'Crește spre perete', 'Se apleacă sub greutatea apei'], 'Plantele cresc spre lumină.',
+            'În model, întorci ghiveciul; după câteva zile, planta se înclină din nou spre fereastră.', ['Planta se întoarce spre lumină', 'Planta se înclină spre perete', 'Planta nu se mișcă deloc'])],
+        [E('Vrei să afli dacă apa influențează o plantă. Ce schimbi între două plante asemănătoare?', ['Doar cantitatea de apă', 'Apa, lumina și ghiveciul', 'Doar eticheta ghiveciului'], 'Schimbăm factorul studiat și păstrăm celelalte condiții la fel.',
+            'În model, valorile sunt A: +4 cm și B: +1 cm.', ['Rezultatul susține rolul apei, aici', 'Orice cantitate de apă ajută', 'Lumina nu are niciun rol']),
+          E('Uzi o plantă de trei ori pe zi și ea se îngălbenește. Ce verifici?', ['Dacă primește prea multă apă', 'Dacă îi trebuie și mai multă apă', 'Dacă frunzele galbene sunt sănătoase'], 'Și prea multă apă poate dăuna: rădăcinile au nevoie și de aer.',
+            'În model, pământul este îmbibat de apă, iar rădăcinile nu primesc aer.', ['Prea multă apă poate dăuna', 'Mai multă apă e mereu mai bine', 'Frunzele galbene arată sănătate']),
+          E('O plantă udată mai mult stă la soare, alta udată mai puțin stă la umbră. Ce problemă are testul?', ['Am schimbat două lucruri deodată', 'Am folosit prea puține frunze', 'Testul nu are nicio problemă'], 'Când schimbăm apa și lumina deodată, nu știm care a produs diferența.',
+            'În model, plantele cresc diferit, dar au primit și apă diferită, și lumină diferită.', ['Nu știm dacă a contat apa sau lumina', 'Sigur doar apa a făcut toată diferența', 'Sigur doar lumina a făcut toată diferența'])]
       ],
       water: [
-        ['Un cub de gheață stă într-o cameră suficient de caldă. Ce prezici?', ['Se topește treptat', 'Devine imediat piatră', 'Rămâne mereu neschimbat'], 'Gheața primește căldură și se poate transforma în apă lichidă.'],
-        ['Un pahar foarte rece stă în aer umed. Ce se poate forma pe exterior?', ['Picături de apă', 'Apă care trece prin sticlă', 'Doar gheață în orice condiții'], 'Vaporii din aer pot condensa pe suprafața rece.'],
-        ['O baltă se micșorează fără să fiarbă. Ce explicație este potrivită?', ['O parte din apă se evaporă', 'Apa există doar la fierbere', 'Apa se transformă în pământ'], 'Evaporarea are loc și sub temperatura de fierbere; apa poate trece în aer ca vapori.']
+        [E('Un cub de gheață stă într-o cameră caldă. Ce prezici?', ['Se topește treptat', 'Se face mai mare', 'Rămâne la fel'], 'Gheața primește căldură și se transformă în apă lichidă.',
+            'În model, cubul se micșorează și apare apă lichidă.', ['Gheața s-a topit și a devenit apă', 'Gheața s-a transformat într-o piatră', 'Gheața s-a făcut mai mare la căldură']),
+          E('Pui un pahar cu apă în congelator. Ce prezici după câteva ore?', ['Apa devine gheață', 'Apa începe să fiarbă', 'Apa se face abur'], 'La frig mare, apa îngheață și devine solidă.',
+            'În model, apa din pahar s-a întărit: acum este gheață.', ['La frig, apa poate îngheța', 'La frig, apa fierbe', 'Frigul face apa abur']),
+          E('Rufele ude stau la soare. Ce se întâmplă cu apa din ele?', ['Se evaporă în aer', 'Coboară în pământ prin sârmă', 'Rămâne mereu în rufe'], 'Apa trece în aer sub formă de vapori: se evaporă.',
+            'În model, după câteva ore, rufele sunt uscate.', ['Apa a trecut în aer ca vapori', 'Apa a rămas ascunsă în rufe', 'Soarele a îngreunat rufele'])],
+        [E('Un pahar foarte rece stă în aer umed. Ce se poate forma pe exterior?', ['Picături de apă', 'Apă venită prin sticlă', 'Bucăți de zahăr'], 'Vaporii din aer se transformă în picături pe suprafața rece.',
+            'În model, apar picături pe exteriorul paharului rece.', ['Vaporii din aer au format picături', 'Apa a trecut prin sticlă', 'Paharul a produs apa singur']),
+          E('Iarna, pe geamul rece apar picături pe partea dinăuntru. De unde vin?', ['Din vaporii din aerul camerei', 'Prin sticlă, de afară', 'Din vopseaua ramei'], 'Aerul cald din cameră are vapori, care se fac picături pe geamul rece.',
+            'În model, aerul cald din cameră atinge geamul rece și apar picături.', ['Vaporii se fac picături pe geamul rece', 'Apa de afară trece prin sticlă', 'Picăturile vin din rama ferestrei']),
+          E('Un adult fierbe apă într-o oală cu capac. Ce apare pe capac?', ['Picături de apă', 'Bucăți de gheață', 'Nu apare nimic'], 'Aburul urcă, atinge capacul mai rece și se transformă înapoi în apă.',
+            'În model, aburul urcă și pe capac se strâng picături. Doar adultul lucrează cu apa fierbinte.', ['Aburul poate redeveni apă lichidă', 'Aburul devine gheață pe capac', 'Capacul produce apa'])],
+        [E('O baltă se micșorează fără să fiarbă. Ce explicație este potrivită?', ['O parte din apă se evaporă', 'Apa se evaporă doar când fierbe', 'Apa se transformă în pământ'], 'Evaporarea are loc și fără fierbere; apa trece în aer ca vapori.',
+            'În model, nivelul apei scade treptat, fără fierbere.', ['Apa se evaporă și fără să fiarbă', 'Apa dispare numai când fierbe', 'Apa din baltă s-a făcut pământ']),
+          E('Două farfurii au aceeași cantitate de apă: una la soare, una la umbră. Ce prezici?', ['La soare se evaporă mai repede', 'La umbră se evaporă mai repede', 'Se evaporă la fel de repede'], 'Căldura grăbește evaporarea.',
+            'În model, după o oră, în farfuria de la soare a rămas mai puțină apă.', ['Căldura grăbește evaporarea', 'Apa se evaporă doar la soare', 'Umbra adaugă apă în farfurie']),
+          E('Un cub de gheață stă pe o farfurie, altul învelit într-un prosop. Care se topește mai încet?', ['Cel învelit în prosop', 'Cel de pe farfurie', 'Se topesc la fel'], 'Prosopul încetinește trecerea căldurii din aer spre gheață.',
+            'În model, cubul din prosop mai are gheață când celălalt s-a topit.', ['Prosopul încetinește topirea', 'Prosopul răcește gheața', 'Gheața învelită nu se topește'])]
       ],
       fair: [
-        ['Compari topirea a două cuburi. Ce păstrezi la fel?', ['Mărimea cuburilor și timpul de observare', 'Doar numele lor', 'Nimic'], 'Ca să comparăm efectul locului, celelalte condiții relevante trebuie să fie asemănătoare.'],
-        ['Schimbi și locul, și mărimea cubului. Ce problemă apare?', ['Nu mai separi efectele celor două schimbări', 'Rezultatul devine sigur', 'Nu mai există gheață'], 'Nu știm care schimbare a produs diferența observată.'],
-        ['Rezultatul diferă de predicție. Care este pasul științific potrivit?', ['Notezi rezultatul, verifici condițiile și repeți', 'Ștergi observația', 'Schimbi rezultatul ca să se potrivească'], 'Datele se păstrează chiar când contrazic predicția.']
+        [E('Vrei să afli care minge sare mai sus. Ce păstrezi la fel?', ['Înălțimea de la care le lași', 'Culoarea și desenul fiecărei mingi', 'Mingea pe care o folosești'], 'Lăsăm mingile de la aceeași înălțime, pe aceeași podea; doar mingea diferă.',
+            'În model, ambele mingi cad de la aceeași înălțime, pe aceeași podea.', ['Testul compară corect mingile', 'Culoarea a făcut diferența', 'Testul nu arată nimic']),
+          E('Vrei să afli dacă locul (soare sau umbră) schimbă topirea. Ce păstrezi la fel?', ['Mărimea cuburilor', 'Locul cuburilor', 'Culoarea farfuriei'], 'Schimbăm doar locul; cuburile trebuie să fie la fel de mari.',
+            'În model folosim două cuburi egale și același timp de observare.', ['Diferența vine de la loc', 'Diferența vine de la mărime', 'Cuburile nu se topesc']),
+          E('Vrei să afli ce hârtie absoarbe mai multă apă. Ce faci?', ['Pun aceeași apă pe fiecare', 'Pun câtă apă vreau', 'Pun apă doar pe una'], 'Aceeași cantitate de apă pe fiecare hârtie face comparația corectă.',
+            'În model, pe fiecare hârtie cade câte o linguriță de apă.', ['Diferența vine de la hârtie', 'Mai multă apă face hârtia mai bună', 'Nu putem compara hârtiile'])],
+        [E('Schimbi și locul, și mărimea cubului. Ce problemă apare?', ['Nu știi ce a produs diferența', 'Rezultatul devine mai sigur', 'Gheața nu se mai topește'], 'Nu știm care schimbare a produs diferența observată.',
+            'Modelul arată două lucruri schimbate: locul și mărimea. Cauza nu poate fi aflată.', ['Schimbăm un singur lucru odată', 'Sigur locul a contat', 'Sigur mărimea a contat']),
+          E('Testezi dacă sarea grăbește topirea gheții. Ce pui pe al doilea cub?', ['Nimic, ca să compar', 'Tot sare', 'Sare și zahăr'], 'Un cub cu sare și unul fără: așa vedem efectul sării.',
+            'În model, cubul cu sare se topește mai repede decât cel fără nimic.', ['Aici, sarea a grăbit topirea', 'Sarea a încetinit topirea', 'Cuburile s-au topit la fel']),
+          E('Faci testul o singură dată și rezultatul pare ciudat. Ce faci?', ['Repet testul', 'Schimb rezultatul', 'Renunț la test'], 'Repetarea ne arată dacă rezultatul se confirmă.',
+            'În model, a doua și a treia încercare dau un rezultat asemănător cu primul.', ['Repetarea ne face mai siguri', 'O încercare ajunge mereu', 'Rezultatul se schimbă cum vrem'])],
+        [E('Rezultatul diferă de predicție. Care este pasul științific potrivit?', ['Notez, verific și repet', 'Șterg observația din caiet', 'Schimb rezultatul cu predicția'], 'Datele se păstrează chiar când contrazic predicția.',
+            'Modelul păstrează observația și arată că testul trebuie repetat.', ['O predicție greșită ne învață ceva', 'Predicția trebuie să iasă mereu', 'Datele nepotrivite se șterg']),
+          E('Două grupe lansează aceeași mașinuță pe aceeași pantă și obțin distanțe puțin diferite. Ce concluzie e prudentă?', ['Repetăm și comparăm măsurările', 'Una dintre grupe a greșit sigur', 'Mașinuța s-a stricat'], 'Măsurătorile pot varia puțin; repetăm și comparăm.',
+            'În model, distanțele sunt 52 cm și 55 cm.', ['Măsurătorile pot varia puțin', '3 cm dovedesc o greșeală', 'Contează doar prima măsurare']),
+          E('Vrei să afli dacă muzica ajută plantele. Ce plan este corect?', ['Două plante la fel, doar una cu muzică', 'Una cu muzică la soare, una fără la umbră', 'O singură plantă, cu muzică'], 'Plantele trebuie să fie la fel și în aceleași condiții; diferă doar muzica.',
+            'În model, cele două plante cresc aproape la fel.', ['Aici, muzica nu a făcut diferență', 'Muzica ajută sigur orice plantă', 'Plantele aud melodiile lor preferate'])]
       ]
     };
-    const item = bank[mode][level];
-    const observation = {
-      plants: ['În model, planta udată potrivit rămâne viguroasă; cea fără suficientă apă începe să se ofilească.', 'În model, A are o creștere mai mare decât B. În realitate ar trebui observații repetate.', 'În model, valorile sunt A: +4 cm și B: +1 cm.'],
-      water: ['În model, cubul se micșorează și apare apă lichidă.', 'În model, apar picături pe exteriorul paharului rece.', 'În model, nivelul apei scade treptat fără fierbere.'],
-      fair: ['În model folosim două cuburi egale și același interval de observare.', 'Modelul arată două condiții schimbate: loc și mărime. Cauza nu poate fi izolată.', 'Modelul păstrează observația și marchează necesitatea repetării.']
-    }[mode][level];
-    return [
-      Object.assign(this.choice(item[0], item[1], 0, item[2], 'Alege mai întâi predicția sau planul. Apoi pornește modelul și compară.'), { kind: 'experiment', observation }),
-      this.choice('După model: care afirmație este susținută?', [item[2], 'Modelul dovedește toate cazurile din natură.', 'O predicție nu poate fi schimbată.'], 0,
-        'O concluzie se limitează la dovezile și condițiile disponibile. Modelul este simplificat, nu înlocuiește observațiile reale.',
-        'Recitește observația modelului și evită formulările „toate” sau „niciodată”.', { passage: observation })
-    ];
+    return this.draw(bank[mode][level], 2).flatMap(item => [
+      Object.assign(this.choice(item.ask, item.options, 0, item.explain, 'Alege mai întâi predicția sau planul. Apoi pornește modelul și compară.'), { kind: 'experiment', observation: item.observation }),
+      this.choice('După model: care afirmație este susținută?', item.supported, 0,
+        'O concluzie se limitează la ce am observat în aceste condiții. Modelul este simplificat și nu înlocuiește observațiile reale.',
+        'Recitește observația modelului și evită formulările „mereu”, „sigur” sau „niciodată”.', { passage: item.observation })
+    ]);
   },
 
   storyRounds(mode, level) {
@@ -426,9 +491,19 @@ const Engines = {
         ['Ai trimis deja o informație personală și cineva te amenință să păstrezi secretul.', 'Opresc discuția și cer imediat ajutor unui adult de încredere', 'Păstrez secretul de teamă', 'Trimit alte date', 'Poți cere ajutor și după o greșeală. Nu ești vinovat pentru amenințările altcuiva.']
       ],
       health: [
-        ['Urmează să mănânci după joaca afară.', 'Mă spăl pe mâini cu apă și săpun', 'Șterg mâinile de haine', 'Nu schimb nimic', 'Spălarea cu apă și săpun ajută la igiena mâinilor.'],
-        ['Te simți rău în timpul unui joc.', 'Mă opresc și anunț un adult', 'Iau singur medicamente', 'Ascund starea de rău', 'Un adult te poate ajuta să primești îngrijirea potrivită.'],
-        ['Un coleg îți oferă medicamentul lui pentru o durere.', 'Refuz și cer ajutor unui adult', 'Îl iau fiindcă l-a ajutat pe el', 'Îl împart cu altcineva', 'Medicamentele nu se aleg și nu se împart între copii.']
+        [['Urmează să mănânci după joaca afară.', 'Mă spăl cu apă și săpun', 'Îmi șterg mâinile de tricou', 'Îmi clătesc doar un deget', 'Spălarea cu apă și săpun îndepărtează murdăria și microbii de pe mâini.'],
+          ['Strănuți și nu ai un șervețel la îndemână.', 'Strănut în cot', 'Strănut în palmă', 'Strănut spre coleg', 'Strănutul în cot oprește o parte din stropi și îți păstrează mâinile curate.'],
+          ['Ți-e sete după alergat.', 'Beau apă', 'Beau suc foarte dulce', 'Aștept până seara', 'Apa ajută corpul după efort.'],
+          ['Ai mâncat bomboane și urmează să te culci.', 'Mă spăl pe dinți', 'Mai mănânc una', 'Mă culc imediat', 'Zahărul rămas pe dinți îi poate strica. Periajul îi curăță.'],
+          ['Este seară, iar mâine ai școală.', 'Mă culc la ora obișnuită', 'Mă joc pe tabletă până târziu', 'Stau treaz cât vreau', 'Somnul suficient ajută corpul să se refacă și te ajută să fii atent.']],
+        [['Te simți rău în timpul unui joc.', 'Mă opresc și anunț un adult', 'Iau singur un medicament de acasă', 'Continui jocul și nu spun nimic', 'Un adult te poate ajuta să primești îngrijirea potrivită.'],
+          ['Găsești pastile colorate pe masă.', 'Nu le ating și chem un adult', 'Gust una să văd cum e', 'Le iau ca pe bomboane', 'Medicamentele pot semăna cu bomboanele, dar pot face rău. Doar un adult le dă.'],
+          ['Te-ai tăiat puțin la deget.', 'Îi spun unui adult', 'Ascund degetul', 'Pun pământ pe rană', 'Un adult te ajută să cureți rana și să o protejezi.'],
+          ['Un coleg tușește mult în clasă.', 'Îi spunem învățătoarei', 'Râdem de el', 'Bem din aceeași sticlă', 'Învățătoarea îl poate ajuta. Nu împărțim sticla, ca să nu se transmită microbii.']],
+        [['Un coleg îți oferă medicamentul lui pentru o durere.', 'Refuz și cer ajutor unui adult', 'Îl iau fiindcă pe el l-a ajutat', 'Îl împart cu altcineva', 'Medicamentele nu se aleg și nu se împart între copii. Ce ajută pe cineva poate face rău altcuiva.'],
+          ['Ai febră, dar vrei să mergi la un concurs la școală.', 'Spun părinților și mă odihnesc', 'Merg fără să spun nimic', 'Iau singur un medicament', 'Când ești bolnav, corpul are nevoie de odihnă, iar colegii sunt feriți de boală.'],
+          ['Un prieten spune că fructele unei plante din parc sunt bune de mâncat.', 'Întreb mai întâi un adult', 'Gust puțin', 'Îi dau și fratelui meu', 'Unele fructe sălbatice sunt otrăvitoare. Nu le gustăm fără un adult care cunoaște plantele.'],
+          ['Te doare burta după ce ai mâncat ceva nou.', 'Spun unui adult ce am mâncat', 'Mai mănânc ca să treacă', 'Nu spun nimic', 'Dacă afli ce și când ai mâncat, adultul poate decide cum te ajută.']]
       ],
       family: [
         ['Vrei să ajuți la masa de seară.', 'Întreb ce sarcină sigură pot face', 'Folosesc singur un cuțit ascuțit', 'Decid că numai fetele strâng masa', 'Alegem treburi pe care le putem face în siguranță. Fetele și băieții pot ajuta la aceleași treburi.'],
@@ -476,12 +551,17 @@ const Engines = {
         ['Ați testat o regulă nouă, dar nu funcționează pentru toți.', 'O revizuim folosind observațiile grupului', 'O păstrăm doar fiindcă am votat-o', 'Îi învinovățim pe cei excluși', 'O decizie bună poate fi îmbunătățită după testare.']
       ]
     };
-    const item = bank[mode][level];
-    const first = this.choice(item[0] + ' Ce alegi?', item.slice(1, 4), 0, item[4],
-      'Compară consecințele: ce alegere respectă siguranța, acordul și nevoile persoanelor?');
-    first.kind = 'story';
-    first.consequences = [item[4], 'Această alegere nu rezolvă nevoia sau introduce un risc. Poți reveni și alege altfel.', 'Această alegere poate încălca o limită ori ignora informațiile. Încearcă o alternativă.'];
-    return [first, this.choice('De ce este potrivită soluția aleasă?', [item[4], 'Pentru că trebuie să câștig mereu.', 'Pentru că nu contează consecințele.'], 0,
+    const story = item => {
+      const round = this.choice(item[0] + ' Ce alegi?', item.slice(1, 4), 0, item[4],
+        'Compară consecințele: ce alegere respectă siguranța, acordul și nevoile persoanelor?');
+      round.kind = 'story';
+      round.consequences = [item[4], 'Această alegere nu rezolvă nevoia sau introduce un risc. Poți reveni și alege altfel.', 'Această alegere poate încălca o limită ori ignora informațiile. Încearcă o alternativă.'];
+      return round;
+    };
+    const entry = bank[mode][level];
+    // nivel cu mai multe situații: la fiecare joc se aleg altele; explicația apare după fiecare alegere
+    if (Array.isArray(entry[0])) return this.draw(entry, Math.min(3, entry.length)).map(story);
+    return [story(entry), this.choice('De ce este potrivită soluția aleasă?', [entry[4], 'Pentru că trebuie să câștig mereu.', 'Pentru că nu contează consecințele.'], 0,
       'Explicația trebuie să se lege de situație, nu de o regulă de tip „câștig cu orice preț”.',
       'Revino la urmarea alegerii și numește nevoia protejată.')];
   },

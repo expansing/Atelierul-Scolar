@@ -732,10 +732,12 @@ const ACTIVITIES = [
     ['Fotografii sau desene de animale.', 'Grupează după învelișul corpului.', 'Compară două animale din habitate diferite.'],
     'Nu toate animalele cu aripi sunt păsări. Fluturele este o insectă, iar liliacul este un mamifer.',
     Content.matching([
-      [{ a: 'Pește', b: 'Înotătoare' }, { a: 'Pisică', b: 'Blană' }, { a: 'Vrabie', b: 'Pene' }],
-      [{ a: 'Fluture', b: 'Patru aripi și șase picioare' }, { a: 'Păianjen', b: 'Opt picioare' }, { a: 'Melc', b: 'Se deplasează cu un picior muscular' }, { a: 'Șarpe', b: 'Nu are picioare' }],
-      [{ a: 'Liliac', b: 'Zboară și își hrănește puii cu lapte' }, { a: 'Pinguin', b: 'Are pene și înoată, dar nu zboară' }, { a: 'Delfin', b: 'Trăiește în apă, dar iese la suprafață ca să respire' }, { a: 'Broască', b: 'La începutul vieții este un mormoloc' }, { a: 'Albină', b: 'Poartă polen de la o floare la alta' }]
-    ]), 'De ce aripile nu sunt suficiente ca să numim un animal pasăre?'),
+      [{ a: 'Pește', b: 'Înotătoare' }, { a: 'Pisică', b: 'Blană' }, { a: 'Vrabie', b: 'Pene' }, { a: 'Melc', b: 'Cochilie' }, { a: 'Broască țestoasă', b: 'Carapace' }, { a: 'Arici', b: 'Țepi' }, { a: 'Elefant', b: 'Trompă' }, { a: 'Rață', b: 'Cioc lat' }],
+      [{ a: 'Fluture', b: 'Patru aripi și șase picioare' }, { a: 'Păianjen', b: 'Opt picioare' }, { a: 'Melc', b: 'Lasă o urmă lucioasă' }, { a: 'Șarpe', b: 'Nu are picioare' },
+        { a: 'Rac', b: 'Are clești' }, { a: 'Cangur', b: 'Își poartă puiul într-un buzunar' }, { a: 'Cămilă', b: 'Are cocoașă' }, { a: 'Bufniță', b: 'Vânează noaptea' }],
+      [{ a: 'Liliac', b: 'Zboară și își hrănește puii cu lapte' }, { a: 'Pinguin', b: 'Are pene și înoată, dar nu zboară' }, { a: 'Delfin', b: 'Trăiește în apă, dar iese la suprafață ca să respire' }, { a: 'Broască', b: 'La începutul vieții este un mormoloc' }, { a: 'Albină', b: 'Poartă polen de la o floare la alta' },
+        { a: 'Lup', b: 'Trăiește și vânează în haită' }, { a: 'Urs brun', b: 'Iarna doarme mult în bârlog' }, { a: 'Barză', b: 'Toamna pleacă spre țări mai calde' }]
+    ], [4, 4, 5]), 'De ce aripile nu sunt suficiente ca să numim un animal pasăre?'),
   L('sci', 4, 'Stările apei', '💧',
     'Să lege schimbările de stare de încălzire și răcire',
     'Apa poate fi solidă, lichidă sau gazoasă. Gheața este apă solidă. Vaporii de apă sunt invizibili; norul alb de deasupra apei calde conține picături foarte mici.',
@@ -752,10 +754,12 @@ const ACTIVITIES = [
     ['O siluetă desenată și cartonașe cu organe.', 'Așază organele aproximativ la locul lor.', 'Unește fiecare organ cu funcția sa principală.'],
     'Un joc nu poate stabili de ce te doare ceva. Spune unui adult dacă te doare ceva sau nu te simți bine.',
     Content.matching([
-      [{ a: 'Inimă', b: 'Pompează sângele' }, { a: 'Plămâni', b: 'Participă la respirație' }, { a: 'Creier', b: 'Coordonează multe funcții' }],
-      [{ a: 'Stomac', b: 'Ajută la desfacerea hranei în părți mai mici' }, { a: 'Intestin subțire', b: 'Prin pereții lui trec în sânge substanțe din hrana digerată' }, { a: 'Oase', b: 'Susțin corpul' }, { a: 'Mușchi', b: 'Ajută mișcarea' }],
-      [{ a: 'Mișcare', b: 'Mușchii și oasele lucrează împreună' }, { a: 'Transportul oxigenului', b: 'Plămânii îl iau din aer, iar sângele îl duce prin corp' }, { a: 'Reacție la atingere', b: 'De la piele ajung informații la creier prin nervi' }, { a: 'Folosirea hranei', b: 'Hrana este digerată, iar sângele transportă substanțele obținute' }, { a: 'Protecția creierului', b: 'Oasele craniului înconjoară creierul' }]
-    ]), 'De ce nu lucrează fiecare organ separat?'),
+      [{ a: 'Inimă', b: 'Pompează sângele' }, { a: 'Plămâni', b: 'Ne ajută să respirăm' }, { a: 'Creier', b: 'Gândește și dă comenzi corpului' }, { a: 'Dinți', b: 'Mestecă hrana' }, { a: 'Piele', b: 'Acoperă și apără corpul' }, { a: 'Nas', b: 'Pe aici intră aerul' }],
+      [{ a: 'Stomac', b: 'Fărâmițează hrana' }, { a: 'Intestin subțire', b: 'De aici trece hrana în sânge' }, { a: 'Oase', b: 'Susțin corpul' }, { a: 'Mușchi', b: 'Ne ajută să ne mișcăm' },
+        { a: 'Rinichi', b: 'Curăță sângele' }, { a: 'Vase de sânge', b: 'Duc sângele prin corp' }, { a: 'Încheieturi', b: 'Lasă oasele să se îndoaie' }],
+      [{ a: 'Mișcare', b: 'Mușchii și oasele lucrează împreună' }, { a: 'Respirație', b: 'Plămânii iau oxigen, iar sângele îl duce prin corp' }, { a: 'Simțirea unei atingeri', b: 'Pielea trimite informații la creier prin nervi' }, { a: 'Folosirea hranei', b: 'Hrana este digerată, iar sângele o duce în corp' },
+        { a: 'Creștere', b: 'Oasele și mușchii cresc cu hrană, mișcare și somn' }, { a: 'Apărarea de boli', b: 'Corpul luptă cu microbii care intră în el' }]
+    ], [4, 4, 4]), 'De ce nu lucrează fiecare organ separat?'),
   L('sci', 6, 'Numărăm în natură', '🌳',
     'Să numere și să compare observații reale din natură',
     'În natură putem număra, măsura și compara. Numărul de petale diferă între specii; nu presupunem că toate florile au cinci petale.',
@@ -772,10 +776,10 @@ const ACTIVITIES = [
     ['Materiale curate cu texturi diferite și obiecte cunoscute.', 'Compară o suprafață netedă și una aspră.', 'Descrie fără să privești, dacă te simți confortabil.'],
     'Nu gustăm și nu mirosim de aproape substanțe necunoscute. Nu atingem obiecte fierbinți pentru a testa un simț.',
     Content.matching([
-      [{ a: 'Văz', b: 'Ochi' }, { a: 'Auz', b: 'Urechi' }, { a: 'Miros', b: 'Nas' }],
-      [{ a: 'Gust', b: 'Îl simțim cu ajutorul limbii' }, { a: 'Atingere', b: 'O simțim cu ajutorul pielii' }, { a: 'Culoarea unui măr', b: 'O observăm cu ochii' }, { a: 'Sunetul ploii', b: 'Îl auzim cu urechile' }],
-      [{ a: 'Textura unei țesături', b: 'O explorăm prin atingere' }, { a: 'Aroma unui aliment cunoscut', b: 'Implică gustul și mirosul' }, { a: 'Un produs necunoscut', b: 'Nu îl gustăm' }, { a: 'Un sunet foarte puternic', b: 'Ne îndepărtăm și ne protejăm auzul' }, { a: 'Un obiect fierbinte', b: 'Nu îl atingem pentru testare' }]
-    ]), 'Cum explorăm fără să ne punem în pericol?'),
+      [{ a: 'Văz', b: 'Ochi' }, { a: 'Auz', b: 'Urechi' }, { a: 'Miros', b: 'Nas' }, { a: 'Gust', b: 'Limbă' }, { a: 'Atingere', b: 'Piele' }],
+      [{ a: 'Culoarea unui măr', b: 'Văz' }, { a: 'Sunetul ploii', b: 'Auz' }, { a: 'Mirosul pâinii calde', b: 'Miros' }, { a: 'Gustul lămâii', b: 'Gust' }, { a: 'Un fular moale', b: 'Atingere' }],
+      [{ a: 'Un produs necunoscut', b: 'Nu îl gustăm' }, { a: 'Un sunet foarte puternic', b: 'Ne îndepărtăm și ne protejăm urechile' }, { a: 'Un obiect fierbinte', b: 'Nu îl atingem ca să-l testăm' }, { a: 'Miros de fum', b: 'Anunțăm imediat un adult' }, { a: 'O lumină foarte puternică', b: 'Nu privim direct spre ea' }, { a: 'Un animal necunoscut', b: 'Îl privim de la distanță' }]
+    ], [4, 4, 5]), 'Cum explorăm fără să ne punem în pericol?'),
   L('sci', 8, 'Ciclul apei', '☁️',
     'Să explice legătura dintre evaporare, condensare și precipitații',
     'Apa circulă între suprafața Pământului și aerul din jurul lui. Când apa lichidă devine vapori, spunem că se evaporă. Când vaporii se răcesc și formează picături, are loc condensarea. Ploaia, ninsoarea și grindina sunt forme de precipitații: apă care cade din nori.',
@@ -784,10 +788,15 @@ const ACTIVITIES = [
     ['Un desen cu soare, apă și nori.', 'Adaugă săgeți între etape.', 'Povestește călătoria unei picături fără să presupui că apa dispare.'],
     'Norii sunt formați din picături foarte mici de apă sau din cristale de gheață, uneori din amândouă. Vaporii de apă nu se văd.',
     Content.sequence([
-      [O('Ordonează etapele indicate: apă la sol, vapori, picături în nor.', ['Apă la sol', 'Vapori în aer', 'Picături în nor'], 'Apa lichidă poate deveni vapori prin evaporare. Când se răcesc, vaporii pot forma picături.')],
-      [O('Reconstruiește ciclul începând cu evaporarea: evaporare, condensare, precipitații, colectare.', ['Evaporare', 'Condensare', 'Precipitații', 'Colectare'], 'Apa se evaporă, formează picături în nori, cade ca precipitații și se adună din nou la suprafață. Ciclul poate continua.')],
-      [O('Urmărește traseul ales al apei: se încălzește, se evaporă, vaporii se răcesc, se formează picături, apa revine la sol.', ['Apa se încălzește', 'O parte se evaporă', 'Vaporii se răcesc', 'Se formează picături', 'Apa revine la sol'], 'Căldura ajută apa să se evapore. Prin răcire se pot forma picături, iar apa poate reveni la sol prin ploaie.')]
-    ]), 'De ce spunem ciclu și nu drum cu un singur final?'),
+      [O('Ordonează etapele indicate: apă la sol, vapori, picături în nor.', ['Apă la sol', 'Vapori în aer', 'Picături în nor'], 'Apa lichidă poate deveni vapori prin evaporare. Când se răcesc, vaporii pot forma picături.'),
+        O('Ordonează: nor, ploaie, băltoacă.', ['Nor', 'Ploaie', 'Băltoacă'], 'Din nor cade ploaia, iar apa se adună pe jos într-o băltoacă.'),
+        O('Ordonează ce se întâmplă cu un om de zăpadă la soare.', ['Om de zăpadă', 'Zăpada se topește', 'Apă pe jos'], 'La căldură, zăpada se topește și devine apă.')],
+      [O('Reconstruiește ciclul începând cu evaporarea: evaporare, condensare, precipitații, colectare.', ['Evaporare', 'Condensare', 'Precipitații', 'Colectare'], 'Apa se evaporă, formează picături în nori, cade ca precipitații și se adună din nou la suprafață. Ciclul poate continua.'),
+        O('Ordonează drumul unei picături de ploaie spre mare.', ['Ploaie', 'Râu', 'Mare', 'Nor'], 'Ploaia ajunge în râu, râul în mare, iar din mare apa se evaporă și formează din nou nori.'),
+        O('Ordonează drumul zăpezii de pe munte.', ['Zăpadă pe munte', 'Zăpada se topește', 'Pârâu', 'Râu'], 'Primăvara zăpada se topește; apa curge în pâraie, iar pâraiele se varsă în râuri.')],
+      [O('Urmărește traseul ales al apei: se încălzește, se evaporă, vaporii se răcesc, se formează picături, apa revine la sol.', ['Apa se încălzește', 'O parte se evaporă', 'Vaporii se răcesc', 'Se formează picături', 'Apa revine la sol'], 'Căldura ajută apa să se evapore. Prin răcire se pot forma picături, iar apa poate reveni la sol.'),
+        O('Ordonează ce se întâmplă cu apa din rufele întinse la soare.', ['Apa din rufe se încălzește', 'Apa se evaporă', 'Vaporii urcă', 'Vaporii se răcesc', 'Se formează nori'], 'Și apa din rufe intră în ciclul apei: se evaporă, urcă și se răcește.')]
+    ], [2, 2, 2]), 'De ce spunem ciclu și nu drum cu un singur final?'),
   L('sci', 9, 'Un experiment corect', '🔬',
     'Să schimbe un singur factor și să lege concluzia de observații',
     'Într-un experiment de comparație punem o întrebare și spunem ce credem că se va întâmpla: aceasta este o predicție. Apoi schimbăm un singur lucru, păstrăm celelalte condiții la fel și observăm rezultatul.',
