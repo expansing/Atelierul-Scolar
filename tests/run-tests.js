@@ -22,8 +22,8 @@ function result(overrides) {
   return Object.assign({ level: 0, total: 5, firstCorrect: 4, percent: 80, hints: 0, errors: 1, moves: 0, evaluation: 'objective', finishedAt: '2026-10-16T12:00:00.000Z' }, overrides || {});
 }
 const data = fixture();
-test('72 activities, 216 levels and complete structural content', () => {
-  assert.strictEqual(data.ACTIVITIES.length, 72);
+test('76 activities, 228 levels and complete structural content', () => {
+  assert.strictEqual(data.ACTIVITIES.length, 76);
   assert.strictEqual(data.LEVELS.length, 3);
   assert.deepStrictEqual(validate(data), []);
 });
@@ -309,8 +309,8 @@ test('All lessons have specific vocabulary, visible worked steps, four goals and
     assert.strictEqual((html.match(/class="discovery-column"/g) || []).length, 2);
     assert(!html.includes('<details><summary>Desfacem'), 'Worked steps should not start hidden');
   });
-  assert.strictEqual(explanations.size, 72);
-  assert.strictEqual(checks.size, 72);
+  assert.strictEqual(explanations.size, 76);
+  assert.strictEqual(checks.size, 76);
 });
 test('Selected games produce only the chosen mechanic at every supported level', () => {
   const expected = { draw: 'geoboard', symmetry: 'symmetry', mosaic: 'mosaic', properties: 'shape-select',
@@ -345,7 +345,7 @@ test('Selected games produce only the chosen mechanic at every supported level',
   });
 });
 test('Every lesson adds three genuinely distinct mechanics with three authored situations', () => {
-  assert.strictEqual(Object.keys(data.GAME_MISSIONS).length, 72);
+  assert.strictEqual(Object.keys(data.GAME_MISSIONS).length, 76);
   let cases = 0, sessions = 0;
   const contexts = new Set();
   data.ACTIVITIES.forEach(activity => {
@@ -369,7 +369,7 @@ test('Every lesson adds three genuinely distinct mechanics with three authored s
     });
     assert.strictEqual(kinds.size, 3);
   });
-  assert.strictEqual(cases, 216); assert.strictEqual(contexts.size, 216); assert.strictEqual(sessions, 648);
+  assert.strictEqual(cases, 228); assert.strictEqual(contexts.size, 228); assert.strictEqual(sessions, 684);
   assert.throws(() => data.MissionGames.demo('missing', 'evidence'), /necunoscut/);
   assert.throws(() => data.MissionGames.demo('mat-1', 'unknown'), /necunoscut/);
   assert.throws(() => data.MissionGames.rounds({ activityId: 'mat-1', mode: 'plan' }, 3), /inexistent/);
@@ -558,6 +558,35 @@ test('New thinking results coexist with old progress and survive export/import',
   assert.strictEqual(second.status('civ-1'), 'viewed');
   assert.strictEqual(second.entry('mat-1').levels[0].mastered, true);
   data.THINKING_PATH.activities.forEach(id => assert.strictEqual(second.entry(id).levels[0].hints, 1));
+});
+test('Romanian lessons draw a different set of tasks on replay', () => {
+  data.ACTIVITIES.filter(a => a.subject === 'lim' && a.demo.type !== 'type').forEach(activity => {
+    [0, 1, 2].forEach(level => {
+      const seen = new Set(), sizes = new Set();
+      for (let i = 0; i < 60; i++) {
+        const rounds = data.Engines.rounds(activity.demo, level);
+        sizes.add(rounds.length);
+        rounds.forEach(q => seen.add(JSON.stringify([q.prompt, q.say, q.passage, q.tokens, (q.pairs || []).map(p => p.a).sort()])));
+      }
+      const config = activity.demo.levels[level];
+      if (config.rounds && ['quiz', 'arrange', 'classify', 'wordbuilder'].includes(activity.demo.type)) assert(sizes.size === 1 && sizes.has(config.rounds), activity.id + '/' + level + ': ' + config.rounds + ' sarcini pe joc');
+      const per = Math.max(...sizes);
+      assert(seen.size > per, activity.id + '/' + level + ': aceleași ' + per + ' sarcini la fiecare reluare');
+    });
+  });
+});
+test('Sound questions carry a word and a picture, and rhyme levels have no rhymes across pairs', () => {
+  const lim1 = data.ACTIVITIES.find(a => a.id === 'lim-1');
+  lim1.demo.levels.forEach((config, level) => {
+    const sounds = config.questions.filter(q => q.say);
+    assert(sounds.length >= 8, 'lim-1/' + level + ': prea puține cuvinte de ascultat');
+    sounds.forEach(q => assert(q.picture && !q.prompt.includes(q.say), 'lim-1: cuvântul ' + q.say + ' nu trebuie scris în cerință'));
+  });
+  const ending = word => word.slice(-3);
+  data.ACTIVITIES.find(a => a.id === 'lim-4').demo.levels.forEach((config, level) => {
+    const endings = config.pairs.map(pair => ending(pair.a));
+    assert.strictEqual(new Set(endings).size, endings.length, 'lim-4/' + level + ': două perechi au același final (' + endings + ')');
+  });
 });
 test('Every page applies saved preferences in the head and names the learning path consistently', () => {
   const fs = require('fs'), path = require('path');

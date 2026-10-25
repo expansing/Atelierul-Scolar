@@ -70,7 +70,14 @@ const Engines = {
   },
   questionRound(question) {
     const correct = question.options[question.answer], options = this.shuffle(question.options);
-    return this.choice(question.prompt, options, options.indexOf(correct), question.explain, question.hint);
+    // say/picture: cuvânt de ascultat (jocuri cu sunete) și imaginea lui
+    const extra = question.say ? { say: question.say, picture: question.picture || '' } : question.scene ? { scene: question.scene, pictureScene: true } : undefined;
+    return this.choice(question.prompt, options, options.indexOf(correct), question.explain, question.hint, extra);
+  },
+  // un nivel poate avea mai multe sarcini decât rundele unui joc: la fiecare joc se aleg altele
+  draw(list, count) {
+    const shuffled = this.shuffle(list);
+    return Number.isInteger(count) && count > 0 ? shuffled.slice(0, count) : shuffled;
   },
   gameOptions(demo) {
     if (demo.type === 'shapes') return [
@@ -119,14 +126,15 @@ const Engines = {
       });
     }
     if (demo.type === 'quiz') {
-      return this.shuffle(config.questions).map(q => this.questionRound(q));
+      return this.draw(config.questions, config.rounds).map(q => this.questionRound(q));
     }
-    if (demo.type === 'arrange') return this.shuffle(config.questions).map(q => Object.assign({ kind: 'arrange' }, q));
+    if (demo.type === 'arrange') return this.draw(config.questions, config.rounds).map(q => Object.assign({ kind: 'arrange' }, q));
     if (demo.type === 'match') {
-      return [{ kind: 'match', prompt: 'Asociază fiecare element din stânga cu perechea lui. Poți schimba selecția înainte de verificare.', pairs: this.shuffle(config.pairs), explain: config.pairs.map(p => p.a + ' — ' + p.b).join('; ') + '.', hint: 'Alege un element din stânga, apoi caută relația lui în dreapta.' }];
+      const pairs = this.draw(config.pairs, config.show);
+      return [{ kind: 'match', prompt: config.prompt || 'Asociază fiecare element din stânga cu perechea lui. Poți schimba selecția înainte de verificare.', pairs, explain: pairs.map(p => p.a + ' — ' + p.b).join('; ') + '.', hint: config.hint || 'Alege un element din stânga, apoi caută relația lui în dreapta.' }];
     }
     if (demo.type === 'classify') {
-      return this.shuffle(config.items).map(item => this.choice('Unde se potrivește: ' + item.label + '?', config.zones, item.zone,
+      return this.draw(config.items, config.rounds).map(item => this.choice('Unde se potrivește: ' + item.label + '?', config.zones, item.zone,
         '„' + item.label + '” aparține grupei „' + config.zones[item.zone] + '”, conform regulii afișate.',
         'Citește toate condițiile din numele grupei, inclusiv limitele și cuvântul „și”.'));
     }
@@ -139,7 +147,7 @@ const Engines = {
     if (demo.type === 'reading') return this.readingRounds(demo.mode, level);
     if (demo.type === 'experiment') return this.experimentRounds(demo.mode, level);
     if (demo.type === 'story') return this.storyRounds(demo.mode, level);
-    if (demo.type === 'wordbuilder') return this.wordRounds(demo.mode, level);
+    if (demo.type === 'wordbuilder') return this.wordRounds(demo.mode, level, config.rounds);
     const result = [];
     for (let index = 0; index < config.rounds; index++) result.push(this.generate(demo.type, demo.mode, level, index));
     if (config.review) result[result.length - 1] = this.questionRound(this.pick(config.review));
@@ -251,52 +259,93 @@ const Engines = {
     hint: 'Un traseu sigur: mergi până jos pe prima coloană, apoi până la stea pe ultimul rând. Ținta este la rândul ' + size + ', coloana ' + (goal.x + 1) + '.' };
   },
 
-  wordRounds(mode, level) {
+  wordRounds(mode, level, count) {
     if (mode === 'syllables') {
       const words = [
-        [['ma', 'mă'], ['ba', 'lon'], ['ca', 'să']],
-        [['ca', 'me', 'ră'], ['pă', 'pu', 'șă'], ['pi', 'si', 'că']],
-        [['soa', 're'], ['școa', 'lă'], ['bi', 'bli', 'o', 'te', 'că']]
+        [['ma', 'mă'], ['ba', 'lon'], ['ca', 'să'], ['ta', 'tă'], ['lu', 'nă'], ['ra', 'ță'], ['su', 'pă'], ['ma', 'să'], ['nu', 'că'], ['ca', 'nă']],
+        [['ca', 'me', 'ră'], ['pă', 'pu', 'șă'], ['pi', 'si', 'că'], ['ba', 'na', 'nă'], ['ro', 'chi', 'ță'], ['ma', 'și', 'nă'], ['al', 'bi', 'nă'], ['pă', 'du', 're'], ['gră', 'di', 'nă'], ['mo', 'ne', 'dă']],
+        [['soa', 're'], ['școa', 'lă'], ['bi', 'bli', 'o', 'te', 'că'], ['cio', 'co', 'la', 'tă'], ['fe', 'reas', 'tră'], ['lea', 'găn'], ['ghio', 'cel'], ['pri', 'mă', 'va', 'ră'], ['flu', 'tu', 're'], ['ceai', 'nic']]
       ][level];
-      return words.map(tokens => ({ kind: 'arrange', prompt: 'Construiește cuvântul „' + tokens.join('') + '” din silabe.', tokens,
+      return this.draw(words, count).map(tokens => ({ kind: 'arrange', prompt: 'Construiește cuvântul „' + tokens.join('') + '” din silabe.', tokens,
         explain: tokens.join('-') + ': ' + tokens.length + ' silabe. Citim silabele împreună pentru a verifica cuvântul.',
         hint: 'Spune cuvântul întreg, apoi rar. Bate o dată din palme pentru fiecare silabă: de exemplu, „ma-mă”.' }));
     }
     const words = [
-      [['m_r', 'ă', 'măr'], ['p_pușă', 'ă', 'păpușă'], ['p_ine', 'â', 'pâine']],
-      [['_not', 'î', 'înot'], ['r_u', 'â', 'râu'], ['m_ncare', 'â', 'mâncare']],
-      [['a cobor_', 'î', 'a coborî'], ['ne_nțeles', 'î', 'neînțeles'], ['hotăr_', 'î', 'hotărî']]
+      [['m_r', 'ă', 'măr'], ['p_pușă', 'ă', 'păpușă'], ['p_ine', 'â', 'pâine'], ['c_ine', 'â', 'câine'], ['cas_', 'ă', 'casă'], ['m_nă', 'â', 'mână'], ['fat_', 'ă', 'fată'], ['p_r', 'ă', 'păr'], ['c_mp', 'â', 'câmp'], ['v_nt', 'â', 'vânt']],
+      [['_not', 'î', 'înot'], ['r_u', 'â', 'râu'], ['m_ncare', 'â', 'mâncare'], ['_nger', 'î', 'înger'], ['_nghețată', 'î', 'înghețată'], ['_nalt', 'î', 'înalt'], ['_mi place', 'î', 'îmi place'], ['c_ntec', 'â', 'cântec'], ['gr_u', 'â', 'grâu'], ['l_ngă', 'â', 'lângă']],
+      [['a cobor_', 'î', 'a coborî'], ['ne_nțeles', 'î', 'neînțeles'], ['hotăr_', 'î', 'hotărî'], ['a ur_', 'î', 'a urî'], ['re_ntoarcere', 'î', 'reîntoarcere'], ['ne_ncetat', 'î', 'neîncetat'], ['a izvor_', 'î', 'a izvorî'], ['m_ine', 'â', 'mâine'], ['c_știg', 'â', 'câștig'], ['p_dure', 'ă', 'pădure']]
     ][level];
-    return words.map(item => this.choice('Completează: ' + item[0], ['ă', 'â', 'î'], ['ă', 'â', 'î'].indexOf(item[1]),
-      'Forma corectă este „' + item[2] + '”. ' + (level === 2 ? 'La finalul acestor verbe și în cuvântul format cu prefix păstrăm î.' : 'Compară sunetul și poziția literei cu exemplele lecției.'),
+    return this.draw(words, count).map(item => this.choice('Completează: ' + item[0], ['ă', 'â', 'î'], ['ă', 'â', 'î'].indexOf(item[1]),
+      'Forma corectă este „' + item[2] + '”. ' + this.diacriticRule(item),
       'Ă notează alt sunet. Pentru â/î verifică forma și poziția, nu lungimea sunetului.'));
   },
   writingRounds(level) {
     return [{
       kind: 'writing',
-      prompt: ['Scrie un enunț despre un personaj și un loc.', 'Scrie cel puțin două enunțuri: o întâmplare și urmarea ei.', 'Scrie cel puțin trei enunțuri: început, întâmplare, încheiere.'][level],
+      prompt: this.pick([
+        ['Scrie un enunț despre un personaj și un loc.', 'Scrie un enunț despre animalul tău preferat și locul unde trăiește.', 'Scrie un enunț despre ce faci în parc.'],
+        ['Scrie cel puțin două enunțuri: o întâmplare și urmarea ei.', 'Scrie două enunțuri despre o zi cu ploaie: ce s-a întâmplat și ce ai făcut.', 'Scrie două enunțuri despre un cadou: ce ai primit și cum te-ai simțit.'],
+        ['Scrie cel puțin trei enunțuri: început, întâmplare, încheiere.', 'Scrie o poveste de trei enunțuri despre un robot care se rătăcește.', 'Scrie o poveste de trei enunțuri despre o excursie la munte.']
+      ][level]),
       minimum: [1, 2, 3][level], minWords: [4, 8, 15][level],
       checklist: ['Mesajul are sens pentru un cititor.', 'Am numit personajul și am legat ideile.', 'Am recitit acordurile, diacriticele și semnele finale.'],
-      hint: 'Poți porni de la „Mara era în parc.” Adaugă ce s-a întâmplat și cum s-a încheiat.',
+      hint: 'Spune mai întâi cu voce tare ce vrei să scrii. Începe cu cine și unde, de exemplu „Mara era în parc.”, apoi adaugă ce s-a întâmplat.',
       explain: 'Ai folosit o listă de revizuire. Verificarea automată urmărește numai câteva criterii de formă, nu confirmă gramatica sau sensul. Cere feedback unui adult.',
       evaluation: 'self'
     }];
   },
+  // explicația potrivită cuvântului: ă (alt sunet), î la început, î la final/după prefix, â în interior
+  diacriticRule(item) {
+    const position = item[0].replace(/^a /, '').indexOf('_'), word = item[0].replace(/^a /, '');
+    if (item[1] === 'ă') return 'Ă notează alt sunet decât â și î: ascultă „măr” și „râu”.';
+    if (item[1] === 'â') return 'În interiorul cuvântului scriem â.';
+    if (position === 0) return 'La începutul cuvântului scriem î.';
+    if (position === word.length - 1) return 'La sfârșitul cuvântului scriem î.';
+    return 'Cuvântul s-a format adăugând un început (ne-, re-) la un cuvânt care începe cu î, de aceea păstrăm î.';
+  },
   readingRounds(mode, level) {
     const passages = {
       park: [
-        { text: 'Lia merge în parc cu bunicul. Ei iau o minge albastră. În parc, Lia o împrumută lui Dan.', questions: [
+        [{ text: 'Lia merge în parc cu bunicul. Ei iau o minge albastră. În parc, Lia o împrumută lui Dan.', questions: [
           Q('Cu cine merge Lia în parc?', ['Cu bunicul', 'Cu Dan', 'Singură'], 0, 'Prima propoziție spune că Lia merge cu bunicul.'),
           Q('Ce culoare are mingea?', ['Albastră', 'Roșie', 'Nu este precizat'], 0, 'Textul spune „o minge albastră”.')
         ] },
-        { text: 'Mara pune o carte în rucsac. Cerul este acoperit, iar la radio se anunță ploaie. Ea adaugă o umbrelă. La bibliotecă, lasă cartea pe masa de returnare.', questions: [
+        { text: 'Tudor are un cățel negru. Îl cheamă Bobi. În fiecare dimineață, Tudor îi pune apă proaspătă.', questions: [
+          Q('Ce culoare are cățelul?', ['Negru', 'Alb', 'Maro'], 0, 'Textul spune „un cățel negru”.'),
+          Q('Ce face Tudor în fiecare dimineață?', ['Îi pune apă', 'Îl spală', 'Îl plimbă'], 0, 'Ultima propoziție spune că îi pune apă proaspătă.')
+        ] },
+        { text: 'Ioana și Matei fac o prăjitură. Ioana bate ouăle. Matei pune făina. Mama aprinde cuptorul.', questions: [
+          Q('Cine pune făina?', ['Matei', 'Ioana', 'Mama'], 0, 'Textul spune „Matei pune făina”.'),
+          Q('Ce pregătesc copiii?', ['O prăjitură', 'O ciorbă', 'O salată'], 0, 'Prima propoziție spune că fac o prăjitură.')
+        ] },
+        { text: 'Este iarnă. Afară ninge. Radu își ia fularul și mănușile și iese la săniuș.', questions: [
+          Q('Ce anotimp este?', ['Iarna', 'Vara', 'Toamna'], 0, 'Prima propoziție spune „Este iarnă”.'),
+          Q('De ce își ia Radu mănușile?', ['Fiindcă afară ninge', 'Fiindcă merge la școală', 'Fiindcă afară plouă'], 0, 'Ninge, iar Radu iese la săniuș: mănușile îl țin de cald.')
+        ] }],
+        [{ text: 'Mara pune o carte în rucsac. Cerul este acoperit, iar la radio se anunță ploaie. Ea adaugă o umbrelă. La bibliotecă, lasă cartea pe masa de returnare.', questions: [
           Q('De ce ia Mara o umbrelă?', ['Pentru că se anunță ploaie', 'Ca să returneze cartea', 'Fiindcă este deja la bibliotecă'], 0, 'Anunțul despre ploaie susține alegerea umbrelei.'),
           Q('Unde duce cartea?', ['La bibliotecă', 'La magazin', 'La școală'], 0, 'Ultima propoziție numește biblioteca.')
         ] },
-        { text: 'La clubul de lectură, Radu propune să aleagă cartea prin vot. Ina observă că un coleg nu vede bine literele mici. Grupul caută o ediție cu litere mari și o variantă audio. Abia apoi compară titlurile disponibile pentru toți.', questions: [
+        { text: 'Andrei vrea să planteze o floare. Sapă o groapă mică, pune sămânța și o acoperă cu pământ. Apoi o udă. După două săptămâni, apare o frunză verde.', questions: [
+          Q('Ce face Andrei după ce acoperă sămânța?', ['O udă', 'Sapă o groapă', 'Culege floarea'], 0, 'Textul spune „Apoi o udă”, după ce acoperă sămânța.'),
+          Q('Cât timp trece până apare frunza?', ['Două săptămâni', 'O zi', 'Un an'], 0, 'Ultima propoziție spune „După două săptămâni”.')
+        ] },
+        { text: 'Bunica i-a dat Sarei un coș. Sara a cules zece mere din livadă. Pe drum, i-a dat trei mere vecinului. Acasă, a pus pe masă merele rămase.', questions: [
+          Q('De unde a cules Sara merele?', ['Din livadă', 'Din piață', 'Din grădina vecinului'], 0, 'Textul spune „din livadă”.'),
+          Q('Câte mere a pus Sara pe masă?', ['Șapte', 'Zece', 'Trei'], 0, 'A cules zece și a dat trei: 10 − 3 = 7.')
+        ] }],
+        [{ text: 'La clubul de lectură, Radu propune să aleagă cartea prin vot. Ina observă că un coleg nu vede bine literele mici. Grupul caută o ediție cu litere mari și o variantă audio. Abia apoi compară titlurile disponibile pentru toți.', questions: [
           Q('De ce nu votează imediat?', ['Verifică mai întâi accesul tuturor', 'Nu vor să citească', 'Nu există nicio carte'], 0, 'Grupul caută mai întâi formate pe care le pot folosi toți.'),
           Q('Ce concluzie este susținută de text?', ['O alegere bună ține cont și de accesibilitate', 'Votul este întotdeauna greșit', 'Toți preferă cărțile audio'], 0, 'Textul nu respinge votul, ci arată pregătirea unei alegeri incluzive.')
-        ] }
+        ] },
+        { text: 'Victor a ajuns la școală ud leoarcă. Avea ghiozdanul în mână, dar umbrela rămăsese acasă, lângă ușă. Doamna învățătoare i-a dat un prosop.', questions: [
+          Q('De ce a ajuns Victor ud?', ['Ploua și nu avea umbrela', 'A sărit într-un lac', 'S-a udat la cișmea'], 0, 'Textul nu spune direct „ploua”, dar umbrela uitată și hainele ude sunt indicii.'),
+          Q('Ce a făcut învățătoarea?', ['I-a dat un prosop', 'L-a trimis acasă', 'I-a adus umbrela'], 0, 'Ultima propoziție spune că i-a dat un prosop.')
+        ] },
+        { text: 'Pe banca din parc stau o carte și o sticlă de apă. Lângă bancă, o fetiță se uită în jur îngrijorată. Ea strigă: „Cine a văzut cartea mea cu dinozauri?”', questions: [
+          Q('Ce caută probabil fetița?', ['Cartea de pe bancă', 'O sticlă de apă', 'Un dinozaur adevărat'], 0, 'Fetița întreabă de cartea ei, iar pe bancă stă o carte.'),
+          Q('Ce cuvânt arată cum se simte fetița?', ['îngrijorată', 'bancă', 'strigă'], 0, '„Îngrijorată” spune ce simte fetița.')
+        ] }]
       ],
       clues: [
         { text: 'Pe masă sunt trei creioane și o foaie cu un soare desenat. Nu vedem cine a făcut desenul.', questions: [
@@ -327,7 +376,8 @@ const Engines = {
         ] }
       ]
     };
-    const passage = passages[mode][level];
+    // un nivel poate avea mai multe texte: la fiecare joc se alege altul
+    const passage = this.pick([].concat(passages[mode][level]));
     return passage.questions.map(q => this.choice(q.prompt, q.options, q.answer, q.explain, 'Recitește și caută propoziția sau valorile care susțin răspunsul.', { passage: passage.text }));
   },
 
@@ -452,6 +502,29 @@ const Engines = {
       const status = container.querySelector('#game-feedback');
       status.textContent = text;
       status.className = 'game-feedback ' + (bad ? 'needs-work' : 'good');
+      const listen = container.querySelector('#game-listen-feedback');
+      if (listen) listen.hidden = !text;
+    };
+    // citire vocală: sarcina cu variantele numerotate, apoi mesajul de după răspuns
+    const speak = async text => {
+      if (typeof Speech === 'undefined') return;
+      const problem = await Speech.speak(text);
+      if (problem) announce(problem, true);
+    };
+    const canSpeak = typeof Speech !== 'undefined' && Speech.supported();
+    const taskText = q => {
+      const list = nodes => nodes.map(text => Speech.clean(text)).filter(Boolean).join(', ');
+      const options = Array.from(container.querySelectorAll('#round-content .quiz-opt'), (node, i) => (i + 1) + ': ' + Speech.clean(node.textContent) + '.');
+      const firstSelect = container.querySelector('#round-content .match-select select');
+      const parts = [q.prompt, q.passage, q.say ? 'Cuvântul este: ' + q.say + '.' : ''].filter(Boolean).map(text => Speech.clean(text));
+      if (options.length) parts.push('Variantele sunt. ' + options.join(' '));
+      if (q.kind === 'match' && firstSelect) {
+        const left = list((q.pairs || []).map(pair => pair.a)), right = list(Array.from(firstSelect.options).slice(1).map(option => option.textContent));
+        parts.push('Cuvintele sunt: ' + left + '.' + (right ? ' Perechile posibile: ' + right + '.' : ''));
+      }
+      const tokens = list(Array.from(container.querySelectorAll('#round-content .token-pool button'), node => node.textContent));
+      if (q.kind === 'arrange' && tokens) parts.push('Piesele de ordonat: ' + tokens + '.');
+      return parts.join(' ');
     };
     const check = (correct, detail) => {
       if (solved || disposed) return;
@@ -477,9 +550,12 @@ const Engines = {
       const q = rounds[index];
       container.innerHTML = '<div class="g-status">Sarcina ' + (index + 1) + ' din ' + rounds.length + ' · ' + LEVELS[level].title + '</div>' +
         '<progress aria-label="Sarcini parcurse" value="' + index + '" max="' + rounds.length + '"></progress>' +
-        '<h3 class="game-prompt" tabindex="-1">' + this.escape(q.prompt) + '</h3>' +
+        '<div class="prompt-row"><h3 class="game-prompt" tabindex="-1">' + this.escape(q.prompt) + '</h3>' +
+        (canSpeak ? '<button class="btn btn-listen" id="game-listen" type="button" aria-label="Ascultă sarcina și variantele">🔊 Ascultă</button>' : '') + '</div>' +
         '<div id="round-content"></div><p id="game-feedback" class="game-feedback" role="status" aria-live="polite" aria-atomic="true"></p>' +
-        '<div class="game-controls"><button class="btn" id="game-hint" type="button">Un indiciu</button>' +
+        '<div class="game-controls">' +
+        (canSpeak ? '<button class="btn btn-listen" id="game-listen-feedback" type="button" hidden aria-label="Ascultă mesajul de sub sarcină">🔊 Ascultă mesajul</button>' : '') +
+        '<button class="btn" id="game-hint" type="button">Un indiciu</button>' +
         '<button class="btn btn-primary" id="game-next" type="button" hidden>Continuă</button></div>';
       const content = container.querySelector('#round-content');
       if (q.passage) {
@@ -488,8 +564,24 @@ const Engines = {
       }
       if (q.clock) content.insertAdjacentHTML('beforeend', this.clockSVG(q.clock.hour, q.clock.minutes));
       if (q.shape) content.insertAdjacentHTML('beforeend', this.shapeSVG(q.shape, q.rotation));
-      if (q.scene) { const scene = document.createElement('div'); scene.className = 'count-scene'; scene.textContent = q.scene; content.appendChild(scene); }
+      if (q.scene) { const scene = document.createElement('div'); scene.className = 'count-scene' + (q.pictureScene ? ' picture-scene' : ''); scene.textContent = q.scene; content.appendChild(scene); }
       if (q.matrix) content.insertAdjacentHTML('beforeend', this.matrixHTML(q.matrix));
+      if (q.say) {
+        // cuvântul se ascultă; scris apare doar la cerere, ca sarcina să rămână una de auz
+        const card = document.createElement('div'); card.className = 'word-card';
+        const picture = document.createElement('span'); picture.className = 'word-picture'; picture.setAttribute('aria-hidden', 'true'); picture.textContent = q.picture;
+        const word = document.createElement('strong'); word.className = 'word-text'; word.textContent = q.say; word.hidden = true;
+        card.appendChild(picture);
+        if (canSpeak) card.appendChild(button('🔊 Ascultă cuvântul', () => speak(q.say), 'btn btn-primary btn-listen'));
+        const reveal = button('Arată cuvântul scris (pentru adult)', () => { word.hidden = false; reveal.hidden = true; }, 'btn');
+        card.appendChild(reveal); card.appendChild(word);
+        if (!canSpeak) {
+          const note = document.createElement('p'); note.className = 'word-note';
+          note.textContent = 'Fără voce română pe dispozitiv: un adult poate citi cuvântul cu voce tare.';
+          card.appendChild(note);
+        }
+        content.appendChild(card);
+      }
       const showChoices = () => {
         const options = document.createElement('div'); options.className = 'quiz-options';
         this.shuffle(q.options.map((option, optionIndex) => ({ option, optionIndex }))).forEach(({ option, optionIndex }) => {
@@ -663,6 +755,12 @@ const Engines = {
           check(true, 'Autoevaluare înregistrată, fără acordarea unei stele de competență.');
         }, 'btn btn-primary'));
       } else throw new Error('Interfață de joc indisponibilă: ' + q.kind);
+      const listenTask = container.querySelector('#game-listen'), listenFeedback = container.querySelector('#game-listen-feedback');
+      if (listenTask) {
+        listen(listenTask, 'click', () => speak(taskText(q)));
+        listen(listenFeedback, 'click', () => speak(Speech.clean(container.querySelector('#game-feedback').textContent)));
+        cleanup.push(() => Speech.stop());
+      }
       listen(container.querySelector('#game-hint'), 'click', () => {
         if (solved) return; hints++; roundHints++; assisted = true;
         announce(roundHints === 1 ? q.hint : q.hint + ' Exemplu de verificare: ' + q.explain, false);

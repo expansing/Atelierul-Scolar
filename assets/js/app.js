@@ -220,24 +220,16 @@
   function initReading() {
     const button = document.getElementById('read-lesson'), stop = document.getElementById('stop-reading');
     if (!button || !activity) return;
-    if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+    if (!Speech.supported()) {
       button.disabled = true; button.textContent = 'Citirea vocală nu este disponibilă în acest browser'; return;
     }
-    button.addEventListener('click', () => {
-      window.speechSynthesis.cancel();
-      const voices = window.speechSynthesis.getVoices(), voice = voices.find(v => /^ro(?:-|_)/i.test(v.lang) || v.lang === 'ro');
-      if (!voice) { message('Browserul nu are o voce română disponibilă. Poți instala una din setările dispozitivului; textul rămâne disponibil pentru citire.', true); return; }
-      if (!voice.localService) { message('Vocea română disponibilă folosește un serviciu online. Atelierul nu pornește această voce, pentru a păstra textul pe dispozitiv.', true); return; }
-      const speech = new SpeechSynthesisUtterance(Discovery.readingText(activity));
-      speech.lang = 'ro-RO'; speech.voice = voice; speech.rate = 0.85;
-      speech.onend = () => { stop.hidden = true; button.disabled = false; };
-      speech.onerror = event => {
-        stop.hidden = true; button.disabled = false;
-        if (event.error !== 'canceled' && event.error !== 'interrupted') message('Citirea vocală a eșuat. Textul poate fi citit în continuare pe pagină.', true);
-      };
-      stop.hidden = false; button.disabled = true; window.speechSynthesis.speak(speech);
+    const idle = () => { stop.hidden = true; button.disabled = false; };
+    button.addEventListener('click', async () => {
+      stop.hidden = false; button.disabled = true;
+      const problem = await Speech.speak(Discovery.readingText(activity), { end: idle, error: text => message(text, true) });
+      if (problem) { idle(); message(problem, true); }
     });
-    stop.addEventListener('click', () => { window.speechSynthesis.cancel(); stop.hidden = true; button.disabled = false; });
+    stop.addEventListener('click', () => { Speech.stop(); idle(); });
   }
   function initPreferences() {
     const theme = document.getElementById('btn-theme'), sound = document.getElementById('btn-sound');

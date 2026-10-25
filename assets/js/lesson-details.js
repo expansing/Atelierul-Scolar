@@ -176,6 +176,38 @@ const LESSON_DETAILS = {
     reflection: [['De ce „citesc” este potrivit aici?', 'Înlocuiește „copiii” cu „ei” și rostește propoziția.'], ['Poate o corectare să strice sensul?', 'Verifică dacă persoana și acțiunea au rămas cele cerute, nu doar dacă textul arată diferit.']],
     check: 'Numește nepotrivirea și schimbarea făcută, apoi citește varianta completă.'
   },
+  'lim-11': {
+    words: [['Sens asemănător', 'Două cuvinte care spun aproape același lucru: „mare” și „uriaș”.'], ['Sens opus', 'Două cuvinte care spun lucruri contrare: „mare” și „mic”.']],
+    explain: 'Ca să verifici, pune cuvântul nou în aceeași propoziție. Dacă propoziția spune la fel, cuvintele au sens asemănător. Dacă spune contrariul, au sens opus. Dacă spune doar altceva, cuvintele sunt doar diferite.',
+    worked: ['Pornesc de la „Ceaiul este fierbinte.”', 'Încerc „Ceaiul este rece.”: propoziția spune contrariul, deci „rece” este opusul.', 'Încerc „Ceaiul este verde.”: spune altceva, nu contrariul, deci „verde” nu este opusul.'],
+    goals: ['Să găsească opusul unui cuvânt cunoscut', 'Să găsească un cuvânt cu sens asemănător', 'Să verifice alegerea punând cuvântul în propoziție'],
+    reflection: [['De ce „verde” nu este opusul lui „mare”?', 'Spune „Mingea este verde.” și „Mingea este mică.”: doar a doua spune contrariul lui „mare”.'], ['Poate un cuvânt să aibă mai multe sensuri?', 'Gândește-te la „ușor”: un rucsac ușor, dar și o temă ușoară.']],
+    check: 'Pune cuvântul ales în propoziție și spune dacă sensul a rămas, a devenit opus sau doar altul.'
+  },
+  'lim-12': {
+    words: [['Singular', 'Forma cuvântului pentru un singur lucru: „o floare”.'], ['Plural', 'Forma cuvântului pentru mai multe lucruri: „două flori”.']],
+    explain: 'Spune cuvântul cu „un” sau „o”, apoi cu „doi” sau „două”, și ascultă ce se schimbă. De obicei se schimbă sfârșitul, uneori și o literă din interior. Câteva cuvinte, precum „ochi”, rămân la fel.',
+    worked: ['Pornesc de la „o masă”.', 'Spun „două” și ascult: „două mese”.', 'Observ că s-a schimbat și litera din mijloc: „a” a devenit „e”.'],
+    goals: ['Să spună forma pentru mai mulți a unui cuvânt cunoscut', 'Să recunoască dacă un cuvânt arată unul sau mai mulți', 'Să potrivească „este” și „sunt” cu numărul'],
+    reflection: [['Ce se schimbă în „o stea, două stele”?', 'Ascultă finalul cuvântului și spune ce s-a adăugat.'], ['Despre mai multe pisici spui „este” sau „sunt”?', 'Spune „O pisică este…” și „Două pisici sunt…”.']],
+    check: 'Spune forma pentru unul și pentru mai mulți și arată ce s-a schimbat.'
+  },
+  'lim-13': {
+    words: [['Instrucțiune', 'Un text care spune ce să facem, pas cu pas.'], ['Cuvânt de ordine', 'Un cuvânt care arată când facem pasul: „mai întâi”, „apoi”, „la final”.']],
+    explain: 'Citește toată instrucțiunea înainte să începi. Caută cuvintele de ordine și pune degetul pe fiecare pas. Atenție la „înainte să” și „după ce”: ele pot schimba ordinea în care facem pașii față de ordinea în care sunt scriși.',
+    worked: ['Citesc: „Înainte să ieși, ia-ți căciula.”', 'Găsesc „înainte să”: luatul căciulii vine primul.', 'Fac pașii: iau căciula, apoi ies.'],
+    goals: ['Să găsească primul pas dintr-o instrucțiune scurtă', 'Să ordoneze pașii folosind cuvintele de ordine', 'Să urmeze o instrucțiune cu „înainte să” sau „după ce”'],
+    reflection: [['Ce s-ar întâmpla dacă ai uda ghiveciul înainte să pui sămânța?', 'Imaginează-ți pașii pe rând și spune ce ar lipsi.'], ['Cum te ajută degetul pus pe text?', 'Arată pasul la care ai ajuns și pe cel care urmează.']],
+    check: 'Spune pașii în ordine și arată cuvântul care te-a ajutat.'
+  },
+  'lim-14': {
+    words: [['Descriere', 'Câteva propoziții care spun ce se vede.'], ['Presupunere', 'Ce credem că este adevărat, dar nu se vede sigur.']],
+    explain: 'Începe cu ce este cel mai important: cine sau ce apare. Apoi spune ce face și cum arată: culoare, mărime, număr. La final, verifică fiecare cuvânt: îl poți arăta cu degetul în imagine? Dacă nu, este o presupunere și o spui cu „cred că”.',
+    worked: ['Privesc o imagine cu două rațe pe un lac.', 'Spun: „Două rațe înoată pe un lac.”', 'Verific: văd două rațe și apa. Nu spun „rațele sunt surori”, pentru că asta nu se vede.'],
+    goals: ['Să numească cine apare și ce face', 'Să adauge un detaliu de culoare, mărime sau număr', 'Să deosebească ce se vede de o presupunere'],
+    reflection: [['Cum arăți că un detaliu se vede în imagine?', 'Pune degetul pe el în imagine.'], ['Cum spui o presupunere fără să pară sigură?', 'Începe cu „Cred că…” sau „Poate…”.']],
+    check: 'Pentru fiecare propoziție, arată în imagine ce ai descris.'
+  },
   'log-1': {
     words: [['Tipar', 'O așezare care repetă o grupă sau urmează o regulă.'], ['Element vecin', 'Elementul aflat imediat înainte sau după altul.']],
     explain: 'Privește mai mult decât ultimul element. La culori, caută grupa care revine. La numere, compară fiecare pereche vecină. O regulă bună pentru exercițiu explică toate trecerile date, nu doar una.',

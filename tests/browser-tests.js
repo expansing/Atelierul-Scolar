@@ -21,6 +21,50 @@
     test('All ' + ACTIVITIES.length * 3 + ' lesson-level interfaces initialize without an exception', () => {
       ACTIVITIES.forEach(activity => { for (let level = 0; level < 3; level++) { const game = start(activity.demo, level); assert(fixture.querySelector('.game-prompt'), activity.id); game.dispose(); } });
     });
+    test('Every game round can be heard: task, numbered options and the feedback message', () => {
+      const realSpeak = Speech.speak, realSupported = Speech.supported, spoken = [];
+      Speech.supported = () => true;
+      Speech.speak = text => { spoken.push(text); return Promise.resolve(''); };
+      try {
+        ACTIVITIES.forEach(activity => {
+          for (let level = 0; level < 3; level++) {
+            const game = start(activity.demo, level);
+            const listenTask = fixture.querySelector('#game-listen'), listenFeedback = fixture.querySelector('#game-listen-feedback');
+            assert(listenTask && listenFeedback && listenFeedback.hidden, activity.id + ': lipsesc butoanele de ascultare');
+            listenTask.click();
+            const text = spoken.pop(), prompt = Speech.clean(fixture.querySelector('.game-prompt').textContent);
+            assert(text && text.indexOf(prompt) === 0, activity.id + ': nu se citește sarcina');
+            const options = fixture.querySelectorAll('#round-content .quiz-opt');
+            if (options.length) {
+              assert(text.includes('Variantele sunt.') && text.includes(options.length + ': '), activity.id + ': nu se citesc variantele');
+              options[0].click();
+              assert(!listenFeedback.hidden, activity.id + ': mesajul nu poate fi ascultat');
+              listenFeedback.click();
+              assert(spoken.pop() === Speech.clean(fixture.querySelector('#game-feedback').textContent), activity.id + ': se citește alt mesaj');
+            }
+            game.dispose();
+          }
+        });
+        assert(Speech.clean('?') === 'semnul întrebării' && Speech.clean('🍎 Mere') === 'Mere', 'semnele și emoji-urile nu sunt pregătite pentru voce');
+      } finally { Speech.speak = realSpeak; Speech.supported = realSupported; }
+    });
+    test('Sound games keep the word hidden until an adult reveals it, with a picture fallback without a voice', () => {
+      const lim1 = ACTIVITIES.find(activity => activity.id === 'lim-1'), realSupported = Speech.supported;
+      try {
+        [true, false].forEach(voice => {
+          Speech.supported = () => voice;
+          const game = start(lim1.demo, 0);
+          const card = fixture.querySelector('.word-card'), word = card && card.querySelector('.word-text');
+          assert(card && card.querySelector('.word-picture').textContent.trim(), 'lipsește imaginea cuvântului');
+          assert(word.hidden && !fixture.querySelector('.game-prompt').textContent.includes(word.textContent), 'cuvântul este vizibil înainte de ascultare');
+          assert(Boolean(Array.from(card.querySelectorAll('button')).find(b => b.textContent === '🔊 Ascultă cuvântul')) === voice, 'butonul de ascultare nu corespunde vocii');
+          assert(Boolean(card.querySelector('.word-note')) === !voice, 'nota pentru adult nu corespunde vocii');
+          click('Arată cuvântul scris (pentru adult)');
+          assert(!word.hidden, 'cuvântul nu poate fi arătat');
+          game.dispose();
+        });
+      } finally { Speech.supported = realSupported; }
+    });
     test('All complete rounds and selected game sessions can be completed through their real controls', () => {
       const factory = Engines.rounds;
       let questions;

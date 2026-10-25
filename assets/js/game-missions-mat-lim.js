@@ -637,5 +637,121 @@ Object.assign(GAME_MISSIONS, {
         check: { correct: 'Rostesc „Ei citesc o carte”, apoi regăsesc aceeași potrivire în „Băieții citesc o carte.”', wrong: ['„El citește” dovedește că „Băieții citește” este corect.', 'Prezența punctului compensează orice nepotrivire dintre cuvinte.'] }
       }
     ]
+  },
+  'lim-11': {
+    titles: { evidence: 'Indiciile cuvintelor potrivite', repair: 'Repară perechea de cuvinte', plan: 'Caut, înlocuiesc, verific' },
+    cases: [
+      {
+        context: 'Mara scrie „Apa din pahar este rece.” și caută cuvântul cu sens opus lui „rece”. Paharul este albastru. Pe masă este și un șervețel.',
+        question: 'Ce cuvânt are sens opus lui „rece” în propoziția Marei?',
+        facts: [{ text: 'Propoziția este „Apa din pahar este rece.”.', relevant: true }, { text: 'Mara caută opusul lui „rece”.', relevant: true }, { text: 'Paharul este albastru.', relevant: false }, { text: 'Pe masă este un șervețel.', relevant: false }],
+        plan: ['Citesc propoziția și găsesc cuvântul „rece”.', 'Caut cuvântul cu sens opus: „caldă”.', 'Citesc „Apa din pahar este caldă.” și verific că sensul a devenit opus.'],
+        error: { index: 1, wrong: 'Aleg „înghețată”, care are sens asemănător cu „rece”.', alternatives: ['Aleg „albastră”, care spune culoarea paharului.', 'Aleg „pahar”, un cuvânt care este deja în propoziție.'] },
+        check: { correct: 'Citesc ambele propoziții: „rece” și „caldă” arată temperaturi opuse.', wrong: ['Orice cuvânt diferit de „rece” este opusul lui.', 'Verific doar dacă noul cuvânt este mai lung.'] }
+      },
+      {
+        context: 'Dan a scris „Cățelul aleargă repede.” Vrea alt cuvânt cu același sens în locul lui „repede”. Caietul lui are linii. Creionul este galben.',
+        question: 'Ce cuvânt păstrează sensul lui „repede”?',
+        facts: [{ text: 'Propoziția este „Cățelul aleargă repede.”.', relevant: true }, { text: 'Dan vrea un cuvânt cu același sens ca „repede”.', relevant: true }, { text: 'Caietul are linii.', relevant: false }, { text: 'Creionul este galben.', relevant: false }],
+        plan: ['Găsesc cuvântul „repede” în propoziție.', 'Îl înlocuiesc cu „rapid”, care are sens asemănător.', 'Citesc „Cățelul aleargă rapid.” și verific că sensul a rămas același.'],
+        error: { index: 1, wrong: 'Îl înlocuiesc cu „încet”, care are sens opus.', alternatives: ['Îl înlocuiesc cu „cățel”, care spune cine aleargă.', 'Șterg cuvântul și las „Cățelul aleargă.”.'] },
+        check: { correct: 'Compar: „aleargă repede” și „aleargă rapid” spun același lucru.', wrong: ['Dacă propoziția are tot punct, sensul sigur a rămas.', 'Un cuvânt cu aceeași primă literă are sigur același sens.'] }
+      },
+      {
+        context: 'Ina are perechea „ușor – greu”. Vorbește despre un rucsac pe care îl cântărește în mână. Rucsacul este roșu. Afară este soare.',
+        question: 'Ce înseamnă „ușor” în această situație și care este opusul lui?',
+        facts: [{ text: 'Perechea propusă este „ușor – greu”.', relevant: true }, { text: 'Ina vorbește despre un rucsac cântărit în mână.', relevant: true }, { text: 'Rucsacul este roșu.', relevant: false }, { text: 'Afară este soare.', relevant: false }],
+        plan: ['Citesc despre ce este vorba: greutatea unui rucsac.', 'Aleg sensul potrivit: „ușor” înseamnă că rucsacul nu cântărește mult.', 'Verific opusul într-o propoziție: „Rucsacul este greu.”'],
+        error: { index: 1, wrong: 'Aleg sensul „ușor = simplu”, deși vorbim despre greutate.', alternatives: ['Spun că „ușor” înseamnă „roșu”, culoarea rucsacului.', 'Spun că „ușor” nu are niciun opus.'] },
+        check: { correct: 'Pun ambele cuvinte în aceeași propoziție despre rucsac și compar greutatea.', wrong: ['Un cuvânt are un singur sens, oriunde ar apărea.', 'Verific doar dacă perechea rimează.'] }
+      }
+    ]
+  },
+  'lim-12': {
+    titles: { evidence: 'Indiciile pentru unul și mai mulți', repair: 'Repară forma pentru mai mulți', plan: 'Număr, schimb, verific' },
+    cases: [
+      {
+        context: 'Pe masă sunt două mere. Toma scrie „două măr”. Merele sunt roșii. Lângă ele stă un șervețel.',
+        question: 'Ce formă trebuie să scrie Toma după „două”?',
+        facts: [{ text: 'Pe masă sunt două mere.', relevant: true }, { text: 'Toma a scris „două măr”.', relevant: true }, { text: 'Merele sunt roșii.', relevant: false }, { text: 'Lângă mere stă un șervețel.', relevant: false }],
+        plan: ['Număr merele: sunt două, deci mai multe.', 'Schimb „măr” în forma pentru mai multe: „mere”.', 'Citesc „două mere” și verific că se potrivește cu numărul.'],
+        error: { index: 1, wrong: 'Las „măr”, forma pentru un singur măr.', alternatives: ['Scriu „mări”, care vine de la „mare”.', 'Scriu „măruri”, o formă care nu există.'] },
+        check: { correct: 'Spun „un măr, două mere” și compar cu ce am scris.', wrong: ['Dacă merele sunt roșii, forma nu contează.', 'Verific doar prima literă a cuvântului.'] }
+      },
+      {
+        context: 'În penar sunt trei creioane. Ana spune: „Am trei creion.” Penarul este verde. Ana stă în bancă.',
+        question: 'Cum spune corect Ana câte creioane are?',
+        facts: [{ text: 'În penar sunt trei creioane.', relevant: true }, { text: 'Ana a spus „Am trei creion.”.', relevant: true }, { text: 'Penarul este verde.', relevant: false }, { text: 'Ana stă în bancă.', relevant: false }],
+        plan: ['Număr creioanele: sunt trei.', 'Folosesc forma pentru mai multe: „creioane”.', 'Spun „Am trei creioane.” și verific potrivirea cu numărul.'],
+        error: { index: 1, wrong: 'Păstrez „creion”, forma pentru unul singur.', alternatives: ['Spun „creioni”, după modelul lui „pomi”.', 'Schimb numărul în „un”, deși sunt trei.'] },
+        check: { correct: 'Număr din nou creioanele și spun: un creion, trei creioane.', wrong: ['Orice cuvânt de după un număr rămâne neschimbat.', 'Verific doar culoarea penarului.'] }
+      },
+      {
+        context: 'Pe cer apar multe stele. Matei scrie „Pe cer este multe stea.” Este seară. Matei are o lanternă.',
+        question: 'Cum repară Matei enunțul despre mai multe stele?',
+        facts: [{ text: 'Pe cer apar mai multe stele.', relevant: true }, { text: 'Matei a scris „Pe cer este multe stea.”.', relevant: true }, { text: 'Este seară.', relevant: false }, { text: 'Matei are o lanternă.', relevant: false }],
+        plan: ['Observ că vorbim despre mai multe stele.', 'Schimb „este” în „sunt” și „stea” în „stele”.', 'Citesc „Pe cer sunt multe stele.” și verific ambele potriviri.'],
+        error: { index: 1, wrong: 'Schimb doar „stea” în „stele” și las „este”.', alternatives: ['Schimb doar „este” în „sunt” și las „stea”.', 'Scriu „steaua”, forma pentru o singură stea anume.'] },
+        check: { correct: 'Verific și cuvântul pentru stele, și cuvântul „sunt”: amândouă arată mai multe.', wrong: ['Este suficient să schimbi un singur cuvânt.', 'Dacă enunțul are punct, este corect.'] }
+      }
+    ]
+  },
+  'lim-13': {
+    titles: { evidence: 'Indiciile din instrucțiune', repair: 'Repară ordinea pașilor', plan: 'Citesc, ordonez, fac' },
+    cases: [
+      {
+        context: 'Instrucțiunea spune: „Mai întâi spală-te pe mâini. Apoi pune biscuiții în farfurie.” Farfuria este albă. Biscuiții sunt rotunzi.',
+        question: 'Ce faci mai întâi, după instrucțiune?',
+        facts: [{ text: 'Instrucțiunea începe cu „Mai întâi spală-te pe mâini.”.', relevant: true }, { text: 'Al doilea pas începe cu „Apoi”.', relevant: true }, { text: 'Farfuria este albă.', relevant: false }, { text: 'Biscuiții sunt rotunzi.', relevant: false }],
+        plan: ['Citesc toată instrucțiunea.', 'Găsesc pasul cu „Mai întâi”: mă spăl pe mâini.', 'Fac apoi pasul cu „Apoi”: pun biscuiții în farfurie.'],
+        error: { index: 1, wrong: 'Încep cu biscuiții, pentru că îi văd primii pe masă.', alternatives: ['Sar peste spălatul pe mâini.', 'Fac pașii în ordinea care îmi place.'] },
+        check: { correct: 'Compar ce am făcut cu cuvintele de ordine: „mai întâi”, apoi „apoi”.', wrong: ['Ordinea nu contează dacă la final biscuiții sunt în farfurie.', 'Verific doar culoarea farfuriei.'] }
+      },
+      {
+        context: 'Biletul spune: „Înainte să pleci, închide fereastra.” Ina vrea să plece la joacă. Perdelele sunt galbene. Pe pervaz este o carte.',
+        question: 'Ce face Ina mai întâi?',
+        facts: [{ text: 'Biletul spune „Înainte să pleci, închide fereastra.”.', relevant: true }, { text: 'Ina vrea să plece la joacă.', relevant: true }, { text: 'Perdelele sunt galbene.', relevant: false }, { text: 'Pe pervaz este o carte.', relevant: false }],
+        plan: ['Citesc tot biletul.', 'Înțeleg că „înainte să pleci” cere mai întâi închiderea ferestrei.', 'Închid fereastra, apoi plec la joacă.'],
+        error: { index: 1, wrong: 'Plec mai întâi, pentru că „pleci” apare primul în bilet.', alternatives: ['Las fereastra deschisă, pentru că perdelele sunt galbene.', 'Închid ușa în loc de fereastră.'] },
+        check: { correct: 'Verific: fereastra este închisă înainte să ies din cameră.', wrong: ['Primul cuvânt din bilet arată mereu primul pas.', 'Dacă am plecat repede, am respectat biletul.'] }
+      },
+      {
+        context: 'Rețeta spune: „Pune iaurtul în bol. După ce adaugi fructele, amestecă.” Bolul este mare. Fructele sunt căpșuni.',
+        question: 'În ce ordine faci cei trei pași?',
+        facts: [{ text: 'Primul pas este „Pune iaurtul în bol.”.', relevant: true }, { text: '„După ce adaugi fructele, amestecă” arată că fructele vin înainte de amestecat.', relevant: true }, { text: 'Bolul este mare.', relevant: false }, { text: 'Fructele sunt căpșuni.', relevant: false }],
+        plan: ['Pun iaurtul în bol.', 'Adaug fructele.', 'Amestec.'],
+        error: { index: 1, wrong: 'Amestec înainte să adaug fructele.', alternatives: ['Pun fructele într-un alt bol.', 'Pun fructele în frigider.'] },
+        check: { correct: 'Recitesc rețeta: „după ce adaugi fructele” înseamnă că amestecatul vine la final.', wrong: ['Fac pașii în ordinea în care îmi amintesc de ei.', 'Verific doar dacă bolul este mare.'] }
+      }
+    ]
+  },
+  'lim-14': {
+    titles: { evidence: 'Indiciile din imagine', repair: 'Repară descrierea', plan: 'Privesc, spun, verific' },
+    cases: [
+      {
+        context: 'Imaginea arată un câine maro care aleargă după o minge roșie, pe iarbă. Radu scrie: „Un câine maro aleargă.” Radu are o geacă verde. Este dimineață.',
+        question: 'Ce detaliu din imagine poate adăuga Radu în descriere?',
+        facts: [{ text: 'În imagine, câinele aleargă după o minge roșie.', relevant: true }, { text: 'Descrierea lui Radu este „Un câine maro aleargă.”.', relevant: true }, { text: 'Radu are o geacă verde.', relevant: false }, { text: 'Este dimineață.', relevant: false }],
+        plan: ['Privesc imaginea și găsesc ce lipsește din descriere: mingea.', 'Adaug detaliul: „Un câine maro aleargă după o minge roșie.”', 'Verific că tot ce am scris se vede în imagine.'],
+        error: { index: 1, wrong: 'Adaug „Câinele se numește Azor.”, deși numele nu se vede.', alternatives: ['Adaug „Câinele aleargă după o pisică.”, deși în imagine este o minge.', 'Adaug că Radu are o geacă verde.'] },
+        check: { correct: 'Compar fiecare cuvânt din descriere cu imaginea: câine maro, aleargă, minge roșie.', wrong: ['O descriere lungă este sigur corectă.', 'Pot adăuga orice, dacă sună frumos.'] }
+      },
+      {
+        context: 'Imaginea arată trei pisici albe care dorm pe o canapea. Ana scrie: „Două pisici dorm pe canapea.” Ana stă la masă. Pe masă este un pahar.',
+        question: 'Ce greșeală are descrierea Anei?',
+        facts: [{ text: 'În imagine sunt trei pisici.', relevant: true }, { text: 'Ana a scris „Două pisici dorm pe canapea.”.', relevant: true }, { text: 'Ana stă la masă.', relevant: false }, { text: 'Pe masă este un pahar.', relevant: false }],
+        plan: ['Număr pisicile din imagine: sunt trei.', 'Corectez numărul: „Trei pisici dorm pe canapea.”', 'Verific restul: pisicile dorm și sunt pe canapea.'],
+        error: { index: 1, wrong: 'Las „două”, pentru că sună bine.', alternatives: ['Scriu „Trei câini dorm pe canapea.”.', 'Scriu „Trei pisici se joacă pe canapea.”.'] },
+        check: { correct: 'Număr din nou pisicile și citesc descrierea corectată lângă imagine.', wrong: ['Numărul nu contează într-o descriere.', 'Verific doar dacă propoziția are punct.'] }
+      },
+      {
+        context: 'Imaginea arată un copil cu umbrelă, în ploaie, lângă o băltoacă. Matei spune: „Copilul este trist pentru că plouă.” Matei poartă ochelari. În cameră este o lampă.',
+        question: 'Ce parte din descrierea lui Matei se vede sigur și ce parte este o presupunere?',
+        facts: [{ text: 'În imagine, copilul are umbrelă, iar afară plouă.', relevant: true }, { text: 'Matei a spus că copilul este trist pentru că plouă.', relevant: true }, { text: 'Matei poartă ochelari.', relevant: false }, { text: 'În cameră este o lampă.', relevant: false }],
+        plan: ['Despart ce se vede: un copil cu umbrelă, ploaia, o băltoacă.', 'Marchez „este trist” ca presupunere: tristețea nu se vede sigur.', 'Spun descrierea sigură: „Un copil stă cu umbrela în ploaie.”'],
+        error: { index: 1, wrong: 'Spun că tristețea se vede sigur, ca umbrela.', alternatives: ['Spun că ploaia este o presupunere.', 'Spun că umbrela lipsește din imagine.'] },
+        check: { correct: 'Pentru fiecare parte întreb: „Pot arăta cu degetul unde se vede?”', wrong: ['Dacă o presupunere pare logică, devine sigur adevărată.', 'Verific doar dacă descrierea este lungă.'] }
+      }
+    ]
   }
 });

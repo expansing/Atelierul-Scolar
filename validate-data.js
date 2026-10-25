@@ -21,7 +21,7 @@ function validate(data) {
   const unique = values => new Set(values).size === values.length;
   const integer = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
   requireValue(SUBJECTS.length === 6, 'Sunt necesare șase discipline.');
-  requireValue(ACTIVITIES.length >= 60 && ACTIVITIES.length <= 72, 'Inventarul trebuie să aibă între 60 și 72 de activități.');
+  requireValue(ACTIVITIES.length >= 60 && ACTIVITIES.length <= 80, 'Inventarul trebuie să aibă între 60 și 80 de activități.');
   requireValue(LEVELS.length === 3, 'Sunt necesare trei niveluri.');
   requireValue(unique(SUBJECTS.map(s => s.id)), 'ID-uri duplicate de discipline.');
   requireValue(unique(ACTIVITIES.map(a => a.id)), 'ID-uri duplicate de activități.');
@@ -48,6 +48,11 @@ function validate(data) {
     requireValue(text(question.prompt) && text(question.explain) && text(question.hint), context + ': cerință, indiciu sau explicație lipsă.');
     requireValue(texts(question.options) && question.options.length >= 2 && unique(question.options), context + ': opțiuni insuficiente sau duplicate.');
     requireValue(integer(question.answer, 0, (question.options || []).length - 1), context + ': răspuns invalid.');
+    if (question.say !== undefined) requireValue(text(question.say) && text(question.picture), context + ': cuvânt de ascultat fără imagine.');
+  };
+  // un nivel cu „rounds” alege la fiecare joc alte sarcini dintr-un set mai mare
+  const checkDraw = (count, pool, min, context) => {
+    if (count !== undefined) requireValue(integer(count, min, 12) && count < pool, context + ': „rounds”/„show” trebuie să fie mai mic decât setul (' + pool + ').');
   };
   ACTIVITIES.forEach(activity => {
     const id = activity.id;
@@ -99,18 +104,22 @@ function validate(data) {
       if (demo.type === 'quiz') {
         requireValue(Array.isArray(config.questions) && config.questions.length >= 3, context + ': minimum trei întrebări distincte.');
         (config.questions || []).forEach(question => checkQuestion(question, context));
-        requireValue(unique((config.questions || []).map(q => q.prompt)), context + ': întrebări duplicate.');
+        requireValue(unique((config.questions || []).map(q => q.prompt + '|' + (q.say || ''))), context + ': întrebări duplicate.');
+        checkDraw(config.rounds, (config.questions || []).length, 2, context);
       } else if (demo.type === 'arrange') {
         requireValue(Array.isArray(config.questions) && config.questions.length >= 2, context + ': minimum două ordonări.');
         (config.questions || []).forEach(q => requireValue(text(q.prompt) && texts(q.tokens) && q.tokens.length >= 2 && text(q.explain) && text(q.hint), context + ': ordonare incompletă.'));
+        checkDraw(config.rounds, (config.questions || []).length, 2, context);
       } else if (demo.type === 'match') {
         requireValue(Array.isArray(config.pairs) && config.pairs.length >= 3, context + ': prea puține perechi.');
         const pairs = config.pairs || [];
         requireValue(pairs.every(p => text(p.a) && text(p.b)) && unique(pairs.map(p => p.a)) && unique(pairs.map(p => p.b)), context + ': perechi incomplete sau ambigue.');
+        checkDraw(config.show, pairs.length, 3, context);
       } else if (demo.type === 'classify') {
         requireValue(texts(config.zones) && unique(config.zones), context + ': grupe invalide.');
         requireValue(Array.isArray(config.items) && config.items.length >= 4 &&
           config.items.every(item => text(item.label) && integer(item.zone, 0, config.zones.length - 1)), context + ': item de clasificare invalid.');
+        checkDraw(config.rounds, (config.items || []).length, 2, context);
       } else requireValue(integer(config.rounds, 1, 12), context + ': număr de runde invalid.');
       try {
         const rounds = Engines.rounds(demo, level);
@@ -137,6 +146,31 @@ function validate(data) {
   return errors;
 }
 
+/* Calitatea întrebărilor cu variante (avertismente, nu erori):
+   - varianta corectă este singura cea mai lungă: copilul poate ghici după lungime;
+   - la nivelurile Descopăr și Exersez, o variantă are peste 8 cuvinte. */
+const words = value => (String(value).match(/[A-Za-zĂÂÎȘȚăâîșț0-9-]+/g) || []).length;
+function quality(data) {
+  const warnings = [];
+  data.ACTIVITIES.forEach(activity => {
+    const demo = activity.demo;
+    if (!demo || !Array.isArray(demo.levels)) return;
+    demo.levels.forEach((config, level) => {
+      const questions = [].concat(demo.type === 'quiz' ? config.questions || [] : [], config.review || []);
+      questions.forEach(q => {
+        if (!Array.isArray(q.options) || q.options.length < 3) return;
+        const lengths = q.options.map(words), longest = Math.max(...lengths);
+        const where = activity.id + ' / ' + level + ': „' + q.prompt + '”';
+        if (lengths[q.answer] === longest && lengths.filter(n => n === longest).length === 1 && longest - Math.max(...lengths.filter((n, i) => i !== q.answer)) >= 2) {
+          warnings.push({ subject: activity.subject, kind: 'lungime', text: where + ' — răspunsul corect este vizibil cea mai lungă variantă.' });
+        }
+        if (level < 2 && longest > 8) warnings.push({ subject: activity.subject, kind: 'variante lungi', text: where + ' — variantă de ' + longest + ' cuvinte.' });
+      });
+    });
+  });
+  return warnings;
+}
+
 if (require.main === module) {
   const content = loadContent();
   const errors = validate(content);
@@ -146,5 +180,10 @@ if (require.main === module) {
     content.ACTIVITIES.length * (content.MissionGames.modes.length + 1) + ' jocuri principale, ' +
     Object.values(content.GAME_MISSIONS).reduce((sum, mission) => sum + mission.cases.length, 0) +
     ' cazuri noi și 11 opriri valide structural. Revizia lingvistică și factuală rămâne și o responsabilitate editorială.');
+  const warnings = quality(content), bySubject = {};
+  warnings.forEach(w => { bySubject[w.subject] = (bySubject[w.subject] || 0) + 1; });
+  if (process.argv.includes('--quality')) warnings.forEach(w => console.log('⚠ ' + w.text));
+  if (warnings.length) console.log('⚠ Calitatea variantelor: ' + warnings.length + ' de revizuit (' +
+    Object.keys(bySubject).map(s => s + ' ' + bySubject[s]).join(', ') + '). Detalii: node validate-data.js --quality');
 }
-module.exports = { loadContent, validate };
+module.exports = { loadContent, validate, quality };

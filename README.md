@@ -15,18 +15,22 @@ Servit prin `http(s)`, atelierul funcționează și **fără internet** după pr
 
 ## Conținut
 
-**72 de activități, fiecare cu trei niveluri deschise** — Descopăr, Exersez, Provocare — și un traseu suplimentar cu 11 opriri despre învățare.
+**76 de activități, fiecare cu trei niveluri deschise** — Descopăr, Exersez, Provocare — și un traseu suplimentar cu 11 opriri despre învățare.
 
 | Disciplină | Activități |
 |---|---:|
 | Matematică | 12 |
-| Limba română | 10 |
+| Limba română | 14 |
 | Logică și gândire | 14 |
 | Informatică | 9 |
 | Științe și natură | 10 |
 | Dezvoltare personală | 17 |
 
-Fiecare dintre cele 72 de lecții include explicații suplimentare proprii, cel puțin două noțiuni definite, o rezolvare în minimum trei pași vizibili, patru obiective concrete și patru întrebări de reflecție cu sprijin pentru formularea răspunsului. Sunt păstrate explorarea cu materiale, pașii ghidați, autocontrolul, capcana de evitat și îndrumările pentru adulți. Copilul poate alege materiale, repeta și schimba nivelul fără blocaje sau cronometru.
+**Citire vocală în jocuri.** Lângă fiecare sarcină, butonul „🔊 Ascultă” citește cerința și variantele numerotate, iar după răspuns „🔊 Ascultă mesajul” citește explicația. Se folosește numai o voce română instalată pe dispozitiv; textul nu este trimis nicăieri. Jocurile cu sunete (de exemplu „Litere și sunete”) arată o imagine, iar cuvântul scris apare doar la cererea adultului. Fără voce română, adultul citește cuvântul cu voce tare.
+
+**Sarcini diferite la reluare.** Un nivel poate avea mai multe sarcini decât rundele unui joc (`rounds`, iar la perechi `show`); la fiecare joc se aleg altele. `node validate-data.js --quality` listează întrebările în care varianta corectă se recunoaște după lungime sau în care variantele sunt prea lungi pentru nivelurile Descopăr și Exersez.
+
+Fiecare dintre cele 76 de lecții include explicații suplimentare proprii, cel puțin două noțiuni definite, o rezolvare în minimum trei pași vizibili, patru obiective concrete și patru întrebări de reflecție cu sprijin pentru formularea răspunsului. Sunt păstrate explorarea cu materiale, pașii ghidați, autocontrolul, capcana de evitat și îndrumările pentru adulți. Copilul poate alege materiale, repeta și schimba nivelul fără blocaje sau cronometru.
 
 „Descoperă” este un caiet vizual: copertă ilustrată, cartonașe tematice, masă de explorare, rezolvare cu pași vizibili, notiță de verificare și activitate practică. Ilustrațiile SVG sunt originale și locale. La matematică, copilul poate desface un grup de zece, roti o formă, muta reperele riglei, regla ceasul, echilibra cantități, modifica un buget sau colora optimi. Aceste explorări nu dau stele. La celelalte discipline, opririle interactive invită la predicție, reprezentare și explicarea pașilor lecției. Toate barele numerice au și butoane plus/minus de minimum 48 px; valorile, pașii și limitele sunt aceleași prin atingere, tragere sau tastatură.
 
@@ -78,14 +82,14 @@ Indiciile au două trepte: orientare, apoi explicația verificării. După o gre
 
 ### Alegerea jocului
 
-**Fiecare dintre cele 72 de lecții are minimum patru jocuri distincte**, afișate prin cartonașe cu titlu și obiectiv:
+**Fiecare dintre cele 76 de lecții are minimum patru jocuri distincte**, afișate prin cartonașe cu titlu și obiectiv:
 
 1. Jocul inițial al lecției, cu mecanicile și evaluarea deja existente.
 2. **Investigație:** copilul alege toate informațiile relevante pentru întrebarea dintr-o poveste și lasă deoparte detaliile adevărate, dar fără legătură.
 3. **Reparație:** găsește unicul pas greșit dintr-o rezolvare și alege o înlocuire corectă. Identificarea locului și corectarea sunt verificate separat în aceeași încercare.
 4. **Construcție și verificare:** construiește un plan în trei pași din patru cartonașe, apoi alege o verificare a rezultatului. Un plan corect nu încheie jocul fără verificarea finală.
 
-Cele trei mecanici noi au titluri și situații redactate pentru fiecare lecție: **216 jocuri noi**, susținute de **216 cazuri distincte** (trei cazuri pentru fiecare lecție, câte unul pentru fiecare nivel). Cele trei mecanici lucrează diferit asupra cazului ales. Reluarea repetă același caz, cu opțiuni reordonate; schimbarea nivelului aduce altă situație, nu doar o amestecare a răspunsurilor. Nu promitem generare infinită de cazuri.
+Cele trei mecanici noi au titluri și situații redactate pentru fiecare lecție: **228 de jocuri noi**, susținute de **228 de cazuri distincte** (trei cazuri pentru fiecare lecție, câte unul pentru fiecare nivel). Cele trei mecanici lucrează diferit asupra cazului ales. Reluarea repetă același caz, cu opțiuni reordonate; schimbarea nivelului aduce altă situație, nu doar o amestecare a răspunsurilor. Nu promitem generare infinită de cazuri.
 
 Investigațiile, reparațiile și planurile sunt practică fără stele și nu modifică rezultatele salvate. Cazurile de dezvoltare personală verifică informații și acțiuni din povești fictive, nu emoțiile, preferințele, supunerea ori experiențele copilului. Planurile urmăresc dependențe explicite sau ordinea anunțată în poveste; nu impun o singură rutină pentru toate familiile.
 
@@ -149,7 +153,7 @@ Necesită Node.js 12 sau mai nou. Nu sunt necesare instalări.
 
 ```bash
 npm run check         # sintaxă, structură, conținut generat, teste de regresie
-npm run validate      # 72 de lecții, 216 niveluri, 11 opriri și legături vechi
+npm run validate      # 76 de lecții, 228 de niveluri, 11 opriri și legături vechi
 npm test              # teste Node fără dependențe
 npm run test:browser  # testele DOM într-un browser fără fereastră
 ```
@@ -158,9 +162,9 @@ npm run test:browser  # testele DOM într-un browser fără fereastră
 
 Verificările DOM se pot deschide și manual: [tests/browser.html](tests/browser.html), prin același server static. Pagina rulează testele și afișează rezultatele. Testele folosesc o cheie temporară de stocare și nu modifică progresul real. Verifică inițializarea și parcurgerea tuturor celor 216 sesiuni, corectarea răspunsurilor, indicii, reluare, ordonare, perechi, scriere, robot și memorie. Sunt testate și toate mesele de explorare, răspunsurile numerice invalide, construcțiile alternative, închiderea explicită a conturului, corectarea simetriei, rotirea/scoaterea pieselor și fracțiile cu părți nealăturate. Verificările compară și grafica efectivă cu datele: cuburi și poziția talerelor, acele ceasului, reperele riglei, vârfurile formelor, suprafața grădinii și intersecția lipsă din tabel. Pentru plus/minus se testează pașii, limitele, afișajul și dependențele dintre comenzi. Sunt verificate contextul și pașii explorărilor, controalele de setări, mărirea efectivă a textului cu 50%, nivelul preferat și grila la text mărit. Traseul de gândire are verificări pentru legături, oprirea curentă, îndrumarea adultului și corectarea tuturor celor 54 de întrebări prin controalele reale.
 
-Testele Node verifică 21.600 de eșantioane lecție–nivel, soluțiile și limitele grilelor, pavarea completă, operațiile în pași, rigla, fracțiile, bugetele și prezența efectivă a glifelor ĂăÂâÎîȘșȚț în font. Verifică și izolarea preferințelor între profiluri, păstrarea progresului la redenumire, persistența, migrarea, importul/exportul, respingerea setărilor invalide și structura traseului de gândire.
+Testele Node verifică 22.800 de eșantioane lecție–nivel, soluțiile și limitele grilelor, pavarea completă, operațiile în pași, rigla, fracțiile, bugetele și prezența efectivă a glifelor ĂăÂâÎîȘșȚț în font. Verifică și izolarea preferințelor între profiluri, păstrarea progresului la redenumire, persistența, migrarea, importul/exportul, respingerea setărilor invalide și structura traseului de gândire.
 
-Suita DOM parcurge 216 runde complete, 111 variante suplimentare și 648 sesiuni ale celor trei mecanici noi: **975 de sesiuni în total**. Verifică și corectarea dovezilor, locul și înlocuirea erorii, eliminarea unui pas nepotrivit, ordinea planului și verificarea finală obligatorie. Verifică marcarea practicii fără stele, vocabularul și rezolvările vizibile pentru toate lecțiile, cele patru obiective/reflecții și distanțele reale dintre cartonașele din stânga. Testele Node verifică și că selecția produce exclusiv mecanica cerută, respectă limitele de nivel și respinge explicit opțiunile inexistente.
+Suita DOM parcurge 228 de runde complete, 111 variante suplimentare și 684 de sesiuni ale celor trei mecanici noi: **1.023 de sesiuni în total**. Verifică și corectarea dovezilor, locul și înlocuirea erorii, eliminarea unui pas nepotrivit, ordinea planului și verificarea finală obligatorie. Verifică marcarea practicii fără stele, vocabularul și rezolvările vizibile pentru toate lecțiile, cele patru obiective/reflecții și distanțele reale dintre cartonașele din stânga. Testele Node verifică și că selecția produce exclusiv mecanica cerută, respectă limitele de nivel și respinge explicit opțiunile inexistente.
 
 Validatorul verifică structura, consistența răspunsurilor și anumite regresii de text. **Nu este un corector gramatical complet și nu certifică adevărul științific.** Conținutul trebuie revizuit editorial când se adaugă sau se schimbă lecții.
 
@@ -175,7 +179,7 @@ settings.html           Preferințe de citire, aspect și profil
 assets/js/data.js       Lecții, niveluri și întrebări redactate
 assets/js/lesson-details.js Vocabular, explicații, rezolvări, obiective și reflecții pentru fiecare lecție
 assets/js/mission-games.js Investigație, reparație și planificare cu verificare
-assets/js/game-missions-*.js Cele 216 situații redactate pentru toate cele 72 de lecții
+assets/js/game-missions-*.js Cele 228 de situații redactate pentru toate cele 76 de lecții
 assets/js/engines.js    Generatoare, controale și evaluare pe rundă
 assets/js/math-games.js Matematică vizuală, grile și verificări geometrice
 assets/js/discovery.js  Caietul ilustrat și explorările fără notă

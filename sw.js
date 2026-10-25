@@ -19,6 +19,7 @@ const ASSETS = [
   'assets/js/progress.js',
   'assets/js/sound.js',
   'assets/js/confetti.js',
+  'assets/js/speech.js',
   'assets/js/engines.js',
   'assets/js/math-games.js',
   'assets/js/discovery.js',

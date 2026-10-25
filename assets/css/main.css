@@ -121,6 +121,13 @@ progress { display: block; width: 100%; height: 1rem; accent-color: var(--focus)
 .game { min-width: 0; padding-top: 1rem; border-top: 2px dashed var(--border); }
 .g-status { margin-bottom: 0.8rem; color: var(--text-soft); }
 .game-prompt { font-size: 1.25rem; margin-block: 1.3rem; }
+.prompt-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.7rem; align-items: center; }
+.btn-listen { white-space: nowrap; }
+.word-card { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-block: 0.8rem 1.2rem; padding: 0.8rem; border: 2px dashed var(--border); border-radius: var(--radius-sm, 12px); }
+.word-picture { font-size: 3.2rem; line-height: 1; }
+.count-scene.picture-scene { font-size: 3rem; line-height: 1.4; text-align: center; }
+.word-text { font-size: 1.6rem; }
+.word-note { flex-basis: 100%; margin: 0; color: var(--text-soft); font-size: 0.95rem; }
 .quiz-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 0.8rem; margin-block: 1rem; }
 .quiz-opt { background: var(--bg-soft); color: var(--text); border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; min-height: 65px; }
 .quiz-opt:hover:not(:disabled) { border-color: var(--focus); }
