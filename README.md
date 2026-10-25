@@ -11,6 +11,8 @@ npm run serve
 
 Fișierele pot fi deschise și direct în browser. Pentru salvare predictibilă, recomandăm serverul static: comportamentul `localStorage` pentru adrese `file:` diferă între browsere. Progresul nu se sincronizează între dispozitive sau adrese diferite.
 
+Servit prin `http(s)`, atelierul funcționează și **fără internet** după prima vizită: `sw.js` păstrează paginile, scripturile, stilurile și fontul. Paginile se cer întâi de la server (conținut proaspăt) și se iau din copie doar când rețeaua lipsește. Tema, fontul și mărimea textului din profilul activ se aplică din `<head>` (`assets/js/early-preferences.js`), înainte de afișare, ca pagina să nu clipească.
+
 ## Conținut
 
 **72 de activități, fiecare cu trei niveluri deschise** — Descopăr, Exersez, Provocare — și un traseu suplimentar cu 11 opriri despre învățare.
@@ -141,7 +143,7 @@ Erorile de stocare sunt afișate. Dacă salvarea nu funcționează, progresul r�
 
 ## Verificare
 
-Fișierele JavaScript și CSS sunt încărcate cu aceeași versiune explicită în toate cele cinci pagini și în pagina testelor. Aplicația transmite versiunea și în legăturile interne, păstrând parametrii lecției sau disciplinei, pentru a evita și paginile HTML vechi din cache. La publicarea modificărilor acestor fișiere, actualizează parametrul `v` peste tot: astfel, browserul nu combină un motor de joc vechi din cache cu noua pagină. Testele verifică prezența și consistența versiunilor. Această versiune nu schimbă cheia progresului local și nu șterge profilurile.
+Fișierele JavaScript și CSS sunt încărcate cu aceeași versiune explicită în toate cele cinci pagini și în pagina testelor. Aplicația transmite versiunea și în legăturile interne, păstrând parametrii lecției sau disciplinei, pentru a evita și paginile HTML vechi din cache. La publicarea modificărilor acestor fișiere, actualizează parametrul `v` peste tot: astfel, browserul nu combină un motor de joc vechi din cache cu noua pagină. Aceeași versiune denumește și copia offline din `sw.js`: o versiune nouă instalează o copie nouă și o șterge pe cea veche. Când adaugi un script sau un stil nou, adaugă-l și în lista `ASSETS` din `sw.js`. Testele verifică prezența și consistența versiunilor, precum și faptul că `sw.js` păstrează fiecare fișier încărcat de pagini. Această versiune nu schimbă cheia progresului local și nu șterge profilurile.
 
 Necesită Node.js 12 sau mai nou. Nu sunt necesare instalări.
 
@@ -149,9 +151,12 @@ Necesită Node.js 12 sau mai nou. Nu sunt necesare instalări.
 npm run check         # sintaxă, structură, conținut generat, teste de regresie
 npm run validate      # 72 de lecții, 216 niveluri, 11 opriri și legături vechi
 npm test              # teste Node fără dependențe
+npm run test:browser  # testele DOM într-un browser fără fereastră
 ```
 
-Pentru verificările DOM, deschide [tests/browser.html](tests/browser.html) prin același server static. Pagina rulează testele și afișează rezultatele. Testele folosesc o cheie temporară de stocare și nu modifică progresul real. Verifică inițializarea și parcurgerea tuturor celor 216 sesiuni, corectarea răspunsurilor, indicii, reluare, ordonare, perechi, scriere, robot și memorie. Sunt testate și toate mesele de explorare, răspunsurile numerice invalide, construcțiile alternative, închiderea explicită a conturului, corectarea simetriei, rotirea/scoaterea pieselor și fracțiile cu părți nealăturate. Verificările compară și grafica efectivă cu datele: cuburi și poziția talerelor, acele ceasului, reperele riglei, vârfurile formelor, suprafața grădinii și intersecția lipsă din tabel. Pentru plus/minus se testează pașii, limitele, afișajul și dependențele dintre comenzi. Sunt verificate contextul și pașii explorărilor, controalele de setări, mărirea efectivă a textului cu 50%, nivelul preferat și grila la text mărit. Traseul de gândire are verificări pentru legături, oprirea curentă, îndrumarea adultului și corectarea tuturor celor 54 de întrebări prin controalele reale.
+`npm run test:browser` pornește un server local și rulează [tests/browser.html](tests/browser.html) automat, cu primul browser găsit dintre Chrome, Chromium și Firefox (sau cel din variabila `BROWSER`). Afișează rezultatul fiecărei verificări și se încheie cu cod de eroare dacă una eșuează. Nu instalează nimic.
+
+Verificările DOM se pot deschide și manual: [tests/browser.html](tests/browser.html), prin același server static. Pagina rulează testele și afișează rezultatele. Testele folosesc o cheie temporară de stocare și nu modifică progresul real. Verifică inițializarea și parcurgerea tuturor celor 216 sesiuni, corectarea răspunsurilor, indicii, reluare, ordonare, perechi, scriere, robot și memorie. Sunt testate și toate mesele de explorare, răspunsurile numerice invalide, construcțiile alternative, închiderea explicită a conturului, corectarea simetriei, rotirea/scoaterea pieselor și fracțiile cu părți nealăturate. Verificările compară și grafica efectivă cu datele: cuburi și poziția talerelor, acele ceasului, reperele riglei, vârfurile formelor, suprafața grădinii și intersecția lipsă din tabel. Pentru plus/minus se testează pașii, limitele, afișajul și dependențele dintre comenzi. Sunt verificate contextul și pașii explorărilor, controalele de setări, mărirea efectivă a textului cu 50%, nivelul preferat și grila la text mărit. Traseul de gândire are verificări pentru legături, oprirea curentă, îndrumarea adultului și corectarea tuturor celor 54 de întrebări prin controalele reale.
 
 Testele Node verifică 21.600 de eșantioane lecție–nivel, soluțiile și limitele grilelor, pavarea completă, operațiile în pași, rigla, fracțiile, bugetele și prezența efectivă a glifelor ĂăÂâÎîȘșȚț în font. Verifică și izolarea preferințelor între profiluri, păstrarea progresului la redenumire, persistența, migrarea, importul/exportul, respingerea setărilor invalide și structura traseului de gândire.
 

@@ -65,11 +65,5 @@ const Sound = {
     this._tone(659.25, 0.1, 0.12, 'sine', 0.16);
     this._tone(783.99, 0.2, 0.12, 'sine', 0.16);
     this._tone(1046.5, 0.3, 0.35, 'sine', 0.18);
-  },
-
-  toggle() {
-    this.enabled = !this.enabled;
-    if (this.enabled) this.click();
-    return this.enabled;
   }
 };

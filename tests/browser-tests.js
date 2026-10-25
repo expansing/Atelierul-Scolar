@@ -578,4 +578,9 @@
   window.workshopTestResults = results;
   output.textContent = results.map(result => (result.passed ? '✓ ' : '✗ ') + result.name + (result.error ? ': ' + result.error : '')).join('\n') +
     '\n\n' + results.filter(result => result.passed).length + '/' + results.length + ' verificări reușite.';
+  // tests/run-browser-tests.js deschide pagina cu ?report=1 și primește rezultatele aici
+  if (new URLSearchParams(location.search).has('report')) {
+    fetch('/__test-results', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(results) })
+      .finally(() => window.close()); // profilul de test permite închiderea, deci browserul se oprește singur
+  }
 })();

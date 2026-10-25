@@ -338,4 +338,10 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
+  // Funcționare offline: doar prin http(s); deschis ca fișier, site-ul merge ca înainte.
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && assetVersion) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js?v=' + assetVersion).catch(error => console.warn('Modul offline nu este disponibil.', error));
+    });
+  }
 })();

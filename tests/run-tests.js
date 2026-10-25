@@ -559,4 +559,29 @@ test('New thinking results coexist with old progress and survive export/import',
   assert.strictEqual(second.entry('mat-1').levels[0].mastered, true);
   data.THINKING_PATH.activities.forEach(id => assert.strictEqual(second.entry(id).levels[0].hints, 1));
 });
+test('Every page applies saved preferences in the head and names the learning path consistently', () => {
+  const fs = require('fs'), path = require('path');
+  ['index', 'subject', 'activity', 'dece', 'settings'].forEach(name => {
+    const html = fs.readFileSync(path.join(__dirname, '..', name + '.html'), 'utf8');
+    const head = html.slice(0, html.indexOf('</head>'));
+    assert(head.indexOf('assets/js/early-preferences.js') !== -1, name + ': early preferences missing from <head>');
+    assert(head.indexOf('assets/js/early-preferences.js') < head.indexOf('assets/css/main.css'), name + ': preferences must apply before styles');
+    assert(html.includes('href="dece.html"'), name + ': no link to the learning path');
+    assert(!html.includes('De ce învățăm'), name + ': old learning path name');
+  });
+});
+test('The service worker caches every asset the pages load', () => {
+  const fs = require('fs'), path = require('path');
+  const sw = fs.readFileSync(path.join(__dirname, '..', 'sw.js'), 'utf8');
+  const listed = new Set(Array.from(sw.matchAll(/'(assets\/[^']+)'/g), match => match[1]));
+  ['index', 'subject', 'activity', 'dece', 'settings'].forEach(name => {
+    const html = fs.readFileSync(path.join(__dirname, '..', name + '.html'), 'utf8');
+    assert(sw.includes("'" + name + ".html'"), 'sw.js does not cache ' + name + '.html');
+    Array.from(html.matchAll(/(?:src|href)="(assets\/[^"?]+)\?v=/g), match => match[1])
+      .forEach(asset => assert(listed.has(asset), 'sw.js does not cache ' + asset + ' (loaded by ' + name + '.html)'));
+  });
+  const css = fs.readFileSync(path.join(__dirname, '..', 'assets/css/main.css'), 'utf8');
+  Array.from(css.matchAll(/url\('\.\.\/([^']+)'\)/g), match => 'assets/' + match[1])
+    .forEach(asset => assert(listed.has(asset), 'sw.js does not cache ' + asset + ' (used by main.css)'));
+});
 console.log('\n' + total + ' groups passed. Generated content tested over ' + (data.ACTIVITIES.length * 3 * 100).toLocaleString('en-US') + ' lesson-level samples.');
