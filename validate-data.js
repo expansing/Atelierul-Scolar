@@ -6,10 +6,10 @@ function loadContent(extra) {
   const context = Object.assign({ console }, extra || {});
   vm.createContext(context);
   ['data', 'lesson-details', 'mission-games', 'game-missions-mat-lim', 'game-missions-log-inf', 'game-missions-sci-civ',
-    'engines', 'math-games', 'discovery', 'preferences', 'progress', 'render', 'dece'].forEach(name => {
+    'engines', 'math-games', 'hands-on', 'discovery', 'preferences', 'progress', 'render', 'dece'].forEach(name => {
     vm.runInContext(fs.readFileSync(path.join(__dirname, 'assets/js', name + '.js'), 'utf8'), context, { filename: name + '.js' });
   });
-  return vm.runInContext('({ SUBJECTS, ACTIVITIES, ACTIVITIES_BY_SUBJECT, THINKING_PATH, LESSON_DETAILS, GAME_MISSIONS, MissionGames, LEVELS, Engines, MathWorkshop, Discovery, Preferences, Progress, Render, DECE_CAMPS })', context);
+  return vm.runInContext('({ SUBJECTS, ACTIVITIES, ACTIVITIES_BY_SUBJECT, THINKING_PATH, LESSON_DETAILS, GAME_MISSIONS, MissionGames, LEVELS, Engines, MathWorkshop, HandsOn, Discovery, Preferences, Progress, Render, DECE_CAMPS })', context);
 }
 
 function validate(data) {
@@ -192,8 +192,11 @@ if (require.main === module) {
     ' cazuri noi și 11 opriri valide structural. Revizia lingvistică și factuală rămâne și o responsabilitate editorială.');
   const warnings = quality(content), bySubject = {};
   warnings.forEach(w => { bySubject[w.subject] = (bySubject[w.subject] || 0) + 1; });
-  if (process.argv.includes('--quality')) warnings.forEach(w => console.log('⚠ ' + w.text));
-  if (warnings.length) console.log('⚠ Calitatea variantelor: ' + warnings.length + ' de revizuit (' +
-    Object.keys(bySubject).map(s => s + ' ' + bySubject[s]).join(', ') + '). Detalii: node validate-data.js --quality');
+  // toate disciplinele au fost revizuite: o variantă care dă răspunsul după lungime este acum o eroare
+  warnings.forEach(w => console.error('✗ Calitatea variantelor: ' + w.text));
+  if (warnings.length) {
+    process.exitCode = 1;
+    console.error('✗ ' + warnings.length + ' întrebări de revizuit (' + Object.keys(bySubject).map(s => s + ' ' + bySubject[s]).join(', ') + ').');
+  }
 }
 module.exports = { loadContent, validate, quality };

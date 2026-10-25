@@ -22,6 +22,10 @@ const Content = {
   sound(prompt, say, picture, options, answer, explain, hint) {
     return Object.assign(Content.question(prompt, options, answer, explain, hint || 'Spune cuvântul rar și prelungește sunetul căutat.'), { say, picture });
   },
+  // joc practic (HandsOn): păstrează întrebările nivelului pentru verificarea de la final
+  handsOn(type, mode, base, rounds) {
+    return { type, mode, levels: base.levels.map((level, i) => ({ rounds: rounds[i], questions: level.questions })) };
+  },
   // imagine de descris: „scene” se afișează deasupra variantelor
   picture(prompt, scene, options, answer, explain, hint) {
     return Object.assign(Content.question(prompt, options, answer, explain, hint || 'Arată cu degetul în imagine fiecare lucru din enunț.'), { scene });
@@ -288,7 +292,7 @@ const ACTIVITIES = [
     ['Citește mesajul cu voce tare.', 'Observă dacă oferă o informație, pune o întrebare sau exprimă o emoție, o urare ori un avertisment.', 'Alege semnul și recitește.'],
     ['Cartonașe cu punct, semn de întrebare și semn de exclamare.', 'Spune același mesaj cu intonații diferite.', 'Discutați când se schimbă semnul final.'],
     'Nu punem semnul întrebării doar pentru că enunțul este scurt. Contează ce comunică.',
-    Content.quiz([
+    Content.handsOn('punctuation', 'marks', Content.quiz([
       [Q('„Unde este cartea” se termină cu…', ['?', '.', ','], 0, 'Mesajul cere o informație, deci este o întrebare.'),
         Q('„Pisica doarme pe pernă” se termină cu…', ['.', '?', '!'], 0, 'Mesajul ne spune ce face pisica, deci punem punct.'),
         Q('„Câți ani ai” se termină cu…', ['?', '.', '!'], 0, '„Câți” cere o informație: este o întrebare.'),
@@ -303,7 +307,7 @@ const ACTIVITIES = [
         Q('Care enunț îl întreabă pe Radu dacă vine?', ['Vii, Radu?', 'Vino, Radu!', 'Radu vine.'], 0, '„Vii, Radu?” întreabă; „Vino, Radu!” îl cheamă.'),
         Q('În care enunț virgula desparte numele celui strigat?', ['Ana, vino la masă!', 'Ana vino, la masă!', 'Ana vino la, masă!'], 0, 'Când strigăm pe cineva, despărțim numele prin virgulă.'),
         Q('Câte enunțuri sunt în „Plouă. Ia umbrela!”?', ['Două', 'Unul', 'Trei'], 0, 'Fiecare enunț se încheie cu semnul lui: punct, apoi semnul exclamării.')]
-    ], [4, 4, 5]), 'Cum schimbă intonația sensul?'),
+    ], [4, 4, 5]), [2, 3, 3]), 'Cum schimbă intonația sensul?'),
   L('lim', 10, 'Redactorul atent', '🖍️',
     'Să observe și să corecteze greșeli în enunțuri cunoscute',
     'Revizuirea înseamnă să recitim și să îmbunătățim ce am scris. Se înțelege mesajul? Se potrivesc formele cuvintelor, ca în „copiii citesc”? Verificăm și litera mare, semnele din ă, â, î, ș, ț și punctuația.',
@@ -537,8 +541,8 @@ const ACTIVITIES = [
         Q('O cutie închisă face zgomot când este mișcată. Aflăm sigur culoarea obiectului dinăuntru?', ['Nu, sunetul nu ne spune culoarea', 'Da, este roșu', 'Da, dacă ascultăm cu atenție'], 0, 'Acest indiciu nu spune culoarea. Putem lăsa întrebarea fără răspuns până avem alte informații.')
       ],
       [
-        Q('Lia observă trei scaune goale și spune: „Toți copiii au plecat acasă.” Nu a verificat celelalte camere. Ce concluzie este susținută?', ['Toți copiii au plecat', 'Cele trei scaune sunt goale; nu știm unde sunt toți copiii', 'Niciun copil nu a venit azi'], 1, 'Observația privește trei scaune, nu toate locurile în care pot fi copiii.'),
-        Q('Teo crede că ploaia a udat aleea. Apoi vede că aleea este sub un acoperiș și un adult folosește un furtun acolo. Ce este potrivit?', ['Să ignore ce a văzut nou', 'Să spună că aleea nu este udă', 'Să ia în calcul furtunul și să verifice ce a udat aleea'], 2, 'Informația nouă oferă o altă explicație. Teo poate verifica fără să rămână legat de prima idee.'),
+        Q('Lia observă trei scaune goale și spune: „Toți copiii au plecat acasă.” Nu a verificat celelalte camere. Ce concluzie este susținută?', ['Toți copiii au plecat sigur acasă', 'Trei scaune sunt goale; restul nu știm', 'Niciun copil nu a venit azi la școală'], 1, 'Observația privește trei scaune, nu toate locurile în care pot fi copiii.'),
+        Q('Teo crede că ploaia a udat aleea. Apoi vede că aleea este sub un acoperiș și un adult folosește un furtun acolo. Ce este potrivit?', ['Să ignore furtunul pe care l-a văzut', 'Să spună sigur că a fost ploaia', 'Să verifice dacă furtunul a udat aleea'], 2, 'Informația nouă oferă o altă explicație. Teo poate verifica fără să rămână legat de prima idee.'),
         Q('Nimeni din poveste nu a văzut cum s-a rupt foaia. Ce răspuns este cinstit?', ['„Nu știm încă cine sau ce a rupt-o.”', '„Sigur a rupt-o cel mai mic copil.”', '„Cine vorbește primul are dreptate.”'], 0, 'Lipsa informației nu trebuie umplută cu o acuzație. „Nu știm încă” este un răspuns potrivit.')
       ]
     ]), 'Ce întrebare ar ajuta-o pe Lia să verifice o explicație fără să acuze pe cineva?'),
@@ -552,18 +556,18 @@ const ACTIVITIES = [
     Content.quiz([
       [
         Q('Care propoziție se poate verifica prin numărare?', ['„Mie îmi plac merele.”', '„În coș sunt trei mere.”', '„Prefer perele.”'], 1, 'Numărând merele verificăm afirmația despre cantitate.'),
-        Q('Ina spune: „Îmi place verdele.” Dan preferă roșul. Cine trebuie să aibă gustul celuilalt?', ['Ina', 'Dan', 'Niciunul; pot prefera culori diferite'], 2, 'O preferință nu este o problemă cu un singur răspuns corect.'),
+        Q('Ina spune: „Îmi place verdele.” Dan preferă roșul. Cine trebuie să aibă gustul celuilalt?', ['Ina trebuie să prefere roșul', 'Dan trebuie să prefere verdele', 'Niciunul; pot prefera culori diferite'], 2, 'O preferință nu este o problemă cu un singur răspuns corect.'),
         Q('Care propoziție arată o preferință?', ['„Prefer povestea cu vulpea.”', '„Cartea are zece pagini.”', '„Pe copertă este o vulpe.”'], 0, 'Cuvântul „prefer” spune ce îi place vorbitorului.')
       ],
       [
-        Q('În desen sunt patru creioane. Un adult spune că sunt cinci. Este afirmația corectă doar pentru că o spune adultul?', ['Da, întotdeauna', 'Nu; numărăm creioanele și putem corecta afirmația', 'Nu avem voie să numărăm'], 1, 'Și adulții pot greși. Numărarea verifică afirmația, fără să jignească persoana.'),
+        Q('În desen sunt patru creioane. Un adult spune că sunt cinci. Este afirmația corectă doar pentru că o spune adultul?', ['Da, adulții au mereu dreptate la numărat', 'Nu; numărăm creioanele și putem corecta afirmația', 'Nu avem voie să numărăm noi creioanele'], 1, 'Și adulții pot greși. Numărarea verifică afirmația, fără să jignească persoana.'),
         Q('Mara spune: „Cartea are opt pagini și este preferata mea.” Ce parte verificăm prin numărare?', ['Că este preferata tuturor', 'Că trebuie să ne placă și nouă', 'Că are opt pagini'], 2, 'Numărul paginilor se verifică; preferința Marei este despre ce îi place ei.'),
         Q('Lui Dan îi place un joc. Ce poate spune fără să ghicească gusturile tuturor?', ['„Mie îmi place acest joc.”', '„Tuturor trebuie să le placă.”', '„Cine nu îl preferă greșește.”'], 0, 'Dan își cunoaște preferința, dar nu poate hotărî preferințele altor persoane.')
       ],
       [
-        Q('Cinci copii preferă cercurile, iar doi preferă pătratele. Ce aflăm din vot?', ['Cercurile sunt forma corectă pentru toți', 'În acest grup, mai mulți copii au ales cercurile', 'Pătratele sunt greșite'], 1, 'Votul descrie alegerile grupului. Nu transformă o preferință într-un adevăr pentru toți.'),
+        Q('Cinci copii preferă cercurile, iar doi preferă pătratele. Ce aflăm din vot?', ['Cercurile sunt forma corectă pentru toți', 'Aici, mai mulți copii au ales cercurile', 'Pătratele sunt o alegere greșită pentru toți'], 1, 'Votul descrie alegerile grupului. Nu transformă o preferință într-un adevăr pentru toți.'),
         Q('Pe un afiș scrie: „Cel mai frumos caiet are 20 de foi.” Ce verificăm direct numărând?', ['Că este cel mai frumos pentru oricine', 'Că trebuie să îl cumpărăm', 'Dacă are 20 de foi'], 2, 'Numărul foilor este verificabil. „Cel mai frumos” depinde de gusturi și nu este dovedit prin numărare.'),
-        Q('Două persoane nu sunt de acord dacă o panglică măsoară 10 cm. Este doar o diferență de gust?', ['Nu; o pot măsura cu aceeași unitate și aceeași metodă', 'Da; fiecare lungime este corectă dacă îi place', 'Da; nu se poate verifica'], 0, 'Lungimea poate fi verificată prin măsurare. Nu toate dezacordurile sunt despre preferințe.')
+        Q('Două persoane nu sunt de acord dacă o panglică măsoară 10 cm. Este doar o diferență de gust?', ['Nu; o pot măsura la fel amândoi', 'Da; fiecare lungime este corectă dacă îi place', 'Da; o lungime nu se poate verifica deloc'], 0, 'Lungimea poate fi verificată prin măsurare. Nu toate dezacordurile sunt despre preferințe.')
       ]
     ]), 'Poți inventa o propoziție care conține și ceva verificabil, și o preferință?'),
   L('log', 13, 'Ce dovezi avem?', '⚖️',
@@ -580,14 +584,14 @@ const ACTIVITIES = [
         Q('Un copil spune: „Panglica mea este mai lungă pentru că este verde.” Ce lipsește?', ['O comparație a lungimilor', 'O culoare și mai frumoasă', 'Un număr mai mare de prieteni'], 0, 'Culoarea nu arată lungimea. Trebuie comparate sau măsurate panglicile.')
       ],
       [
-        Q('Panglica roșie are 11 cm, iar albastra 8 cm, măsurate corect. Ce susține concluzia că roșia este mai lungă?', ['Roșul este preferat de grup', '11 cm este mai mult decât 8 cm', 'Mara a ales prima'], 1, 'Comparația folosește măsurători în aceeași unitate.'),
+        Q('Panglica roșie are 11 cm, iar albastra 8 cm, măsurate corect. Ce susține concluzia că roșia este mai lungă?', ['Roșul este culoarea preferată a clasei', '11 cm sunt mai mult decât 8', 'Mara a ales-o prima dintre panglici'], 1, 'Comparația folosește măsurători în aceeași unitate.'),
         Q('Patru copii spun că într-o cutie sunt șase bile. Toți au repetat ce a ghicit primul copil, fără să deschidă cutia. Avem patru numărări?', ['Da, câte una pentru fiecare voce', 'Da, dacă sunt prieteni', 'Nu; este aceeași ghicire repetată'], 2, 'Repetarea unei informații nu este o nouă verificare independentă.'),
-        Q('Teo și Ina obțin lungimi diferite pentru aceeași bandă. Ce verifică mai întâi?', ['Dacă au pornit de la același reper și au folosit aceeași unitate', 'Care dintre ei este mai mare', 'Cine a terminat primul'], 0, 'Metoda poate explica diferența; vârsta sau viteza nu decid lungimea.')
+        Q('Teo și Ina obțin lungimi diferite pentru aceeași bandă. Ce verifică mai întâi?', ['Dacă au pornit de la același capăt', 'Care dintre ei este mai mare de vârstă', 'Cine a terminat primul de măsurat'], 0, 'Metoda poate explica diferența; vârsta sau viteza nu decid lungimea.')
       ],
       [
-        Q('O mașinuță merge mai departe pe o rampă. În a doua încercare, copilul schimbă și rampa, și mașinuța. Știe sigur că numai rampa a făcut diferența?', ['Da, fiindcă a doua distanță este mai mare', 'Nu; a schimbat două lucruri și trebuie să le verifice separat', 'Da, dacă îi place a doua rampă'], 1, 'Nu putem izola efectul rampei dacă s-a schimbat și mașinuța.'),
+        Q('O mașinuță merge mai departe pe o rampă. În a doua încercare, copilul schimbă și rampa, și mașinuța. Știe sigur că numai rampa a făcut diferența?', ['Da, fiindcă a doua distanță este mai mare', 'Nu; a schimbat două lucruri deodată', 'Da, dacă îi place a doua rampă'], 1, 'Nu putem izola efectul rampei dacă s-a schimbat și mașinuța.'),
         Q('Trei semințe dintr-un pahar au încolțit. Ce putem spune numai din această observație?', ['Toate semințele din lume încolțesc mereu', 'Nicio altă sămânță nu are nevoie de apă', 'Aceste trei semințe au încolțit în condițiile observate'], 2, 'Observația susține concluzia despre semințele urmărite, nu o promisiune despre toate semințele.'),
-        Q('Două măsurători atente arată același rezultat, dar un afiș fără explicații spune altceva. Ce este mai potrivit?', ['Să verificăm metoda și explicația afișului înainte să decidem', 'Să alegem automat afișul fiindcă este mare', 'Să ignorăm orice măsurătoare'], 0, 'Comparăm cum au fost obținute informațiile. Aspectul afișului nu dovedește afirmația.')
+        Q('Două măsurători atente arată același rezultat, dar un afiș fără explicații spune altceva. Ce este mai potrivit?', ['Verificăm cum a aflat afișul, apoi decidem', 'Să alegem automat afișul fiindcă este mare', 'Să ignorăm cele două măsurători atente'], 0, 'Comparăm cum au fost obținute informațiile. Aspectul afișului nu dovedește afirmația.')
       ]
     ]), 'Ce dovadă ai căuta ca să verifici o afirmație despre un număr de obiecte? Dar despre lungime?'),
   L('log', 14, 'De unde vine informația?', '📚',
@@ -600,18 +604,18 @@ const ACTIVITIES = [
     Content.quiz([
       [
         Q('Un coleg spune că mâine biblioteca este închisă. Ce întrebare ajută?', ['„Cât de tare poți repeta?”', '„De unde ai aflat?”', '„Câți prieteni ai?”'], 1, 'Întrebarea caută sursa informației, nu popularitatea colegului.'),
-        Q('Ai două programe ale bibliotecii: unul vechi și unul pentru săptămâna aceasta. Ce verifici pentru vizita de mâine?', ['Care hârtie are mai multe culori', 'Care titlu este mai mare', 'Programul pentru perioada în care vrei să mergi'], 2, 'Data și perioada contează, fiindcă programul se poate schimba.'),
-        Q('Primești un link necunoscut care promite răspunsul. Ce faci?', ['Ceri sprijinul unui adult de încredere, fără să îl deschizi singur', 'Introduci numele și adresa ta', 'Îl trimiți tuturor ca fapt sigur'], 0, 'Verificarea informației trebuie să rămână sigură; nu dai date personale și nu deschizi singur linkuri necunoscute.')
+        Q('Ai două programe ale bibliotecii: unul vechi și unul pentru săptămâna aceasta. Ce verifici pentru vizita de mâine?', ['Care hârtie are mai multe culori', 'Care titlu este mai mare', 'Programul pentru săptămâna aceasta'], 2, 'Data și perioada contează, fiindcă programul se poate schimba.'),
+        Q('Primești un link necunoscut care promite răspunsul. Ce faci?', ['Nu îl deschid și întreb un adult', 'Îl deschid și îmi scriu adresa', 'Îl trimit tuturor ca fapt sigur'], 0, 'Verificarea informației trebuie să rămână sigură; nu dai date personale și nu deschizi singur linkuri necunoscute.')
       ],
       [
-        Q('Două pagini au copiat același anunț vechi. Înseamnă că biblioteca a confirmat de două ori programul de azi?', ['Da, sunt două pagini', 'Nu; ambele pot repeta aceeași informație veche', 'Da, dacă au multe aprecieri'], 1, 'Trebuie urmărite sursa și data; copiile nu sunt confirmări separate.'),
+        Q('Două pagini au copiat același anunț vechi. Înseamnă că biblioteca a confirmat de două ori programul de azi?', ['Da, două pagini înseamnă două confirmări', 'Nu; ambele pot repeta aceeași informație veche', 'Da, dacă au multe aprecieri și comentarii'], 1, 'Trebuie urmărite sursa și data; copiile nu sunt confirmări separate.'),
         Q('Un coleg a fost ieri la bibliotecă. Despre ce poate povesti direct?', ['Despre toate bibliotecile din țară', 'Despre orice zi din anul viitor', 'Despre ce a observat acolo ieri'], 2, 'Experiența directă privește locul și momentul observate; nu garantează programul viitor.'),
-        Q('Un adult nu își amintește programul și spune: „Cred că deschide la zece.” Cum continuăm?', ['Verificăm împreună programul actual sau întrebăm la bibliotecă', 'Tratăm amintirea ca dovadă sigură', 'Îi spunem că nu mai poate avea dreptate niciodată'], 0, 'Un adult poate fi nesigur sau poate greși. Verificăm afirmația, fără să atacăm persoana.')
+        Q('Un adult nu își amintește programul și spune: „Cred că deschide la zece.” Cum continuăm?', ['Verificăm împreună programul actual sau întrebăm la bibliotecă', 'Tratăm amintirea ca dovadă sigură', 'Îi spunem că nu va mai avea dreptate'], 0, 'Un adult poate fi nesigur sau poate greși. Verificăm afirmația, fără să atacăm persoana.')
       ],
       [
-        Q('Un program de conversație spune un orar, dar nu arată de unde l-a luat. Este suficient pentru a porni la bibliotecă?', ['Da, un program nu poate greși', 'Nu; verificăm împreună cu un adult programul actual al bibliotecii', 'Da, dacă răspunsul pare politicos'], 1, 'Și programele pot produce informații greșite sau vechi. Felul politicos de a răspunde nu este o dovadă.'),
-        Q('Anunțul actual al bibliotecii spune „închis pentru reparații”; o fotografie de anul trecut arată ușa deschisă. Ce este relevant pentru azi?', ['Fotografia veche, fiindcă are oameni', 'Numărul de aprecieri al fotografiei', 'Anunțul pentru perioada actuală, pe care îl putem confirma la bibliotecă'], 2, 'Fotografia poate arăta corect trecutul fără să arate programul de azi.'),
-        Q('Două surse dau informații diferite și nu poți afla încă data uneia. Ce poți spune?', ['„Nu am verificat încă suficient. Cer ajutor și nu prezint una ca sigură.”', '„Aleg ce îmi place și spun că am dovada.”', '„Ambele sunt sigur false.”'], 0, 'Un dezacord între surse cere verificare. Nu este nevoie să inventăm certitudine.')
+        Q('Un program de conversație spune un orar, dar nu arată de unde l-a luat. Este suficient pentru a porni la bibliotecă?', ['Da, un program nu poate greși', 'Nu; verificăm cu un adult programul actual', 'Da, dacă răspunsul pare politicos'], 1, 'Și programele pot produce informații greșite sau vechi. Felul politicos de a răspunde nu este o dovadă.'),
+        Q('Anunțul actual al bibliotecii spune „închis pentru reparații”; o fotografie de anul trecut arată ușa deschisă. Ce este relevant pentru azi?', ['Fotografia veche, fiindcă are oameni', 'Numărul de aprecieri al fotografiei', 'Anunțul actual al bibliotecii'], 2, 'Fotografia poate arăta corect trecutul fără să arate programul de azi.'),
+        Q('Două surse dau informații diferite și nu poți afla încă data uneia. Ce poți spune?', ['„Nu am verificat încă suficient.”', '„Aleg ce îmi place și spun că e dovedit.”', '„Ambele sunt sigur false, deci nu contează.”'], 0, 'Un dezacord între surse cere verificare. Nu este nevoie să inventăm certitudine.')
       ]
     ]), 'Ce ai întreba despre o informație înainte să o spui mai departe ca sigură?'),
 
@@ -623,9 +627,9 @@ const ACTIVITIES = [
     ['Cartonașe cu tastatură, microfon, ecran și difuzor.', 'Joacă rolurile de intrare, program și ieșire.', 'Schimbă un cartonaș și explică noul traseu.'],
     'Calculatorul nu gândește ca un om și nu știe automat ce dorești. Execută instrucțiuni și poate produce rezultate greșite dacă datele sau instrucțiunile sunt greșite.',
     Content.sorting([
-      { zones: ['Introduc date', 'Prezintă rezultate'], items: [{ label: 'Tastatură', zone: 0 }, { label: 'Mouse', zone: 0 }, { label: 'Ecran', zone: 1 }, { label: 'Difuzor', zone: 1 }] },
-      { zones: ['Intrare', 'Ieșire'], items: [{ label: 'Microfon', zone: 0 }, { label: 'Cameră video', zone: 0 }, { label: 'Imprimantă', zone: 1 }, { label: 'Căști', zone: 1 }] },
-      { zones: ['Intrare', 'Prelucrare', 'Ieșire'], items: [{ label: 'Apeși tasta A', zone: 0 }, { label: 'Programul calculează 4 + 3', zone: 1 }, { label: 'Ecranul arată 7', zone: 2 }, { label: 'Microfonul înregistrează vocea', zone: 0 }, { label: 'Difuzorul redă un sunet', zone: 2 }] }
+      { zones: ['Introduc date', 'Prezintă rezultate'], rounds: 5, items: [{ label: 'Tastatură', zone: 0 }, { label: 'Mouse', zone: 0 }, { label: 'Ecran', zone: 1 }, { label: 'Difuzor', zone: 1 }, { label: 'Microfon', zone: 0 }, { label: 'Căști', zone: 1 }, { label: 'Imprimantă', zone: 1 }, { label: 'Joystick', zone: 0 }] },
+      { zones: ['Intrare', 'Ieșire'], rounds: 5, items: [{ label: 'Microfon', zone: 0 }, { label: 'Cameră video', zone: 0 }, { label: 'Imprimantă', zone: 1 }, { label: 'Căști', zone: 1 }, { label: 'Scaner', zone: 0 }, { label: 'Proiector', zone: 1 }, { label: 'Telecomandă', zone: 0 }, { label: 'Ecranul ceasului inteligent', zone: 1 }] },
+      { zones: ['Intrare', 'Prelucrare', 'Ieșire'], rounds: 5, items: [{ label: 'Apeși tasta A', zone: 0 }, { label: 'Programul calculează 4 + 3', zone: 1 }, { label: 'Ecranul arată 7', zone: 2 }, { label: 'Microfonul înregistrează vocea', zone: 0 }, { label: 'Difuzorul redă un sunet', zone: 2 }, { label: 'Atingi o imagine pe tabletă', zone: 0 }, { label: 'Programul sortează pozele după dată', zone: 1 }, { label: 'Imprimanta tipărește desenul', zone: 2 }, { label: 'Programul verifică parola', zone: 1 }] }
     ]), 'Ce se întâmplă între apăsarea tastei și apariția literei?'),
   L('inf', 2, 'Mouse-ul și tastatura', '⌨️',
     'Să aleagă o comandă potrivită și să folosească tastatura',
@@ -634,11 +638,11 @@ const ACTIVITIES = [
     ['Găsește un buton folosind Tab.', 'Activează-l cu Enter.', 'Într-un câmp de text, folosește Spațiu între cuvinte și Backspace pentru corectare.'],
     ['O tastatură și o foaie cu taste desenate.', 'Găsește Tab, Enter, Spațiu și Backspace.', 'Exersează o navigare fără mouse, fără grabă.'],
     'Așază mâna confortabil pe mouse. De obicei apăsăm butonul principal cu arătătorul. Un adult te poate ajuta să adaptezi setările pentru mâna și nevoile tale.',
-    Content.quiz([
+    Content.handsOn('device', 'practice', Content.quiz([
       [Q('Ce tastă lasă un spațiu între cuvinte?', ['Spațiu', 'Escape', 'Tab'], 0, 'Spațiu separă cuvintele când scriem.')],
       [Q('Ce tastă te ajută să alegi următorul buton al paginii fără mouse?', ['Tab', 'Backspace', 'Caps Lock'], 0, 'Tab trece pe rând la elementele paginii pe care le putem folosi cu tastatura.')],
       [Q('Ai trecut de butonul dorit. Cum revii prin tastatură?', ['Shift + Tab', 'Mai multe spații', 'Caps Lock'], 0, 'Shift + Tab mută focalizarea înapoi.')]
-    ]), 'Cum observi ce buton este focalizat?'),
+    ]), [3, 4, 4]), 'Cum observi ce buton este focalizat?'),
   L('inf', 3, 'Algoritmi simpli', '➡️',
     'Să construiască o succesiune de instrucțiuni clare',
     'Un algoritm este un șir de pași clari pentru a îndeplini o sarcină. Are un început și un sfârșit. Unii pași pot fi făcuți numai după alții: punem sămânța înainte să o acoperim cu pământ.',
@@ -647,10 +651,16 @@ const ACTIVITIES = [
     ['Cartonașe cu pașii plantării și un ghiveci.', 'Pune pașii în ordine.', 'Cere unui partener să urmeze exact instrucțiunile.'],
     'Unele sarcini au mai multe ordini valide. În joc reconstruim ordinea indicată, iar în discuție putem compara alte variante.',
     Content.sequence([
-      [O('Construiește drumul: dreapta, apoi jos.', ['Dreapta', 'Jos'], 'Executăm fiecare comandă în ordinea cerută.')],
-      [O('Ordinea plantării: pregătire, sămânță, acoperire, udare.', ['Pun pământ', 'Așez sămânța', 'Acopăr', 'Ud ușor'], 'Sămânța se așază înainte de acoperire.')],
-      [O('Reconstruiește: citesc cerința, planific, execut, verific, corectez.', ['Citesc', 'Planific', 'Execut', 'Verific', 'Corectez'], 'Verificarea ne arată dacă trebuie schimbat planul.')]
-    ]), 'Ce pas depinde de un pas anterior?'),
+      [O('Construiește drumul: dreapta, apoi jos.', ['Dreapta', 'Jos'], 'Robotul face pașii exact în ordinea cerută.'),
+        O('Construiește drumul: jos, apoi stânga.', ['Jos', 'Stânga'], 'Primul pas este „jos”, al doilea „stânga”.'),
+        O('Construiește drumul: sus, dreapta, jos.', ['Sus', 'Dreapta', 'Jos'], 'Trei comenzi, în ordinea scrisă.')],
+      [O('Ordinea plantării: pregătire, sămânță, acoperire, udare.', ['Pun pământ', 'Așez sămânța', 'Acopăr', 'Ud ușor'], 'Sămânța are nevoie de pământ sub ea și deasupra; udăm la final.'),
+        O('Algoritmul pentru un sandviș: iau pâinea, pun unt, pun brânză, închid.', ['Iau pâinea', 'Pun unt', 'Pun brânză', 'Închid sandvișul'], 'Fiecare pas folosește rezultatul pasului de dinainte.'),
+        O('Algoritmul spălatului pe mâini: ud, pun săpun, frec, clătesc, șterg.', ['Ud mâinile', 'Pun săpun', 'Frec mâinile', 'Clătesc', 'Șterg mâinile'], 'Săpunul vine după udat, iar ștersul la final.')],
+      [O('Reconstruiește: citesc cerința, planific, execut, verific, corectez.', ['Citesc', 'Planific', 'Execut', 'Verific', 'Corectez'], 'Verificarea vine după execuție, iar corectarea după verificare.'),
+        O('Algoritmul pentru o carte de la bibliotecă: caut raftul, citesc titlurile, găsesc cartea, o împrumut.', ['Caut raftul', 'Citesc titlurile', 'Găsesc cartea', 'O împrumut'], 'Nu putem împrumuta cartea înainte să o găsim.'),
+        O('Depanarea: rulez, observ greșeala, găsesc pasul, îl corectez, rulez din nou.', ['Rulez programul', 'Observ greșeala', 'Găsesc pasul greșit', 'Corectez pasul', 'Rulez din nou'], 'După corectare rulăm din nou, ca să verificăm.')]
+    ], [2, 2, 2]), 'Ce pas depinde de un pas anterior?'),
   L('inf', 4, 'Gândim ca programatori', '🤖',
     'Să testeze și să repare un program de deplasare',
     'O eroare de program poate fi un pas lipsă, o comandă nepotrivită sau o ordine greșită. Testăm câte un pas și comparăm cu planul.',
@@ -667,9 +677,9 @@ const ACTIVITIES = [
     ['Cartonașe cu numere de la 1 la 20.', 'Sortează după „mai mic decât 10”.', 'Schimbă regula în „cel mult 10” și observă ce se mută.'],
     '„Mai mic decât 10” nu îl include pe 10. „Cel mult 10” înseamnă 10 sau mai puțin, deci îl include și pe 10.',
     Content.sorting([
-      { zones: ['Mai mic decât 10', 'Cel puțin 10'], items: [{ label: '4', zone: 0 }, { label: '9', zone: 0 }, { label: '10', zone: 1 }, { label: '15', zone: 1 }] },
-      { zones: ['Par', 'Impar'], items: [{ label: '12', zone: 0 }, { label: '17', zone: 1 }, { label: '20', zone: 0 }, { label: '25', zone: 1 }] },
-      { zones: ['Par și mai mare decât 10', 'Nu respectă ambele condiții'], items: [{ label: '8', zone: 1 }, { label: '10', zone: 1 }, { label: '12', zone: 0 }, { label: '13', zone: 1 }, { label: '24', zone: 0 }] }
+      { zones: ['Mai mic decât 10', 'Cel puțin 10'], rounds: 5, items: [{ label: '4', zone: 0 }, { label: '9', zone: 0 }, { label: '10', zone: 1 }, { label: '15', zone: 1 }, { label: '1', zone: 0 }, { label: '6', zone: 0 }, { label: '12', zone: 1 }, { label: '30', zone: 1 }] },
+      { zones: ['Par', 'Impar'], rounds: 5, items: [{ label: '12', zone: 0 }, { label: '17', zone: 1 }, { label: '20', zone: 0 }, { label: '25', zone: 1 }, { label: '6', zone: 0 }, { label: '9', zone: 1 }, { label: '14', zone: 0 }, { label: '31', zone: 1 }] },
+      { zones: ['Par și mai mare decât 10', 'Nu respectă ambele condiții'], rounds: 6, items: [{ label: '8', zone: 1 }, { label: '10', zone: 1 }, { label: '12', zone: 0 }, { label: '13', zone: 1 }, { label: '24', zone: 0 }, { label: '11', zone: 1 }, { label: '16', zone: 0 }, { label: '22', zone: 0 }, { label: '9', zone: 1 }, { label: '30', zone: 0 }] }
     ]), 'Cum verifici un număr aflat chiar la limita regulii?'),
   L('inf', 6, 'Algoritmul zilei mele', '🌤️',
     'Să distingă pașii obligatorii de alegerile unei rutine',
@@ -679,10 +689,16 @@ const ACTIVITIES = [
     ['Desene cu activități zilnice.', 'Construiește rutina ta pe o bandă de hârtie.', 'Mută un pas și discută dacă noua ordine funcționează.'],
     'O rutină diferită nu este neapărat greșită. Verificăm dacă este sigură și dacă fiecare pas poate fi făcut în ordinea aleasă.',
     Content.sequence([
-      [O('Reconstruiește rutina aleasă: mă trezesc, mă îmbrac, plec.', ['Mă trezesc', 'Mă îmbrac', 'Plec'], 'Trezirea precedă plecarea; aceasta este rutina cerută în exemplu.')],
-      [O('Pregătirea pentru ploaie: verific, aleg, îmbrac, plec.', ['Verific vremea', 'Aleg haina', 'Îmbrac haina', 'Plec'], 'Informația despre vreme ajută alegerea hainei.')],
-      [O('Pregătirea ghiozdanului după plan: verific, aleg, pun, controlez, închid.', ['Verific orarul', 'Aleg materialele', 'Le pun în ghiozdan', 'Controlez lista', 'Închid ghiozdanul'], 'O listă verificată reduce riscul să uităm ceva.')]
-    ]), 'Ce pași ai putea schimba fără să strici rutina?'),
+      [O('Reconstruiește rutina aleasă: mă trezesc, mă îmbrac, plec.', ['Mă trezesc', 'Mă îmbrac', 'Plec'], 'Rutina are o ordine: nu plecăm înainte să ne îmbrăcăm.'),
+        O('Rutina de seară aleasă: mă spăl pe dinți, îmi pun pijamaua, mă culc.', ['Mă spăl pe dinți', 'Îmi pun pijamaua', 'Mă culc'], 'Somnul vine la finalul rutinei de seară.'),
+        O('Rutina mesei: mă spăl pe mâini, mănânc, strâng farfuria.', ['Mă spăl pe mâini', 'Mănânc', 'Strâng farfuria'], 'Ne spălăm înainte de masă și strângem după.')],
+      [O('Pregătirea pentru ploaie: verific, aleg, îmbrac, plec.', ['Verific vremea', 'Aleg haina', 'Îmbrac haina', 'Plec'], 'Alegerea hainei depinde de vremea verificată.'),
+        O('Planul pentru floare: verific pământul, umplu stropitoarea, ud, pun stropitoarea la loc.', ['Verific pământul', 'Umplu stropitoarea', 'Ud floarea', 'Pun stropitoarea la loc'], 'Verificăm întâi dacă floarea are nevoie de apă.'),
+        O('Planul pentru joacă afară: întreb un adult, mă îmbrac potrivit, ies, mă întorc la ora stabilită.', ['Întreb un adult', 'Mă îmbrac potrivit', 'Ies afară', 'Mă întorc la ora stabilită'], 'Întrebăm înainte să ieșim și respectăm ora de întoarcere.')],
+      [O('Pregătirea ghiozdanului după plan: verific, aleg, pun, controlez, închid.', ['Verific orarul', 'Aleg materialele', 'Le pun în ghiozdan', 'Controlez lista', 'Închid ghiozdanul'], 'Orarul arată ce materiale alegem; lista ne ajută să nu uităm nimic.'),
+        O('Planul pentru tema de scris: citesc cerința, scriu, recitesc, corectez, pun caietul în ghiozdan.', ['Citesc cerința', 'Scriu', 'Recitesc', 'Corectez', 'Pun caietul în ghiozdan'], 'Recitim înainte să corectăm și strângem caietul la final.'),
+        O('Planul pentru o plimbare cu bicicleta: verific roțile, pun casca, ies cu un adult, merg pe pistă, pun bicicleta la loc.', ['Verific roțile', 'Pun casca', 'Ies cu un adult', 'Merg pe pistă', 'Pun bicicleta la loc'], 'Siguranța vine înainte de plimbare: roți verificate și cască.')]
+    ], [2, 2, 2]), 'Ce pași ai putea schimba fără să strici rutina?'),
   L('inf', 7, 'Robotul și repetările', '🔄',
     'Să folosească repetări pentru secvențe de comenzi',
     'O comandă de repetare îi spune robotului să facă aceeași comandă sau același grup de comenzi de mai multe ori.',
@@ -897,7 +913,7 @@ const ACTIVITIES = [
       [
         Q('Lia spune: „Prefer creionul verde celui albastru.” Ce aflăm?', ['Ce meserie va avea', 'Ce culoare preferă acum', 'Cât de bine desenează'], 1, 'Lia spune ce culoare alege, nu ce poate face sau ce va deveni.'),
         Q('Dan întreabă cum trăiesc albinele și caută o carte despre ele. Ce arată?', ['Un interes pentru albine', 'Că toți trebuie să aleagă albinele', 'Că știe deja totul'], 0, 'Întrebarea și căutarea unei cărți arată că Dan vrea să afle mai mult.'),
-        Q('Nora așteaptă să termine colegul, apoi vorbește. Ce faptă arată răbdare?', ['Culoarea caietului', 'Numele ei', 'Faptul că așteaptă rândul'], 2, 'Răbdarea este arătată aici prin așteptarea rândului.')
+        Q('Nora așteaptă să termine colegul, apoi vorbește. Ce faptă arată răbdare?', ['Culoarea caietului ei', 'Numele pe care îl are', 'Faptul că așteaptă rândul'], 2, 'Răbdarea este arătată aici prin așteptarea rândului.')
       ],
       [
         Q('Alex preferă puzzle-uri, iar Ina preferă povești. Ce este respectuos?', ['Ina trebuie să aleagă puzzle-uri', 'Pot avea preferințe diferite', 'Unul dintre ei greșește'], 1, 'Niciuna dintre preferințele declarate nu trebuie corectată.'),
@@ -906,7 +922,7 @@ const ACTIVITIES = [
       ],
       [
         Q('Teo spune: „Îmi plac păsările. Prefer să le desenez. Azi am împrumutat un creion unui coleg care mi-a cerut.” Care faptă arată generozitate?', ['Interesul pentru păsări', 'Împrumutarea creionului', 'Preferința pentru desen'], 1, 'Împrumutarea cu acord este fapta de ajutor; celelalte enunțuri descriu ce îi place.'),
-        Q('Sara spune că preferă cântecele. Un coleg decide că nu îi pot plăcea și poveștile. Ce lipsește?', ['Să aflăm de la Sara dacă îi plac și poveștile', 'Să îi interzicem poveștile', 'Să aleagă colegul pentru ea'], 0, 'O preferință nu ne spune toate interesele persoanei. Întrebăm, nu presupunem.'),
+        Q('Sara spune că preferă cântecele. Un coleg decide că nu îi pot plăcea și poveștile. Ce lipsește?', ['Să o întrebăm pe Sara', 'Să îi interzicem poveștile', 'Să aleagă colegul pentru ea'], 0, 'O preferință nu ne spune toate interesele persoanei. Întrebăm, nu presupunem.'),
         Q('Doi copii vor să afle despre stele. Unul preferă desene, altul explicații citite de adult. Ce au în comun?', ['Toate preferințele', 'Toate priceperile', 'Interesul pentru stele'], 2, 'Au același subiect de interes, dar preferă moduri diferite de explorare.')
       ]
     ]), 'Cum recunoști în exemplul Mirei un interes, o preferință și o faptă care arată respect?'),
@@ -919,19 +935,19 @@ const ACTIVITIES = [
     '„Am greșit un pas” nu înseamnă „nu sunt bun la nimic”. Nici repetarea fără verificare nu rezolvă întotdeauna problema: putem schimba metoda și putem cere sprijin.',
     Content.quiz([
       [
-        Q('Mara pune patru jetoane, dar cerința cere trei. Ce o ajută să verifice?', ['Să numere jetoanele și să compare cu cerința', 'Să ascundă foaia', 'Să spună că nu poate învăța'], 0, 'Numărarea arată nepotrivirea: sunt patru, nu trei.'),
+        Q('Mara pune patru jetoane, dar cerința cere trei. Ce o ajută să verifice?', ['Să numere și să compare', 'Să ascundă foaia cu cerința', 'Să spună că nu poate învăța'], 0, 'Numărarea arată nepotrivirea: sunt patru, nu trei.'),
         Q('Ionuț nu înțelege un cuvânt din cerință. Cum cere ajutor?', ['„Fă totul în locul meu.”', '„Nu mai ascult.”', '„Îmi explici acest cuvânt?”'], 2, 'Cererea numește exact ce nu înțelege, ca să poată continua.'),
         Q('Ada a greșit un desen după model. Ce este adevărat?', ['Greșeala spune totul despre ea', 'Poate verifica și încerca din nou', 'Nu mai are voie să deseneze'], 1, 'O încercare se poate revizui; nu este o etichetă pentru persoană.')
       ],
       [
         Q('Modelul este roșu–verde–roșu. Luca are roșu–albastru–roșu. Unde verifică mai atent?', ['La primul loc', 'La ultimul loc', 'La mijloc'], 2, 'Doar piesa din mijloc diferă de model: albastru în loc de verde.'),
-        Q('Daria a încercat de două ori fără să înțeleagă. Ce cerere o ajută să învețe?', ['„Îmi arăți primul pas, apoi încerc eu?”', '„Spune-mi că nu voi reuși.”', '„Rezolvă fără să-mi explici.”'], 0, 'Un prim pas explicat îi oferă sprijin și o lasă să exerseze.'),
-        Q('Paul este obosit și nu mai urmărește cerința. Ce poate cere?', ['Să continue fără oprire', 'O pauză și apoi recitirea cerinței cu adultul', 'Să fie certat'], 1, 'Pauza și recitirea sunt forme de sprijin, nu pedepse.')
+        Q('Daria a încercat de două ori fără să înțeleagă. Ce cerere o ajută să învețe?', ['„Îmi arăți primul pas?”', '„Spune-mi că nu voi reuși.”', '„Rezolvă fără să-mi explici.”'], 0, 'Un prim pas explicat îi oferă sprijin și o lasă să exerseze.'),
+        Q('Paul este obosit și nu mai urmărește cerința. Ce poate cere?', ['Să continue fără nicio oprire', 'O pauză, apoi recitirea cerinței', 'Să fie certat că e obosit'], 1, 'Pauza și recitirea sunt forme de sprijin, nu pedepse.')
       ],
       [
-        Q('Ina corectează o piesă și vrea să termine. Cum află dacă modelul se potrivește acum?', ['Presupune că orice schimbare ajută', 'Compară din nou toate locurile cu modelul', 'Ascunde modelul'], 1, 'Verificarea întregului șir arată dacă schimbarea a rezolvat nepotrivirea.'),
-        Q('Un adult nu a auzit cererea de ajutor a lui Sami. Ce poate face Sami?', ['Să creadă că nu merită ajutor', 'Să renunțe pentru totdeauna', 'Să repete cererea sau să întrebe alt adult de încredere'], 2, 'O cerere neauzită nu este un refuz al persoanei; Sami poate căuta sprijin din nou.'),
-        Q('O piesă a căzut lângă un cablu electric deteriorat. Cum procedează copilul?', ['Se îndepărtează și anunță un adult, fără să atingă cablul', 'Repară singur cablul', 'Încearcă mai multe feluri de a-l atinge'], 0, 'Aici nu exersăm prin încercări: evităm pericolul și cerem ajutor unui adult.')
+        Q('Ina corectează o piesă și vrea să termine. Cum află dacă modelul se potrivește acum?', ['Presupune că orice schimbare ajută sigur', 'Compară din nou toate locurile cu modelul', 'Ascunde modelul ca să termine'], 1, 'Verificarea întregului șir arată dacă schimbarea a rezolvat nepotrivirea.'),
+        Q('Un adult nu a auzit cererea de ajutor a lui Sami. Ce poate face Sami?', ['Să creadă că nu merită ajutor', 'Să renunțe pentru totdeauna la ajutor', 'Să repete sau să întrebe alt adult'], 2, 'O cerere neauzită nu este un refuz al persoanei; Sami poate căuta sprijin din nou.'),
+        Q('O piesă a căzut lângă un cablu electric deteriorat. Cum procedează copilul?', ['Se îndepărtează și anunță un adult', 'Repară singur cablul stricat', 'Ridică piesa de lângă cablu'], 0, 'Aici nu exersăm prin încercări: evităm pericolul și cerem ajutor unui adult.')
       ]
     ]), 'Ce a verificat Vlad înainte și după ce a schimbat piesa?'),
   L('civ', 12, 'Rutina mea: timp, pauze și organizare', '🗓️',
@@ -941,7 +957,7 @@ const ACTIVITIES = [
     ['Desenează patru cartonașe: pregătesc foaia, desenez, fac pauză, strâng creioanele.', 'Așază-le după planul Anei: pregătire, desen, pauză, strângere. Spune cu voce tare ce vine înainte și după pauză.', 'Arată cu degetul pasul la care a ajuns Ana. Dacă are nevoie de o pauză mai devreme, discută cu adultul cum poate schimba planul.'],
     ['Patru bucăți de hârtie și creioane; fără cronometru obligatoriu.', 'Desenează pentru un personaj un plan scurt cu pregătire, activitate, pauză și strângere. Spune explicit ordinea aleasă.', 'Un partener așază cartonașele după planul tău. Verificați împreună; apoi schimbați planul și observați că altă ordine poate fi potrivită.'],
     'Un plan nu trebuie urmat cu orice preț. Dacă apare oboseala, o nevoie sau un pericol, cerem sprijin și îl adaptăm. În exercițiile de ordonare, răspunsul urmează numai instrucțiunile personajului.',
-    Content.sequence([
+    Content.handsOn('routine', 'day', Content.sequence([
       [
         O('Planul lui Teo: întâi pregătește foaia, apoi desenează, la final pune desenul în mapă. Reface planul.', ['Pregătește foaia', 'Desenează', 'Pune desenul în mapă'], 'Foaia este prima, desenul urmează, iar mapa este ultimul pas, exact ca în plan.'),
         O('Planul Mirei: începe cu citirea, ia pauză după citire, apoi povestește. Ordonează doar după acest plan.', ['Citește', 'Ia pauză', 'Povestește'], 'Pauza este între citire și povestire în planul Mirei.'),
@@ -957,7 +973,7 @@ const ACTIVITIES = [
         O('Planul nou al lui Vlad începe cu o pauză. Apoi caută cartea înainte de citire. După citire pune semnul de carte, iar la final așază cartea pe raft.', ['Ia pauză', 'Caută cartea', 'Citește', 'Pune semnul de carte', 'Așază cartea pe raft'], 'Pauza este prima în acest plan adaptat; celelalte legături fixează pașii rămași.'),
         O('La atelier, salutul este primul, plecarea este ultima. Copiii aleg materialele înainte de lucru. Strângerea este după lucru și înainte de plecare.', ['Salută', 'Aleg materialele', 'Lucrează', 'Strâng materialele', 'Pleacă'], 'Între salut și plecare, regulile cer alegere–lucru–strângere.')
       ]
-    ]), 'De ce pauza poate avea alt loc într-un plan nou, chiar dacă jocul cere o ordine precisă?'),
+    ]), [2, 2, 2]), 'De ce pauza poate avea alt loc într-un plan nou, chiar dacă jocul cere o ordine precisă?'),
   L('civ', 13, 'Am grijă de mine: odihnă, mișcare și igienă', '🧼',
     'Să recunoască alegeri de îngrijire și situații în care cere sprijin',
     'Corpul are nevoie de odihnă, mișcare potrivită și igienă. Igiena înseamnă îngrijirea curățeniei corpului, de exemplu spălarea mâinilor cu apă și săpun. Mișcarea poate fi adaptată fiecărui copil. Obiceiurile de îngrijire ne sprijină sănătatea, dar nu promit că nu ne vom îmbolnăvi. Dacă ne doare ceva sau ne simțim rău, spunem unui adult.',
@@ -967,19 +983,19 @@ const ACTIVITIES = [
     'Îmbolnăvirea nu dovedește că un copil a făcut ceva rău. Nu comparăm corpurile și nu cerem tuturor aceeași mișcare. Copiii nu aleg singuri medicamente sau tratamente.',
     Content.quiz([
       [
-        Q('După toaletă, înainte de a mânca, ce alegere de igienă este potrivită?', ['Doar să privească mâinile', 'Să își spele mâinile cu apă și săpun și să le usuce', 'Să le șteargă de caiet'], 1, 'Spălarea cu apă și săpun și uscarea îngrijesc mâinile în aceste momente.'),
+        Q('După toaletă, înainte de a mânca, ce alegere de igienă este potrivită?', ['Doar să-și privească atent mâinile', 'Să își spele mâinile cu săpun', 'Să le șteargă de caiet'], 1, 'Spălarea cu apă și săpun și uscarea îngrijesc mâinile în aceste momente.'),
         Q('Nina spune adultului că este foarte obosită. Ce poate cere?', ['O pauză de odihnă', 'Să alerge fără oprire', 'Să ascundă oboseala'], 0, 'Poate spune că are nevoie de odihnă și poate cere sprijin.'),
         Q('Pe podea sunt cuburi. Înaintea unui joc de mișcare, ce trebuie făcut?', ['Să se sară peste ele cu ochii închiși', 'Să fie ignorate', 'Să fie eliberat spațiul cu ajutorul adultului'], 2, 'Îndepărtarea obstacolelor ajută la pregătirea unui loc mai sigur.')
       ],
       [
-        Q('Într-un joc, pe Luca începe să îl doară piciorul. Ce alegere este potrivită?', ['Să continue ca să câștige', 'Să se oprească și să spună unui adult', 'Să ia singur o pastilă'], 1, 'Durerea este un motiv să oprească activitatea și să ceară sprijin, nu să o ascundă.'),
+        Q('Într-un joc, pe Luca începe să îl doară piciorul. Ce alegere este potrivită?', ['Să continue jocul ca să câștige', 'Să se oprească și să anunțe un adult', 'Să ia singur o pastilă de acasă'], 1, 'Durerea este un motiv să oprească activitatea și să ceară sprijin, nu să o ascundă.'),
         Q('Un copil face mișcări așezat, altul în picioare, după indicațiile adulților. Ce este respectuos?', ['Să spunem că doar alergarea contează', 'Să îi punem să concureze la fel', 'Să respectăm mișcarea potrivită fiecăruia'], 2, 'Mișcarea se poate adapta; nu judecăm copiii după felul în care se mișcă.'),
         Q('Mâinile par curate după joaca afară. Începe gustarea. Ce alegere este potrivită?', ['Spălarea cu apă și săpun înainte de masă', 'Doar alegerea unei farfurii colorate', 'Să nu le spele dacă nu vede murdărie'], 0, 'Faptul că nu vedem murdărie nu înlocuiește spălarea mâinilor înainte de masă.')
       ],
       [
-        Q('Un coleg spune: „Dacă mă spăl pe mâini, nu mă pot îmbolnăvi niciodată.” Ce răspuns este corect?', ['Este o garanție pentru orice boală', 'Igiena ajută, dar nu garantează că nu ne îmbolnăvim', 'Igiena nu are niciun rost'], 1, 'Igiena este utilă fără să ofere o garanție împotriva tuturor îmbolnăvirilor.'),
-        Q('Ana are un plan de joacă, dar spune că se simte rău. Ce contează acum?', ['Să termine planul cu orice preț', 'Să ia medicamentul altcuiva', 'Să anunțe adultul și să adapteze planul cu ajutor'], 2, 'Starea de rău cere sprijin; planul se poate schimba, iar medicamentele nu se aleg de copil.'),
-        Q('Doi copii au răcit. Putem decide din asta cine s-a îngrijit mai bine?', ['Nu; răceala singură nu ne spune ce obiceiuri au avut', 'Da; cel care tușește a greșit sigur', 'Da; cel absent este vinovat'], 0, 'Nu cunoaștem obiceiurile lor din simplul fapt că sunt bolnavi și nu îi învinovățim.')
+        Q('Un coleg spune: „Dacă mă spăl pe mâini, nu mă pot îmbolnăvi niciodată.” Ce răspuns este corect?', ['Este o garanție pentru orice boală', 'Igiena ajută, dar nu garantează', 'Igiena nu are niciun rost'], 1, 'Igiena este utilă fără să ofere o garanție împotriva tuturor îmbolnăvirilor.'),
+        Q('Ana are un plan de joacă, dar spune că se simte rău. Ce contează acum?', ['Să termine planul cu orice preț', 'Să ia medicamentul unui prieten', 'Să anunțe adultul și să adapteze planul'], 2, 'Starea de rău cere sprijin; planul se poate schimba, iar medicamentele nu se aleg de copil.'),
+        Q('Doi copii au răcit. Putem decide din asta cine s-a îngrijit mai bine?', ['Nu; răceala nu arată obiceiurile', 'Da; cel care tușește a greșit sigur', 'Da; cel absent este vinovat'], 0, 'Nu cunoaștem obiceiurile lor din simplul fapt că sunt bolnavi și nu îi învinovățim.')
       ]
     ]), 'Ce poate face Lia dacă are nevoie de odihnă înainte să termine activitatea?'),
   L('civ', 14, 'Ascult și spun ce am nevoie', '💬',
@@ -992,18 +1008,18 @@ const ACTIVITIES = [
     Content.quiz([
       [
         Q('Lia spune: „Am nevoie de loc pe masă pentru foaie.” Ce cere?', ['Să plece toată clasa', 'Să primească toate creioanele', 'Spațiu pentru foaia ei'], 2, 'Nevoia este spusă direct: loc pe masă pentru foaie.'),
-        Q('Care cerere este clară și fără jigniri?', ['„Ești rău!”', '„Te rog să vorbești mai încet; încerc să citesc.”', '„Tu strici tot!”'], 1, 'Cererea spune ce ar ajuta și în ce situație, fără să eticheteze persoana.'),
-        Q('Cum verifică Teo dacă a înțeles mesajul?', ['„Ai spus că vrei o pauză, am înțeles bine?”', '„Știu eu mai bine ce vrei.”', 'Vorbește peste coleg'], 0, 'Repetă mesajul ca întrebare, lăsând colegul să confirme sau să corecteze.')
+        Q('Care cerere este clară și fără jigniri?', ['„Ești rău și gălăgios!”', '„Te rog, vorbește mai încet.”', '„Tu strici tot mereu!”'], 1, 'Cererea spune ce ar ajuta și în ce situație, fără să eticheteze persoana.'),
+        Q('Cum verifică Teo dacă a înțeles mesajul?', ['„Vrei o pauză, am înțeles bine?”', '„Știu eu mai bine ce vrei.”', 'Vorbește peste colegul lui'], 0, 'Repetă mesajul ca întrebare, lăsând colegul să confirme sau să corecteze.')
       ],
       [
-        Q('Ina ascultă și răspunde la întrebare, dar nu privește în ochi. Ce știm?', ['Sigur nu ascultă', 'Trebuie obligată să privească', 'Răspunsul poate arăta că a urmărit mesajul'], 2, 'Privitul în ochi nu este o condiție obligatorie pentru ascultare.'),
+        Q('Ina ascultă și răspunde la întrebare, dar nu privește în ochi. Ce știm?', ['Sigur nu ascultă ce i se spune', 'Trebuie obligată să privească', 'Răspunsul arată că a ascultat'], 2, 'Privitul în ochi nu este o condiție obligatorie pentru ascultare.'),
         Q('Dan cere creionul. Mara spune: „Îl folosesc acum.” Ce răspuns respectă limita?', ['„Atunci îl iau fără voie.”', '„Bine. Pot întreba pe altcineva.”', '„Trebuie să mi-l dai.”'], 1, 'Mara poate refuza; Dan poate căuta o altă soluție fără presiune.'),
-        Q('Un coleg spune: „Nu am cerut să mă ajuți, ci să lași puțin loc.” Ce face ascultătorul?', ['Corectează ce a înțeles și lasă spațiu', 'Insistă că știe el mai bine', 'Ia lucrarea colegului'], 0, 'Ascultarea include acceptarea unei corectări despre nevoia exprimată.')
+        Q('Un coleg spune: „Nu am cerut să mă ajuți, ci să lași puțin loc.” Ce face ascultătorul?', ['Corectează ce a înțeles și lasă spațiu', 'Insistă că știe el mai bine', 'Ia lucrarea colegului din mâini'], 0, 'Ascultarea include acceptarea unei corectări despre nevoia exprimată.')
       ],
       [
-        Q('Mira are nevoie de liniște, iar Radu vrea să exerseze o poveste cu voce tare. Adultul permite două colțuri separate. Ce propunere ține seama de amândoi?', ['Mira trebuie să suporte orice zgomot', 'Radu nu mai are voie să vorbească deloc', 'Încearcă locurile separate și verifică dacă se aud bine și pot lucra'], 2, 'Soluția folosește spațiul permis și verifică nevoile ambilor copii.'),
-        Q('Un copil spune „Sunt furios” și cere să lovească pe cineva. Ce răspuns deosebește emoția de faptă?', ['„Nu ai voie să simți furie.”', '„Poți simți furie, dar nu lovim. Hai să cerem sprijin.”', '„Dacă ești furios, poți lovi.”'], 1, 'Emoția nu este greșită; lovirea rănește, iar copilul poate primi sprijin pentru o alternativă.'),
-        Q('Un coleg amenință că o va lovi pe Ana dacă ea cere ajutor. Ce este potrivit?', ['Ana se îndepărtează spre un loc sigur și spune unui adult de încredere', 'Ana păstrează secretul ca să fie politicoasă', 'Ana rămâne să negocieze singură'], 0, 'Siguranța are prioritate față de continuarea discuției; amenințarea trebuie spusă unui adult.')
+        Q('Mira are nevoie de liniște, iar Radu vrea să exerseze o poveste cu voce tare. Adultul permite două colțuri separate. Ce propunere ține seama de amândoi?', ['Mira trebuie să suporte orice zgomot', 'Radu nu mai are voie să vorbească deloc', 'Încearcă locurile separate și verifică'], 2, 'Soluția folosește spațiul permis și verifică nevoile ambilor copii.'),
+        Q('Un copil spune „Sunt furios” și cere să lovească pe cineva. Ce răspuns deosebește emoția de faptă?', ['„Nu ai voie să simți furie.”', '„Poți fi furios, dar nu lovim.”', '„Dacă ești furios, poți lovi.”'], 1, 'Emoția nu este greșită; lovirea rănește, iar copilul poate primi sprijin pentru o alternativă.'),
+        Q('Un coleg amenință că o va lovi pe Ana dacă ea cere ajutor. Ce este potrivit?', ['Ana pleacă și spune unui adult', 'Ana păstrează secretul ca să fie politicoasă', 'Ana rămâne să negocieze singură'], 0, 'Siguranța are prioritate față de continuarea discuției; amenințarea trebuie spusă unui adult.')
       ]
     ]), 'Cum îl ajută pe Dan întrebarea „Am înțeles bine?” înainte de a propune o soluție?'),
   L('civ', 15, 'Descopăr meserii și roluri în comunitate', '🏘️',
@@ -1017,13 +1033,21 @@ const ACTIVITIES = [
       [
         { a: 'Ana, șofer de autobuz în poveste', b: 'Transportă călători cu autobuzul.' },
         { a: 'Mihai, asistent medical în poveste', b: 'Îngrijește pacienți în echipa medicală.' },
-        { a: 'Irina, bibliotecară în poveste', b: 'Ajută cititorii să găsească și să împrumute cărți.' }
+        { a: 'Irina, bibliotecară în poveste', b: 'Ajută cititorii să găsească și să împrumute cărți.' },
+        { a: 'Dan, pompier în poveste', b: 'Stinge incendiile și salvează oameni.' },
+        { a: 'Elena, învățătoare în poveste', b: 'Îi ajută pe copii să învețe la școală.' },
+        { a: 'Victor, brutar în poveste', b: 'Coace pâine pentru cartier.' },
+        { a: 'Maria, poștaș în poveste', b: 'Aduce scrisori și colete la case.' },
+        { a: 'Paul, medic veterinar în poveste', b: 'Îngrijește animalele bolnave.' }
       ],
       [
         { a: 'Roxana, mecanic: azi lucrează la o bicicletă', b: 'Repară frâna bicicletei în atelier.' },
         { a: 'Andrei, bucătar: azi pregătește supă', b: 'Gătește supa în bucătăria cantinei.' },
         { a: 'Dana, grădinar: azi îngrijește răsaduri', b: 'Îngrijește plantele tinere din grădina comunității.' },
-        { a: 'Sorin, voluntar: azi citește copiilor', b: 'Oferă din timpul său pentru lectura de povești la bibliotecă.' }
+        { a: 'Sorin, voluntar: azi citește copiilor', b: 'Oferă din timpul său pentru lectura de povești la bibliotecă.' },
+        { a: 'Ioana, croitoreasă: azi coase un nasture', b: 'Coase nasturele căzut al unei haine.' },
+        { a: 'Radu, electrician: azi lucrează la școală', b: 'Înlocuiește becul ars din clasă.' },
+        { a: 'Cristina, farmacistă: azi explică o rețetă', b: 'Explică cum se ia medicamentul prescris de medic.' }
       ],
       [
         { a: 'Ana la serviciu, în autobuz', b: 'Rol de meserie: conduce autobuzul pentru călători.' },
@@ -1032,7 +1056,7 @@ const ACTIVITIES = [
         { a: 'Mihai ca vecin: a promis să ude florile vecinei plecate', b: 'Rol de vecin: udă florile cu acordul vecinei.' },
         { a: 'Irina la bibliotecă: pregătește un împrumut de cărți', b: 'Rol de meserie: înregistrează cărțile împrumutate de cititor.' }
       ]
-    ]), 'Cum poate aceeași persoană să aibă o meserie și un rol de voluntar? Folosește exemplul Anei.'),
+    ], [4, 4]), 'Cum poate aceeași persoană să aibă o meserie și un rol de voluntar? Folosește exemplul Anei.'),
   L('civ', 16, 'Pot să-mi schimb părerea', '🌱',
     'Să revizuiască o concluzie când apar dovezi noi, fără să se învinovățească',
     'Gândesc cu mintea mea când caut motive și verific, nu când spun mereu da sau mereu nu. Pot avea o idee la început și o pot schimba când apar dovezi potrivite. Pot și să păstrez o concluzie susținută, dacă aud doar o presiune sau o preferință. O greșeală nu mă face mai puțin valoros.',
@@ -1042,19 +1066,19 @@ const ACTIVITIES = [
     'Nu trebuie să îmi schimb părerea doar ca să plac cuiva. Nici încăpățânarea, nici acordul automat nu înlocuiesc verificarea. Nu sunt obligat să am un răspuns imediat.',
     Content.quiz([
       [
-        Q('Dan a crezut că sunt șase jetoane. Numără cinci și verifică săculețul gol. Ce poate spune?', ['„Trebuie să rămână șase pentru că așa am spus.”', '„Am verificat: sunt cinci. Îmi schimb răspunsul.”', '„Nu mai am voie să încerc.”'], 1, 'Dan folosește verificarea ca să corecteze răspunsul; o greșeală nu îl împiedică să învețe.'),
-        Q('Ina nu are destule informații ca să aleagă o explicație. Ce poate spune?', ['„Orice ghicesc este sigur.”', '„Trebuie să copiez imediat răspunsul cuiva.”', '„Nu știu încă. Mai am nevoie de informații.”'], 2, 'Poate lăsa întrebarea deschisă până găsește informații potrivite.'),
-        Q('Mara află că a citit greșit un număr. Ce spune greșeala despre ea?', ['Că poate corecta acel răspuns și continua să învețe', 'Că toate ideile ei sunt greșite', 'Că nu mai trebuie ascultată'], 0, 'O eroare privește un răspuns, nu valoarea persoanei sau toate ideile ei.')
+        Q('Dan a crezut că sunt șase jetoane. Numără cinci și verifică săculețul gol. Ce poate spune?', ['„Rămân la șase, fiindcă așa am spus.”', '„Am verificat: sunt cinci. Îmi schimb răspunsul.”', '„Nu mai am voie să încerc.”'], 1, 'Dan folosește verificarea ca să corecteze răspunsul; o greșeală nu îl împiedică să învețe.'),
+        Q('Ina nu are destule informații ca să aleagă o explicație. Ce poate spune?', ['„Orice ghicesc este sigur.”', '„Trebuie să copiez imediat răspunsul cuiva.”', '„Nu știu încă; caut informații.”'], 2, 'Poate lăsa întrebarea deschisă până găsește informații potrivite.'),
+        Q('Mara află că a citit greșit un număr. Ce spune greșeala despre ea?', ['Că poate corecta și învăța', 'Că toate ideile ei sunt greșite', 'Că nu mai trebuie ascultată'], 0, 'O eroare privește un răspuns, nu valoarea persoanei sau toate ideile ei.')
       ],
       [
-        Q('Teo a măsurat o bandă de 8 cm. Un prieten spune: „Zi că are 10 cm, ca mine!”, fără să măsoare. Ce este potrivit?', ['Să schimbe numărul ca să nu piardă prietenia', 'Să propună o nouă măsurare, nu să schimbe răspunsul doar din presiune', 'Să îl jignească pe prieten'], 1, 'O cerere de acord nu este o dovadă despre lungime. O nouă măsurare poate clarifica.'),
-        Q('Lia credea că programul începe la nouă. Biblioteca confirmă un anunț actual: începe la zece. Ce motiv are Lia să își revizuiască răspunsul?', ['Anunțul este mai colorat', 'Lia trebuie să fie mereu de acord cu oricine', 'Informația actuală și confirmarea privesc exact programul căutat'], 2, 'Motivul este informația relevantă și actuală, nu nevoia de a mulțumi pe cineva.'),
-        Q('Un adult spune „Ai dreptate, am numărat greșit”. Ce arată?', ['Că și un adult își poate corecta răspunsul folosind verificarea', 'Că adultul nu mai poate ști nimic', 'Că a corecta o greșeală este rușinos'], 0, 'Recunoașterea unei erori este un model de învățare, nu pierderea valorii persoanei.')
+        Q('Teo a măsurat o bandă de 8 cm. Un prieten spune: „Zi că are 10 cm, ca mine!”, fără să măsoare. Ce este potrivit?', ['Să schimbe numărul ca să nu piardă prietenia', 'Să propună o nouă măsurare', 'Să îl jignească pe prieten'], 1, 'O cerere de acord nu este o dovadă despre lungime. O nouă măsurare poate clarifica.'),
+        Q('Lia credea că programul începe la nouă. Biblioteca confirmă un anunț actual: începe la zece. Ce motiv are Lia să își revizuiască răspunsul?', ['Anunțul este mai colorat', 'Lia trebuie să fie de acord cu oricine', 'Informația actuală și confirmarea privesc exact programul căutat'], 2, 'Motivul este informația relevantă și actuală, nu nevoia de a mulțumi pe cineva.'),
+        Q('Un adult spune „Ai dreptate, am numărat greșit”. Ce arată?', ['Că și adulții își pot corecta răspunsul', 'Că adultul nu mai poate ști nimic', 'Că a corecta o greșeală este rușinos'], 0, 'Recunoașterea unei erori este un model de învățare, nu pierderea valorii persoanei.')
       ],
       [
-        Q('Ina credea că un cartonaș este albastru. La lumină bună vede că este verde și un coleg confirmă privind același cartonaș. Ce replică explică schimbarea?', ['„Spun verde fiindcă nu vreau întrebări.”', '„La lumină bună am văzut altă culoare; îmi corectez observația.”', '„Prima idee trebuie păstrată mereu.”'], 1, 'Ina spune ce informație nouă a schimbat observația.'),
-        Q('Dan și Mara au măsurători diferite și observă că o riglă este ruptă la capăt. Ce fac înainte de o concluzie?', ['Votează cine este mai popular', 'Decid că măsurarea nu folosește niciodată', 'Repetă cu o riglă întreagă, pornind de la zero și folosind aceeași unitate'], 2, 'Verifică metoda și instrumentul, în loc să aleagă o persoană pe care să o creadă automat.'),
-        Q('Un grup spune că tuturor trebuie să le placă aceeași poveste. Ina preferă alta. Trebuie să își schimbe gustul ca să arate că poate învăța?', ['Nu; o preferință diferită nu este o greșeală de corectat', 'Da, fiindcă grupul este mai mare', 'Da, orice dezacord înseamnă încăpățânare'], 0, 'Schimbarea unei concluzii după dovezi este diferită de obligarea cuiva să aibă gustul grupului.')
+        Q('Ina credea că un cartonaș este albastru. La lumină bună vede că este verde și un coleg confirmă privind același cartonaș. Ce replică explică schimbarea?', ['„Spun verde fiindcă nu vreau întrebări.”', '„La lumină bună văd altă culoare.”', '„Prima idee trebuie păstrată mereu.”'], 1, 'Ina spune ce informație nouă a schimbat observația.'),
+        Q('Dan și Mara au măsurători diferite și observă că o riglă este ruptă la capăt. Ce fac înainte de o concluzie?', ['Votează cine este mai popular', 'Decid că măsurarea nu folosește niciodată', 'Repetă măsurarea cu o riglă întreagă'], 2, 'Verifică metoda și instrumentul, în loc să aleagă o persoană pe care să o creadă automat.'),
+        Q('Un grup spune că tuturor trebuie să le placă aceeași poveste. Ina preferă alta. Trebuie să își schimbe gustul ca să arate că poate învăța?', ['Nu; o preferință diferită nu este o greșeală', 'Da, fiindcă grupul este mai mare decât ea', 'Da, orice dezacord înseamnă că e încăpățânată'], 0, 'Schimbarea unei concluzii după dovezi este diferită de obligarea cuiva să aibă gustul grupului.')
       ]
     ]), 'Ce l-a ajutat pe Dan să își schimbe răspunsul: verificarea sau dorința de a fi ca ceilalți?'),
   L('civ', 17, 'Nu sunt de acord și pot explica de ce', '💬',
@@ -1067,25 +1091,25 @@ const ACTIVITIES = [
     Content.quiz([
       [
         Q('Un adult spune cinci creioane, iar Ana numără patru. Care replică arată dezacordul fără jignire?', ['„Tu nu știi nimic!”', '„Eu număr patru. Putem verifica împreună?”', '„Spun cinci, deși văd patru, fiindcă ești adult.”'], 1, 'Ana își spune observația și propune verificarea. Nu trebuie să fie de acord doar pentru că vorbește cu un adult.'),
-        Q('Doi copii preferă povești diferite. Cum pot încheia discuția?', ['Unul trebuie să fie declarat greșit', 'Cel mai tare decide gustul celuilalt', 'Pot spune ce le place și pot păstra preferințe diferite'], 2, 'Nu orice dezacord are nevoie de un câștigător; gusturile pot rămâne diferite.'),
-        Q('Care replică vorbește despre idee, nu atacă persoana?', ['„Nu sunt de acord cu numărul acesta; am numărat patru.”', '„Ești prost.”', '„Nimeni nu ar trebui să te asculte.”'], 0, 'Putem contesta răspunsul și explica motivul fără să jignim persoana.')
+        Q('Doi copii preferă povești diferite. Cum pot încheia discuția?', ['Unul trebuie să fie declarat greșit', 'Cel mai tare decide gustul celuilalt', 'Pot păstra preferințe diferite'], 2, 'Nu orice dezacord are nevoie de un câștigător; gusturile pot rămâne diferite.'),
+        Q('Care replică vorbește despre idee, nu atacă persoana?', ['„Nu sunt de acord: am numărat patru.”', '„Ești prost și nu știi să numeri.”', '„Nimeni nu ar trebui să te asculte.”'], 0, 'Putem contesta răspunsul și explica motivul fără să jignim persoana.')
       ],
       [
         Q('Un coleg nu este de acord cu Mara. Ce poate întreba Mara ca să înțeleagă motivul?', ['„De ce nu spui ce vreau eu?”', '„Ce ai observat tu?”', '„Cum îndrăznești să gândești altfel?”'], 1, 'Întrebarea invită explicația. A asculta nu o obligă pe Mara să accepte concluzia.'),
         Q('Un adult spune: „Sunt mai mare, deci numărul meu este sigur corect.” Ce ar verifica afirmația despre creioane?', ['Vârsta adultului', 'Cât de hotărât vorbește', 'Numărarea creioanelor împreună'], 2, 'Vârsta nu stabilește câte creioane sunt. Adultul are responsabilitatea să permită verificarea fără pedeapsă.'),
-        Q('Un personaj spune: „Dacă nu ești de acord, te lovesc.” Ce are prioritate pentru copil?', ['Să se îndepărteze spre siguranță și să ceară ajutor unui adult de încredere', 'Să rămână singur până îl convinge', 'Să găsească o replică mai politicoasă cu orice preț'], 0, 'Amenințarea nu este o dezbatere. Siguranța este mai importantă decât continuarea discuției.')
+        Q('Un personaj spune: „Dacă nu ești de acord, te lovesc.” Ce are prioritate pentru copil?', ['Să plece și să ceară ajutor unui adult', 'Să rămână singur cu el până îl convinge', 'Să caute o replică politicoasă cu orice preț'], 0, 'Amenințarea nu este o dezbatere. Siguranța este mai importantă decât continuarea discuției.')
       ],
       [
-        Q('Copilul arată o greșeală reală de numărare a adultului. Ce răspuns al adultului sprijină gândirea independentă?', ['„Nu ai voie să mă contrazici.”', '„Hai să verificăm. Ai dreptate, am greșit și pot corecta.”', '„Îți retrag jocul fiindcă ai alt răspuns.”'], 1, 'Adultul ascultă și corectează fără să pedepsească dezacordul sau să ceară supunere.'),
-        Q('După o discuție calmă despre preferințe, ceilalți nu își schimbă părerea. A eșuat copilul?', ['Da, trebuie să îi convingă pe toți', 'Da, trebuie să își retragă gustul', 'Nu; poate explica, asculta și rămâne cu o preferință diferită'], 2, 'A gândi independent nu înseamnă a câștiga fiecare discuție.'),
-        Q('Copilul întreabă de ce nu traversează pe roșu. Cum poate învăța fără să se pună în pericol?', ['Rămâne într-un loc sigur și cere explicația sau o demonstrație pe un desen', 'Pășește pe carosabil ca să testeze regula', 'Crede că nu mai are voie să pună întrebări'], 0, 'Poate cere motive pentru o regulă, fără să o testeze printr-un comportament periculos.')
+        Q('Copilul arată o greșeală reală de numărare a adultului. Ce răspuns al adultului sprijină gândirea independentă?', ['„Nu ai voie să mă contrazici.”', '„Hai să verificăm. Ai dreptate, am greșit.”', '„Îți retrag jocul fiindcă ai alt răspuns.”'], 1, 'Adultul ascultă și corectează fără să pedepsească dezacordul sau să ceară supunere.'),
+        Q('După o discuție calmă despre preferințe, ceilalți nu își schimbă părerea. A eșuat copilul?', ['Da, trebuie să îi convingă pe toți', 'Da, trebuie să își retragă gustul', 'Nu; poate rămâne cu altă preferință'], 2, 'A gândi independent nu înseamnă a câștiga fiecare discuție.'),
+        Q('Copilul întreabă de ce nu traversează pe roșu. Cum poate învăța fără să se pună în pericol?', ['Cere explicația, rămânând pe trotuar', 'Pășește pe carosabil ca să testeze regula', 'Crede că nu mai are voie să pună întrebări'], 0, 'Poate cere motive pentru o regulă, fără să o testeze printr-un comportament periculos.')
       ]
     ]), 'Cum poate Ana să arate ce a observat fără să fie obligată să accepte răspunsul adultului?')
 ];
 
 const REVIEW_QUESTIONS = {
   'mat-5': [
-    [Q('Cum așezăm agrafele când măsurăm cu ele?', ['Fără spații și fără suprapuneri', 'Cu spații mari', 'Unele peste altele'], 0, 'Unitatea trebuie repetată continuu, fără a număra aceeași lungime de două ori.'),
+    [Q('Cum așezăm agrafele când măsurăm cu ele?', ['Una lângă alta, fără spații', 'Cu spații mari între ele', 'Unele peste altele, suprapuse'], 0, 'Unitatea trebuie repetată continuu, fără a număra aceeași lungime de două ori.'),
       Q('Ce comparăm direct pentru două creioane?', ['Lungimi măsurate în aceeași unitate', 'Culoarea', 'Numărul de litere din nume'], 0, 'Aceeași unitate permite o comparație corectă.')],
     [Q('O panglică de 8 cm este prelungită cu 5 cm. Cât măsoară?', ['13 cm', '3 cm', '85 cm'], 0, 'Adunăm lungimile: 8 + 5 = 13 cm.'),
       Q('Un creion măsoară cât 6 agrafe mici puse cap la cap. Alt creion măsoară cât 5 agrafe mai mari. Aflăm care creion este mai lung comparând doar 6 cu 5?', ['Nu, agrafele au mărimi diferite', 'Da, întotdeauna', 'Da, dacă agrafele au aceeași culoare'], 0, 'Pentru a compara direct numerele, trebuie să folosim agrafe de aceeași mărime.')],
@@ -1127,7 +1151,7 @@ const REVIEW_QUESTIONS = {
   'inf-2': [
     [Q('Când scrii, liniuța care clipește arată locul scrierii. Ce tastă șterge litera din stânga ei?', ['Backspace', 'Spațiu', 'Caps Lock'], 0, 'Acea liniuță se numește cursor de text. Backspace șterge de obicei litera sau semnul din stânga lui.'),
       Q('Ce comandă poate selecta un obiect cu mouse-ul?', ['Un clic', 'Scuturarea mouse-ului', 'Apăsarea pe masă'], 0, 'În multe programe, un clic alege obiectul spre care arată săgeata mouse-ului.')],
-    [Q('Cum observi ce buton ai ales cu Tab?', ['Printr-un contur sau alt semn vizibil', 'Doar după culoarea mouse-ului', 'Nu se poate observa'], 0, 'Un contur sau alt semn vizibil trebuie să arate ce element poți folosi acum cu tastatura.'),
+    [Q('Cum observi ce buton ai ales cu Tab?', ['Printr-un contur în jurul butonului', 'Doar după culoarea mouse-ului', 'Nu se poate observa deloc'], 0, 'Un contur sau alt semn vizibil trebuie să arate ce element poți folosi acum cu tastatura.'),
       Q('Ce tastă poate apăsa butonul ales cu Tab?', ['Enter', 'Caps Lock', 'Backspace'], 0, 'După ce ai ales butonul cu Tab, îl poți apăsa cu Enter sau Spațiu.')],
     [Q('Un coleg folosește mouse-ul cu mâna stângă. Ce este potrivit?', ['Poate adapta setările butonului principal', 'Trebuie să folosească obligatoriu dreapta', 'Nu poate folosi calculatorul'], 0, 'Setările și dispozitivele pot fi adaptate utilizatorului.'),
       Q('Un buton poate fi folosit cu mouse-ul, dar deloc cu tastatura. Ce este potrivit să faci?', ['Cer ajutor unui adult și îi arăt problema', 'Mă învinovățesc', 'Cred că nimeni nu are nevoie de tastatură'], 0, 'Butoanele trebuie să poată fi folosite și cu tastatura. Dacă nu poți folosi unul, poate fi o problemă a paginii, nu o greșeală a ta.')]
@@ -1137,7 +1161,7 @@ const REVIEW_QUESTIONS = {
       Q('Lia este mai înaltă decât Dan. Cine este mai scund?', ['Dan', 'Lia', 'Nu există diferență'], 0, 'Relația dată arată că Dan este mai scund decât Lia.')],
     [Q('Radu este după Ina, iar Ina este după Mara. Cine este ultimul?', ['Radu', 'Ina', 'Mara'], 0, 'Ordinea este Mara, Ina, Radu.'),
       Q('Trei cartonașe au numerele 2, 4 și 6. Caut numărul mai mare decât 3 și mai mic decât 5.', ['4', '2', '6'], 0, 'Doar 4 respectă ambele limite.')],
-    [Q('Un obiect este roșu sau albastru. Este și rotund. Știm sigur culoarea?', ['Nu, forma nu elimină o culoare', 'Da, roșu', 'Da, albastru'], 0, 'Indiciul despre formă nu decide între cele două culori.'),
+    [Q('Un obiect este roșu sau albastru. Este și rotund. Știm sigur culoarea?', ['Nu, forma nu elimină o culoare', 'Da, e sigur roșu, fiind rotund', 'Da, e sigur albastru, fiind rotund'], 0, 'Indiciul despre formă nu decide între cele două culori.'),
       Q('Ana este înaintea lui Dan. Despre Lia nu știm nimic. Putem ordona sigur toți trei?', ['Nu, lipsesc informații despre Lia', 'Da, Lia este ultima', 'Da, Lia este prima'], 0, 'Relația dintre Ana și Dan nu fixează poziția Liei.')]
   ]
 };
@@ -1163,6 +1187,134 @@ const ORDER_PRACTICE = {
     O('Reconstruiește observația: așez paharul rece, aerul din jur se răcește, vaporii se condensează, apar picături, picăturile se adună.', ['Așez paharul rece', 'Aerul din jur se răcește', 'Vaporii se condensează', 'Apar picături pe exterior', 'Picăturile se adună'], 'Dacă aerul de lângă pahar este suficient de rece, vaporii din el se transformă în picături. Apa nu trece prin sticlă.')
   ]
 };
+/* Întrebări suplimentare: se adaugă la setul fiecărui nivel, iar EXTRA_ROUNDS spune câte
+   se aleg la un joc. Astfel, o reluare aduce alte întrebări. */
+const EXTRA_QUESTIONS = {
+  'log-5': [
+    [Q('Pisica este pe pat sau pe covor. Nu este pe pat. Unde este?', ['Pe covor', 'Pe pat', 'Sub masă'], 0, 'Sunt doar două locuri, iar patul este eliminat. Rămâne covorul.'),
+      Q('Am un fruct galben: o banană sau o cireașă. Ce am?', ['O banană', 'O cireașă', 'Un măr'], 0, 'Cireașa este roșie, deci rămâne banana.'),
+      Q('Dan are mai multe bile decât Ana. Cine are mai puține?', ['Ana', 'Dan', 'Au la fel'], 0, 'Dacă Dan are mai multe, Ana are mai puține.')],
+    [Q('Mara stă între Ion și Lia. Ion este primul. Cine este ultima?', ['Lia', 'Mara', 'Ion'], 0, 'Ion este primul, Mara la mijloc, deci Lia este ultima.'),
+      Q('Caut un număr par între 1 și 5, dar nu 2. Ce număr este?', ['4', '3', '6'], 0, 'Numerele pare între 1 și 5 sunt 2 și 4. Fără 2, rămâne 4.'),
+      Q('Câinele este mai mare decât pisica, iar pisica este mai mare decât șoarecele. Care este cel mai mic?', ['Șoarecele', 'Pisica', 'Câinele'], 0, 'Câinele, apoi pisica, apoi șoarecele: șoarecele este cel mai mic.')],
+    [Q('Ana, Dan și Ion au o minge, o carte și o păpușă. Ana nu are mingea. Dan are cartea. Ce are Ana?', ['Păpușa', 'Mingea', 'Cartea'], 0, 'Cartea este a lui Dan, iar Ana nu are mingea. Îi rămâne păpușa.'),
+      Q('Toate florile din vază sunt galbene. Este în vază o floare roșie?', ['Nu, toate sunt galbene', 'Da, una singură', 'Poate, dacă e mică'], 0, 'Dacă toate sunt galbene, nicio floare nu este roșie.'),
+      Q('Ion este mai înalt decât Dan. Lia este mai înaltă decât Ion. Cine este cel mai înalt?', ['Lia', 'Ion', 'Dan'], 0, 'Lia, apoi Ion, apoi Dan: Lia este cea mai înaltă.')]
+  ],
+  'log-11': [
+    [Q('Dan vede o umbrelă udă lângă ușă. Ce a observat?', ['Umbrela este udă', 'Afară plouă sigur', 'Mama a venit acasă'], 0, 'Umbrela udă se vede. Ploaia și cine a venit sunt doar presupuneri.'),
+      Q('Ina vede firimituri pe masă. Ce poate spune sigur?', ['Pe masă sunt firimituri', 'Fratele a mâncat biscuiți', 'Cineva a fost neatent'], 0, 'Firimiturile se văd. Cine le-a lăsat nu se vede.'),
+      Q('Mara aude lătrat afară. Ce știe sigur?', ['A auzit un lătrat', 'Câinele vecinului latră', 'Vine poștașul'], 0, 'Lătratul se aude. Al cui câine este și de ce latră nu știm încă.')],
+    [Q('Fereastra este deschisă și pe jos sunt frunze. Radu spune: „Vântul le-a adus.” Ce este afirmația lui?', ['O presupunere de verificat', 'O observație sigură', 'O regulă pentru orice cameră'], 0, 'Radu leagă două observații printr-o explicație. Poate fi adevărată, dar trebuie verificată.'),
+      Q('Un coleg lipsește. Ana spune: „E bolnav.” Ce întrebare ajută?', ['„Cum aflăm de ce lipsește?”', '„Cine e cel mai bolnav?”', '„De ce lipsește mereu?”'], 0, 'Ana face o presupunere. O întrebare de verificare ne ajută să aflăm.'),
+      Q('Pe tablă scrie „Ziua lui Dan!”. Ce putem spune sigur?', ['Pe tablă scrie un mesaj', 'Dan are azi tort', 'Dan este foarte fericit'], 0, 'Mesajul de pe tablă se vede. Tortul și ce simte Dan sunt presupuneri.')],
+    [Q('Teo vede ghiozdanul Linei în clasă, dar nu o vede pe Lina. Ce poate spune sigur?', ['Ghiozdanul ei este aici', 'Lina e sigur în curte', 'Lina a plecat sigur acasă'], 0, 'Ghiozdanul se vede. Unde este Lina acum nu știm încă.'),
+      Q('Doi copii dau explicații diferite pentru o pată pe covor. Ce faceți?', ['Căutăm împreună alte indicii', 'Alegem explicația celui mai mare', 'Spunem că ambele sunt sigure'], 0, 'Când explicațiile diferă, căutăm informații care le pot verifica.'),
+      Q('Dan crede că pisica e în dulap, fiindcă a auzit un zgomot. Deschide și vede o carte căzută. Ce face?', ['Își schimbă explicația', 'Spune că pisica a fugit', 'Uită de cartea căzută'], 0, 'O observație nouă poate schimba o presupunere. Asta înseamnă să gândești atent.')]
+  ],
+  'log-12': [
+    [Q('Care propoziție arată ce îi place cuiva?', ['„Îmi place iarna.”', '„Azi ninge.”', '„Azi este luni.”'], 0, '„Îmi place” arată ce simte cineva. Nu se verifică prin numărare sau măsurare.'),
+      Q('Care propoziție se poate verifica privind?', ['„Mingea este roșie.”', '„Mingea e cea mai frumoasă.”', '„Prefer mingea mare.”'], 0, 'Culoarea se poate vedea și verifica. „Frumoasă” și „prefer” sunt păreri.'),
+      Q('Lui Radu îi place supa, Linei nu. Cine greșește?', ['Niciunul dintre ei', 'Radu greșește', 'Lina greșește'], 0, 'Gusturile pot fi diferite. Nimeni nu greșește pentru că îi place altceva.')],
+    [Q('„Pisica mea e cea mai drăgălașă și are trei pete.” Ce parte putem verifica?', ['Că are trei pete', 'Că e cea mai drăgălașă', 'Că trebuie să ne placă'], 0, 'Petele se pot număra; „cea mai drăgălașă” este o părere.'),
+      Q('Mama spune: „Ploaia e plictisitoare.” Ce este afirmația ei?', ['O părere a mamei', 'Un fapt verificat', 'O regulă pentru toți'], 0, 'Mama spune ce simte ea despre ploaie. Altcuiva ploaia poate să-i placă.'),
+      Q('Cum verifici afirmația „Clasa are 20 de bănci”?', ['Număr băncile', 'Întreb care bancă e preferată', 'Ghicesc după mărimea clasei'], 0, 'O afirmație despre un număr se verifică numărând.')],
+    [Q('Un afiș spune: „Cea mai gustoasă înghețată are trei straturi.” Ce poți verifica?', ['Dacă are trei straturi', 'Dacă e cea mai gustoasă', 'Dacă toți o preferă'], 0, 'Straturile se pot număra; gustul este o preferință.'),
+      Q('Ana spune: „Câinii sunt mai buni decât pisicile.” Se poate dovedi?', ['Nu, este o preferință', 'Da, printr-un vot', 'Da, dacă spune tare'], 0, 'Este o preferință. Un vot ar arăta ce preferă grupul, nu ce este adevărat pentru toți.'),
+      Q('Opt copii spun că desenul e frumos, doi că nu. Ce aflăm?', ['Ce preferă copiii din grup', 'Că desenul e sigur frumos', 'Că doi copii greșesc'], 0, 'Răspunsurile arată preferințele grupului, nu un fapt despre desen.')]
+  ],
+  'log-13': [
+    [Q('Vrei să afli dacă plouă afară. Ce dovadă ajută?', ['Mă uit pe fereastră', 'Întreb ce culoare preferă colegul', 'Ghicesc după ziua săptămânii'], 0, 'Privind afară, vezi direct dacă plouă.'),
+      Q('Vrei să știi care cană e mai grea. Ce faci?', ['Le cântăresc pe amândouă', 'Aleg cana mai frumoasă', 'Întreb cine a cumpărat-o'], 0, 'Greutatea se compară cântărind.'),
+      Q('Ion spune că a câștigat pentru că a strigat primul. Ce dovadă lipsește?', ['Rezultatul jocului', 'O voce mai puternică', 'Un tricou nou'], 0, 'Strigatul nu arată cine a câștigat; rezultatul jocului arată.')],
+    [Q('Trei copii spun că apa e rece. Ce dovadă ar fi mai sigură?', ['Un termometru pus în apă', 'Încă un copil care repetă', 'Culoarea paharului cu apă'], 0, 'Termometrul măsoară temperatura; o vorbă repetată nu adaugă o dovadă.'),
+      Q('Ina a numărat 9 nasturi, iar Dan a numărat 10. Ce faceți?', ['Numărăm din nou împreună', 'Alegem numărul mai mare', 'Îl credem pe cel mai mare'], 0, 'O nouă numărare atentă arată care număr este corect.'),
+      Q('Un copil spune că o plantă crește mai bine dacă e udată cu lapte. Ce ar ajuta?', ['Un test cu două plante la fel', 'Faptul că laptele este alb', 'Ce cred prietenii lui despre lapte'], 0, 'Un test corect compară două plante la fel, schimbând doar ce udăm.')],
+    [Q('Un film arată un animal care vorbește. Este o dovadă că animalele vorbesc?', ['Nu, filmele pot inventa', 'Da, se vede în film', 'Da, dacă filmul e colorat'], 0, 'Filmele pot fi povești inventate; nu sunt dovezi despre lumea reală.'),
+      Q('Ai măsurat o singură dată și rezultatul pare ciudat. Ce faci?', ['Măsor din nou', 'Șterg rezultatul', 'Spun că e sigur corect'], 0, 'Repetarea ne arată dacă rezultatul se confirmă.'),
+      Q('Doi copii spun lucruri diferite. Unul arată și o măsurătoare. Ce verificăm întâi?', ['Măsurătoarea arătată', 'Cine vorbește mai mult', 'Cine este mai înalt'], 0, 'Măsurătoarea este o dovadă pe care o putem verifica și repeta.')]
+  ],
+  'log-14': [
+    [Q('Vrei să afli când începe filmul la cinema. Unde te uiți?', ['Pe programul cinematografului', 'Pe un afiș de anul trecut', 'Pe ce crede un prieten'], 0, 'Programul actual al cinematografului este sursa care știe ora.'),
+      Q('Un coleg spune: „Am auzit că mâine nu avem școală.” Ce faci?', ['Întreb un adult care știe', 'Rămân acasă mâine', 'Spun tuturor că e sigur'], 0, 'Un zvon se verifică la cineva care știe: învățătoarea sau părinții.'),
+      Q('Cine știe sigur ce lecții aveți mâine?', ['Învățătoarea', 'Un copil din altă școală', 'Vânzătorul de la magazin'], 0, 'Învățătoarea face orarul clasei, deci știe.')],
+    [Q('Un anunț nu are dată. Ce întrebare pui?', ['„Când a fost scris?”', '„Ce culoare are?”', '„Cât de mare e?”'], 0, 'Data ne spune dacă informația mai este valabilă azi.'),
+      Q('Bunicul crede că parcul se închide la 8, dar nu e sigur. Ce faceți?', ['Citim panoul de la intrare', 'Credem amintirea lui', 'Nu mai mergem în parc'], 0, 'O amintire nesigură se verifică la o sursă actuală.'),
+      Q('Un mesaj spune: „Trimite-l la zece prieteni sau ai ghinion!” Este de încredere?', ['Nu, nu arată nicio dovadă', 'Da, fiindcă este scris', 'Da, fiindcă e de la un prieten'], 0, 'Mesajele care sperie fără dovezi nu sunt de încredere. Arată-l unui adult.')],
+    [Q('Două site-uri spun același lucru, dar unul l-a copiat de la celălalt. Câte surse ai de fapt?', ['Una', 'Două', 'Niciuna'], 0, 'Dacă unul copiază, informația vine de fapt dintr-un singur loc.'),
+      Q('O poză arată un pește uriaș. Poza ar putea fi modificată. Ce faci?', ['Caut cine explică poza', 'O trimit ca sigur reală', 'O cred fiindcă e poză'], 0, 'Pozele pot fi modificate; căutăm de unde vine și cine o explică.'),
+      Q('Un adult spune o informație greșită, apoi o corectează. Ce arată asta?', ['Oricine poate greși și corecta', 'Adultul nu mai știe nimic', 'Nu mai avem voie să întrebăm'], 0, 'Oricine poate greși. Corectarea unei greșeli este un lucru bun.')]
+  ],
+  'civ-10': [
+    [Q('Ion termină puzzle-ul fără să renunțe. Ce calitate arată?', ['Răbdare', 'Grabă', 'Supărare'], 0, 'Ion lucrează până la capăt, fără să renunțe: arată răbdare.'),
+      Q('Ce poate fi un interes?', ['Îmi place să desenez animale', 'Am ochi căprui și păr negru', 'Am șapte ani împliniți'], 0, 'Un interes este ceva ce îți place să faci sau să afli.'),
+      Q('Lia spune: „Prefer fotbalul.” Ce aflăm?', ['Ce sport îi place ei', 'Că fotbalul e cel mai bun', 'Că toți trebuie să joace'], 0, 'O preferință spune ce îi place unei persoane, nu ce trebuie să le placă tuturor.')],
+    [Q('Dan ajută un coleg să-și găsească penarul. Ce calitate arată?', ['Grijă față de ceilalți', 'Neatenție la ce face', 'Grabă să termine repede'], 0, 'Când ajutăm pe cineva, arătăm grijă față de ceilalți.'),
+      Q('Ana se pricepe la desen, dar îi e greu la alergat. Ce este adevărat?', ['Fiecare are lucruri de exersat', 'Ana nu se pricepe la nimic', 'Ana trebuie să renunțe la sport'], 0, 'Toți avem puncte tari și lucruri pe care le exersăm.'),
+      Q('Care propoziție descrie o calitate, nu un lucru pe care îl ai?', ['Sunt curajos', 'Am o bicicletă', 'Am un ghiozdan nou'], 0, 'Curajul este o calitate; bicicleta și ghiozdanul sunt obiecte.')],
+    [Q('Mara spunea că nu-i place supa de dovleac, dar acum îi place. Ce arată?', ['Preferințele se pot schimba', 'Mara spune o minciună', 'Gusturile nu se schimbă'], 0, 'Preferințele se pot schimba în timp; asta e firesc.'),
+      Q('Radu e timid la o petrecere, dar vorbește mult cu prietenii. Ce putem spune?', ['Se poartă diferit în locuri diferite', 'Este mereu timid, oriunde ar fi', 'Nu are deloc prieteni apropiați'], 0, 'Oamenii se pot purta diferit în situații diferite.'),
+      Q('Cum descoperi ce te interesează?', ['Încerc activități noi', 'Fac doar ce fac alții', 'Nu încerc nimic nou'], 0, 'Încercând lucruri noi, afli ce îți place cu adevărat.')]
+  ],
+  'civ-11': [
+    [Q('Ai greșit o literă. Ce faci?', ['O corectez', 'Rup foaia', 'Renunț la temă'], 0, 'O greșeală se poate corecta; nu e nevoie să renunți.'),
+      Q('Nu reușești să legi șireturile. Ce poți spune?', ['„Mă ajuți, te rog?”', '„Nu voi reuși niciodată.”', '„Nu mă mai încalț.”'], 0, 'Cererea de ajutor este o alegere bună când ceva e greu.'),
+      Q('Un coleg greșește la tablă. Ce faci?', ['Îl încurajez', 'Râd de el', 'Îi spun că e prost'], 0, 'Toți greșim. Încurajarea îl ajută să încerce din nou.')],
+    [Q('Ai încercat de trei ori și nu iese. Ce încerci acum?', ['Altă metodă sau un indiciu', 'Același lucru, mai tare', 'Renunț pentru totdeauna'], 0, 'O metodă nouă sau un indiciu te pot ajuta să reușești.'),
+      Q('Ce înseamnă „încă” în „Nu știu încă”?', ['Că pot învăța mai târziu', 'Că nu voi ști niciodată', 'Că nu este important'], 0, '„Încă” arată că învățarea continuă.'),
+      Q('Cui poți cere ajutor la școală?', ['Învățătoarei sau unui coleg', 'Nimănui, niciodată', 'Unui străin de pe stradă'], 0, 'La școală te pot ajuta învățătoarea și colegii.')],
+    [Q('Ai greșit și cineva râde. Ce îți spui?', ['„Greșelile mă ajută să învăț.”', '„Sunt cel mai prost.”', '„Nu mai încerc nimic.”'], 0, 'Greșelile fac parte din învățare, chiar dacă cineva râde.'),
+      Q('Cum folosești o greșeală la următoarea încercare?', ['Mă uit ce am greșit', 'O uit cât mai repede', 'Fac exact la fel'], 0, 'Când înțelegi greșeala, o poți evita data viitoare.'),
+      Q('Un adult îți arată primul pas. Ce faci apoi?', ['Încerc și eu singur', 'Îl las să facă tot', 'Mă uit și nu încerc'], 0, 'Ajutorul te pregătește să încerci singur pașii următori.')]
+  ],
+  'civ-13': [
+    [Q('Ce faci înainte de culcare?', ['Mă spăl pe dinți', 'Mănânc bomboane', 'Mă joc pe tabletă'], 0, 'Periajul de seară curăță dinții înainte de somn.'),
+      Q('Ce gustare ajută corpul?', ['Un măr', 'Multe bomboane', 'Chipsuri în fiecare zi'], 0, 'Fructele ajută corpul să crească sănătos.'),
+      Q('Cât dorm de obicei pe noapte copiii de șapte ani?', ['Cam 10 ore', 'Cam 3 ore', 'Cam 20 de ore'], 0, 'Copiii de vârsta ta au nevoie de aproximativ 9–11 ore de somn.')],
+    [Q('Ai stat mult pe scaun. Ce faci?', ['Mă mișc puțin', 'Mai stau două ore', 'Mănânc ceva dulce'], 0, 'Mișcarea ajută corpul după ce ai stat mult.'),
+      Q('Când te speli pe mâini?', ['Înainte de masă și după toaletă', 'Doar o dată pe săptămână', 'Doar când am vopsea pe ele'], 0, 'Spălarea mâinilor înainte de masă și după toaletă oprește microbii.'),
+      Q('Afară e foarte cald. Ce faci?', ['Beau apă și stau la umbră', 'Alerg mult în plin soare', 'Mă îmbrac cu haine foarte groase'], 0, 'Apa și umbra protejează corpul de căldură.')],
+    [Q('Un prieten spune că dacă nu mănânci dulciuri nu te îmbolnăvești niciodată. Este adevărat?', ['Nu; ajută, dar nu garantează', 'Da, este sigur adevărat', 'Da, nimeni nu se îmbolnăvește'], 0, 'Obiceiurile bune ajută, dar nu ne pot garanta că nu ne îmbolnăvim.'),
+      Q('De ce ne odihnim după efort?', ['Corpul se reface', 'Ca să pierdem timp', 'Pentru că e o pedeapsă'], 0, 'În timpul odihnei, corpul își reface puterile.'),
+      Q('Te simți obosit în fiecare dimineață. Ce poți face?', ['Spun unui adult cum dorm', 'Beau cafea ca adulții', 'Nu mai merg la școală'], 0, 'Un adult te poate ajuta să afli de ce ești obosit și ce să schimbi.')]
+  ],
+  'civ-14': [
+    [Q('Cum arăți că asculți?', ['Mă uit la cel care vorbește', 'Vorbesc peste el', 'Mă joc cu altceva între timp'], 0, 'Privirea și atenția arată că urmărești ce spune celălalt.'),
+      Q('Ți-e foame la școală. Ce spui?', ['„Pot mânca gustarea, te rog?”', 'Plâng fără să spun nimic', 'Iau gustarea altcuiva'], 0, 'Când spui clar ce îți trebuie, ceilalți te pot ajuta.'),
+      Q('Ce înseamnă să aștepți rândul la vorbit?', ['Vorbesc după ce termină celălalt', 'Vorbesc oricând vreau eu', 'Nu vorbesc niciodată, deloc'], 0, 'Așteptăm să termine celălalt, apoi vorbim noi.')],
+    [Q('Colegul vorbește și tu nu înțelegi. Ce faci?', ['Îl rog să repete', 'Mă prefac că am înțeles', 'Plec fără să spun nimic'], 0, 'O cerere de a repeta ne ajută să înțelegem corect.'),
+      Q('Ai nevoie de liniște ca să citești. Cum spui?', ['„Poți vorbi mai încet?”', '„Taci odată!”', 'Arunc cartea pe jos'], 0, 'O cerere politicoasă spune ce îți trebuie fără să jignești.'),
+      Q('Prietenul îți povestește ceva trist. Ce faci?', ['Îl ascult până la capăt', 'Schimb repede subiectul', 'Râd de povestea lui'], 0, 'Ascultarea până la capăt îi arată că îți pasă.')],
+    [Q('Tu și sora ta aveți nevoie de aceeași masă. Ce faceți?', ['Spunem ce ne trebuie', 'Cine e mai mare câștigă', 'Ne certăm până plânge una'], 0, 'Când fiecare spune ce îi trebuie, putem găsi o soluție pentru amândouă.'),
+      Q('Cum spui că ești supărat fără să jignești?', ['„Sunt supărat pentru că…”', '„Ești cel mai rău!”', 'Trântesc ușa tare'], 0, 'Spunem ce simțim și de ce, fără să atacăm persoana.'),
+      Q('Un adult nu te-a auzit când ai cerut ajutor. Ce faci?', ['Repet mai clar', 'Renunț', 'Țip foarte tare'], 0, 'O cerere repetată clar are mai multe șanse să fie auzită.')]
+  ],
+  'civ-16': [
+    [Q('Ai crezut că afară e frig, dar vezi că e cald. Ce faci?', ['Îmi schimb părerea', 'Spun tot că e frig', 'Mă supăr pe soare'], 0, 'O observație nouă este un motiv bun să îți schimbi părerea.'),
+      Q('Este bine să spui „Am greșit”?', ['Da, așa învățăm', 'Nu, e rușinos', 'Nu, niciodată'], 0, 'Când recunoaștem o greșeală, o putem corecta și învățăm.'),
+      Q('Ai crezut că jucăria e în cutie, dar nu e. Ce spui?', ['„M-am înșelat, caut în altă parte.”', '„Sigur e acolo, dar ascunsă.”', '„Cineva a furat-o sigur.”'], 0, 'Ai verificat și nu e acolo; îți schimbi părerea și cauți mai departe.')],
+    [Q('Un coleg îți arată că 7 + 2 face 9, nu 8. Ce faci?', ['Verific și îmi corectez răspunsul', 'Spun că tot 8 face', 'Mă supăr pe coleg'], 0, 'Verifici calculul: 7 + 2 = 9. Corectarea arată gândire atentă.'),
+      Q('Te răzgândești după ce afli ceva nou. Ce arată asta?', ['Că gândești atent', 'Că ești slab', 'Că nu știi nimic'], 0, 'Schimbarea părerii după o informație nouă arată că gândești atent.'),
+      Q('Toți spun că filmul e plictisitor, dar ție ți-a plăcut. Trebuie să-ți schimbi părerea?', ['Nu, e preferința mea', 'Da, ca să fiu ca ei', 'Da, toți au dreptate'], 0, 'Despre preferințe nu trebuie să fim toți de acord.')],
+    [Q('Ce motiv este bun pentru a-ți schimba o părere?', ['O informație nouă, verificată', 'Presiunea grupului', 'Teama de ceartă'], 0, 'O informație verificată este un motiv bun; presiunea sau teama nu sunt.'),
+      Q('Ai spus ieri o informație greșită. Ce faci azi?', ['Le spun că am aflat altceva', 'Mă prefac că n-am spus', 'Repet informația greșită'], 0, 'Când corectăm o informație, îi ajutăm și pe ceilalți.'),
+      Q('Un prieten insistă să spui că desenul lui e cel mai frumos. Ție îți place altul. Ce faci?', ['Spun ce îmi place, cu grijă', 'Mint ca să-l mulțumesc', 'Îi spun că al lui e urât'], 0, 'Poți spune ce preferi fără să jignești și fără să minți.')]
+  ],
+  'civ-17': [
+    [Q('Cum spui politicos că nu ești de acord?', ['„Eu cred altceva.”', '„Ești prost!”', 'Tac și mă supăr'], 0, 'Spui ce crezi tu, fără să jignești persoana.'),
+      Q('Cineva spune că 2 + 2 face 5. Ce faci?', ['Spun calm că face 4', 'Râd de el', 'Tac chiar dacă știu'], 0, 'Poți spune calm ce știi și poți arăta cum ai numărat.'),
+      Q('După ce spui că nu ești de acord, ce faci?', ['Ascult și părerea celuilalt', 'Plec imediat', 'Strig mai tare'], 0, 'Un dezacord bun înseamnă să vorbești și să asculți.')],
+    [Q('Ce face un dezacord respectuos?', ['Vorbește despre idee', 'Jignește persoana', 'Strigă cât mai tare'], 0, 'Discutăm ideea, nu atacăm persoana care o spune.'),
+      Q('Cum îți explici părerea?', ['Spun și motivul', 'Repet mai tare', 'Spun „pentru că da”'], 0, 'Un motiv îi ajută pe ceilalți să înțeleagă de ce gândești așa.'),
+      Q('Învățătoarea a scris greșit o dată pe tablă. Ce poți face?', ['Îi spun politicos', 'Râd de ea', 'Tac și copiez greșit'], 0, 'Și adulții greșesc. Le putem spune politicos ce am observat.')],
+    [Q('Nu ești de acord cu regula unui joc. Ce faci?', ['Propun o schimbare', 'Stric tot jocul', 'Trișez pe ascuns'], 0, 'Poți propune o regulă nouă și poți explica de ce ar fi mai bună.'),
+      Q('Un prieten se supără că nu ești de acord cu el. Ce faci?', ['Rămân prieten și gândesc altfel', 'Îmi schimb părerea ca să nu se supere', 'Nu mai vorbesc cu el'], 0, 'Prietenii pot avea păreri diferite și pot rămâne prieteni.'),
+      Q('Când e bine să ceri ajutorul unui adult într-o ceartă?', ['Când cineva amenință sau lovește', 'Niciodată, rezolv singur', 'Doar dacă pierd cearta'], 0, 'Siguranța e mai importantă decât câștigarea unei discuții.')]
+  ]
+
+};
+const EXTRA_ROUNDS = { 'log-5': 4, 'log-11': 4, 'log-12': 4, 'log-13': 4, 'log-14': 4, 'civ-10': 4, 'civ-11': 4, 'civ-13': 4, 'civ-14': 4, 'civ-16': 4, 'civ-17': 4 };
+
 ACTIVITIES.forEach(activity => {
   const review = REVIEW_QUESTIONS[activity.id], order = ORDER_PRACTICE[activity.id];
   if (review) activity.demo.levels.forEach((level, index) => {
@@ -1170,6 +1322,11 @@ ACTIVITIES.forEach(activity => {
     else level.review = review[index];
   });
   if (order) activity.demo.levels.forEach((level, index) => { level.questions.push(order[index]); });
+  const extra = EXTRA_QUESTIONS[activity.id];
+  if (extra) activity.demo.levels.forEach((level, index) => {
+    level.questions = level.questions.concat(extra[index]);
+    level.rounds = EXTRA_ROUNDS[activity.id];
+  });
 });
 
 const THINKING_PATH = {

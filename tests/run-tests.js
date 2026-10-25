@@ -395,7 +395,7 @@ test('Personal development preserves old IDs and adds six authored three-level l
   assert.strictEqual(added.length, 6);
   assert(new Set(added.map(activity => activity.demo.type)).size >= 3);
   added.forEach(activity => {
-    assert(['quiz', 'arrange', 'match', 'classify'].includes(activity.demo.type));
+    assert(['quiz', 'arrange', 'match', 'classify', 'routine'].includes(activity.demo.type));
     assert.strictEqual(new Set(activity.demo.levels.map(level => JSON.stringify(level))).size, 3);
   });
 });
@@ -520,7 +520,7 @@ test('Critical thinking lessons assess explicit cases and support independent re
     const activity = data.ACTIVITIES.find(item => item.id === id);
     assert.strictEqual(activity.demo.type, 'quiz');
     activity.demo.levels.forEach(level => {
-      assert.strictEqual(level.questions.length, 3);
+      assert(level.questions.length >= 3 && (level.rounds || level.questions.length) <= level.questions.length);
       level.questions.forEach(question => {
         assert(!prompts.has(question.prompt), 'Repeated critical thinking question');
         prompts.add(question.prompt);
@@ -531,7 +531,7 @@ test('Critical thinking lessons assess explicit cases and support independent re
     assert(activity.parent.help.some(text => text.includes('Nu știu încă')));
     assert(activity.parent.support.some(text => text.includes('copilul nu trebuie să convingă')));
   });
-  assert.strictEqual(prompts.size, 54);
+  assert(prompts.size >= 54);
 });
 test('Critical thinking correct answers include uncertainty, adult errors and independent preferences', () => {
   const answers = id => data.ACTIVITIES.find(activity => activity.id === id).demo.levels.reduce((all, level) =>
@@ -559,14 +559,14 @@ test('New thinking results coexist with old progress and survive export/import',
   assert.strictEqual(second.entry('mat-1').levels[0].mastered, true);
   data.THINKING_PATH.activities.forEach(id => assert.strictEqual(second.entry(id).levels[0].hints, 1));
 });
-test('Romanian and science lessons draw a different set of tasks on replay', () => {
-  data.ACTIVITIES.filter(a => ['lim', 'sci'].includes(a.subject) && a.demo.type !== 'type').forEach(activity => {
+test('Every lesson draws a different set of tasks on replay', () => {
+  data.ACTIVITIES.filter(a => a.subject !== 'mat' && a.demo.type !== 'memory' && a.demo.type !== 'type').forEach(activity => {
     [0, 1, 2].forEach(level => {
       const seen = new Set(), sizes = new Set();
       for (let i = 0; i < 60; i++) {
         const rounds = data.Engines.rounds(activity.demo, level);
         sizes.add(rounds.length);
-        rounds.forEach(q => seen.add(JSON.stringify([q.prompt, q.say, q.passage, q.tokens, q.options && q.options.slice().sort(), (q.pairs || []).map(p => p.a).sort()])));
+        rounds.forEach(q => seen.add(JSON.stringify(Object.assign({}, q, { options: q.options && q.options.slice().sort(), answer: undefined, pairs: (q.pairs || []).map(p => p.a).sort(), tokens: (q.tokens || []).slice().sort() }))));
       }
       const config = activity.demo.levels[level];
       if (config.rounds && ['quiz', 'arrange', 'classify', 'wordbuilder'].includes(activity.demo.type)) assert(sizes.size === 1 && sizes.has(config.rounds), activity.id + '/' + level + ': ' + config.rounds + ' sarcini pe joc');
@@ -588,9 +588,17 @@ test('Sound questions carry a word and a picture, and rhyme levels have no rhyme
     assert.strictEqual(new Set(endings).size, endings.length, 'lim-4/' + level + ': două perechi au același final (' + endings + ')');
   });
 });
-test('No answer in Romanian or science can be spotted by its length', () => {
+test('Robot goals in the repetition lesson always need a repeated step', () => {
+  [0, 1, 2].forEach(level => {
+    for (let i = 0; i < 300; i++) {
+      const q = data.Engines.robotRound('repeat', level, 0);
+      assert(Math.max(q.goal.x, q.goal.y) >= 2, 'inf-7/' + level + ': ținta ' + JSON.stringify(q.goal) + ' nu cere repetare');
+    }
+  });
+});
+test('No answer in any lesson can be spotted by its length', () => {
   const { quality } = require('../validate-data');
-  const found = quality(data).filter(w => ['lim', 'sci'].includes(w.subject));
+  const found = quality(data);
   assert.deepStrictEqual(found.map(w => w.text), []);
 });
 test('Every page applies saved preferences in the head and names the learning path consistently', () => {

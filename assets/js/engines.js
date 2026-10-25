@@ -1,13 +1,13 @@
 /* Motoare fără cronometru: încercare, indiciu, corectare, explicație, continuare. */
 const Engines = {
-  types: ['quiz', 'count', 'match', 'arrange', 'classify', 'memory', 'clock', 'shapes', 'type', 'balance', 'shop', 'gen', 'placevalue', 'numberline', 'wordbuilder', 'reading', 'experiment', 'story', 'matrix', 'robot', 'measurement', 'fractions', 'mission'],
+  types: ['quiz', 'count', 'match', 'arrange', 'classify', 'memory', 'clock', 'shapes', 'type', 'balance', 'shop', 'gen', 'placevalue', 'numberline', 'wordbuilder', 'reading', 'experiment', 'story', 'matrix', 'robot', 'measurement', 'fractions', 'mission', 'device', 'punctuation', 'routine'],
   modes: {
     count: ['count'], memory: ['pairs'], clock: ['time'], shapes: ['properties', 'objects', 'riddle'], type: ['story'],
     balance: ['equal'], shop: ['budget'], gen: ['two-step', 'nature'], placevalue: ['build', 'exchange'], numberline: ['add', 'subtract'],
     wordbuilder: ['syllables', 'diacritics'], reading: ['park', 'clues', 'observations'], experiment: ['plants', 'water', 'fair'],
     story: ['conditions', 'digital', 'health', 'family', 'friends', 'school', 'help', 'nature', 'emotions', 'conflict', 'boundaries', 'group'],
     matrix: ['sequence', 'classification', 'grid', 'growth'], robot: ['route', 'debug', 'repeat'], measurement: ['ruler'], fractions: ['parts'],
-    mission: ['evidence', 'repair', 'plan']
+    mission: ['evidence', 'repair', 'plan'], device: ['practice'], punctuation: ['marks'], routine: ['day']
   },
   shuffle(items) {
     const result = items.slice();
@@ -125,6 +125,7 @@ const Engines = {
         return this.robotRound(demo.focus, level, index);
       });
     }
+    if (typeof HandsOn !== 'undefined' && HandsOn.handles(demo.type)) return HandsOn.rounds(demo, level, config);
     if (demo.type === 'quiz') {
       return this.draw(config.questions, config.rounds).map(q => this.questionRound(q));
     }
@@ -234,29 +235,37 @@ const Engines = {
       return this.numeric('Creșterile sunt +1, +2, +3. Continuă cu +4: ' + seq.join(', ') + ', ?', a + 10,
         'Creșterea se mărește cu 1. Ultimul număr este ' + (a + 6) + ', apoi adăugăm 4: ' + (a + 10) + '.', 'Nu se repetă același salt; cresc și salturile.');
     }
-    const forms = ['cerc', 'triunghi', 'pătrat'], colors = ['roșu', 'albastru', 'verde'];
-    const row = index % (level === 0 ? 2 : 3), col = this.randInt(0, level === 0 ? 1 : 2);
+    // la fiecare rundă: alte forme și culori (toate se acordă la masculin: „romb roșu”)
+    const size = level === 0 ? 2 : 3;
+    const palette = this.draw(['roșu', 'albastru', 'verde', 'galben', 'mov', 'portocaliu', 'negru'], size + 1);
+    const forms = this.draw(['cerc', 'triunghi', 'pătrat', 'romb', 'dreptunghi', 'oval'], size), colors = palette.slice(0, size), changed = palette[size];
+    const row = index % size, col = this.randInt(0, size - 1);
     const label = forms[row] + ' ' + colors[col];
-    const alternatives = [label, forms[(row + 1) % 3] + ' ' + colors[col], forms[row] + ' ' + colors[(col + 1) % 3]];
+    const alternatives = [label, forms[(row + 1) % size] + ' ' + colors[col], forms[row] + ' ' + colors[(col + 1) % size]];
     if (level < 2) return this.choice('Rândul cere „' + forms[row] + '”, coloana cere „' + colors[col] + '”. Ce piesă alegi?',
       alternatives, 0, 'Combinăm forma rândului cu culoarea coloanei: ' + label + '.', 'Piesa trebuie să respecte ambele proprietăți.',
-      { matrix: { forms: forms.slice(0, level === 0 ? 2 : 3), colors: colors.slice(0, level === 0 ? 2 : 3), row, col } });
-    return this.choice('În tabelul afișat, piesa lipsă este pe rândul „' + forms[row] + '” și coloana „' + colors[col] + '”. După schimbarea culorii în galben, ce piesă obținem?',
-      [forms[row] + ' galben', label, forms[(row + 1) % 3] + ' galben'], 0,
+      { matrix: { forms, colors, row, col } });
+    return this.choice('În tabelul afișat, piesa lipsă este pe rândul „' + forms[row] + '” și coloana „' + colors[col] + '”. După schimbarea culorii în ' + changed + ', ce piesă obținem?',
+      [forms[row] + ' ' + changed, label, forms[(row + 1) % size] + ' ' + changed], 0,
       'Mai întâi identificăm ' + label + ', apoi schimbăm doar culoarea. Forma rămâne ' + forms[row] + '.',
       'Rezolvă intersecția, apoi aplică schimbarea fără să modifici forma.',
       { matrix: { forms, colors, row, col } });
   },
   robotRound(mode, level, index) {
     const size = [3, 4, 5][level];
-    const start = { x: 0, y: 0 }, goal = { x: this.randInt(1, size - 1), y: size - 1 };
+    const start = { x: 0, y: 0 };
+    // la primul nivel steaua poate fi oriunde, la cel puțin doi pași; cu obstacole rămâne pe ultimul rând
+    let goal = { x: this.randInt(1, size - 1), y: size - 1 };
+    // în lecția despre repetări, cel puțin o direcție cere doi pași, ca repetarea să aibă rost
+    if (level === 0) do { goal = { x: this.randInt(0, size - 1), y: this.randInt(0, size - 1) }; } while (goal.x + goal.y < 2 || (mode === 'repeat' && Math.max(goal.x, goal.y) < 2));
     const blocked = level === 0 ? [] : [{ x: 1, y: 0 }, { x: this.randInt(1, size - 1), y: this.randInt(1, size - 2) }];
     return { kind: 'robot', prompt: mode === 'debug' ? 'Repară programul de probă și du robotul la stea. Rulează pas cu pas.' :
       mode === 'repeat' ? 'Folosește numărul de repetări pentru comenzi. Du robotul la stea fără să atingi obstacolele.' :
         'Construiește un traseu de la robot la stea. Obstacolele nu pot fi traversate.',
     size, start, goal, blocked, repeat: mode === 'repeat', debug: mode === 'debug', maxCommands: size * size,
     explain: 'Un program corect rămâne în grilă, evită obstacolele și se termină la stea. Sunt acceptate toate traseele valide.',
-    hint: 'Un traseu sigur: mergi până jos pe prima coloană, apoi până la stea pe ultimul rând. Ținta este la rândul ' + size + ', coloana ' + (goal.x + 1) + '.' };
+    hint: level === 0 ? 'Numără câte pătrățele are robotul de mers în jos și câte spre dreapta. Ținta este la rândul ' + (goal.y + 1) + ', coloana ' + (goal.x + 1) + '.' :
+      'Un traseu sigur: mergi până jos pe prima coloană, apoi până la stea pe ultimul rând. Ținta este la rândul ' + size + ', coloana ' + (goal.x + 1) + '.' };
   },
 
   wordRounds(mode, level, count) {
@@ -348,18 +357,42 @@ const Engines = {
         ] }]
       ],
       clues: [
-        { text: 'Pe masă sunt trei creioane și o foaie cu un soare desenat. Nu vedem cine a făcut desenul.', questions: [
+        [{ text: 'Pe masă sunt trei creioane și o foaie cu un soare desenat. Nu vedem cine a făcut desenul.', questions: [
           Q('Ce știm sigur?', ['Pe foaie este un soare', 'Ana a desenat', 'Desenul a fost făcut azi'], 0, 'Soarele este observat; autorul și momentul nu sunt precizate.'),
           Q('Ce informație lipsește?', ['Cine a desenat', 'Câte creioane sunt', 'Ce apare pe foaie'], 0, 'Textul precizează că nu vedem autorul.')
         ] },
-        { text: 'Curtea este udă. Lângă flori se află un furtun. Nu știm dacă a plouat. Un copil spune că poate cineva a udat grădina.', questions: [
+        { text: 'Pe prag sunt urme mici de lăbuțe. Ușa spre curte este deschisă. Nu vedem niciun animal.', questions: [
+          Q('Ce știm sigur?', ['Pe prag sunt urme de lăbuțe', 'Pisica a intrat în casă', 'Câinele a fugit în curte'], 0, 'Urmele se văd. Ce animal le-a lăsat nu știm.'),
+          Q('Ce informație lipsește?', ['Ce animal a lăsat urmele', 'Unde sunt urmele', 'Dacă ușa este deschisă'], 0, 'Textul nu spune ce animal a fost.')
+        ] },
+        { text: 'În coșul de pe masă erau cinci mere. Acum sunt trei. Lângă coș este o farfurie goală.', questions: [
+          Q('Ce știm sigur?', ['Lipsesc două mere', 'Ana a mâncat merele', 'Merele s-au stricat'], 0, '5 − 3 = 2: lipsesc două mere. Cine le-a luat nu știm.'),
+          Q('Ce întrebare ajută?', ['Cine a luat merele?', 'Ce culoare are coșul?', 'Câte farfurii avem?'], 0, 'Întrebarea caută informația care lipsește.')
+        ] }],
+        [{ text: 'Curtea este udă. Lângă flori se află un furtun. Nu știm dacă a plouat. Un copil spune că poate cineva a udat grădina.', questions: [
           Q('Care este o presupunere?', ['Cineva a udat grădina', 'Curtea este udă', 'Există un furtun'], 0, 'Udarea este o explicație posibilă, nu un fapt confirmat.'),
           Q('Ce întrebare ajută verificarea?', ['A udat cineva curtea?', 'Ce culoare preferi?', 'Câte flori îți plac?'], 0, 'Întrebarea caută o informație relevantă pentru cauză.')
         ] },
-        { text: 'Un ghiveci a fost mutat la fereastră și udat mai des. După o săptămână, planta are două frunze noi. O colegă spune că lumina a produs sigur schimbarea.', questions: [
-          Q('De ce nu știm sigur cauza?', ['S-au schimbat și lumina, și udarea', 'Nu există frunze noi', 'Plantele nu cresc'], 0, 'Două condiții s-au modificat simultan, deci nu izolăm cauza.'),
-          Q('Cum am putea verifica mai bine?', ['Comparăm plante similare schimbând un singur factor', 'Schimbăm toate condițiile', 'Privim o singură dată'], 0, 'O comparație controlată ajută să distingem efectele.')
-        ] }
+        { text: 'Becul din cameră nu se aprinde. Lampa de pe birou merge. Ieri becul mergea.', questions: [
+          Q('Care este o presupunere?', ['Becul s-a ars', 'Lampa de pe birou merge', 'Becul nu se aprinde'], 0, '„S-a ars” este o explicație posibilă; celelalte două sunt observații.'),
+          Q('Ce verificare ajută?', ['Încercăm un bec nou', 'Aprindem lampa din nou', 'Așteptăm până mâine'], 0, 'Cu un bec nou aflăm dacă becul era de vină.')
+        ] },
+        { text: 'Câinele Rex latră la ușă. Se aude soneria. Bunica spune că sigur a venit poștașul.', questions: [
+          Q('Ce se știe sigur?', ['Câinele latră și sună soneria', 'A venit sigur poștașul', 'Rex vrea să iasă afară'], 0, 'Lătratul și soneria se aud. Cine este la ușă nu știm încă.'),
+          Q('Cum verificăm cine a sunat?', ['Întrebăm cine este', 'Lăsăm câinele să latre', 'Ghicim după oră'], 0, 'Întrebând, aflăm cine este la ușă. Ușa o deschide un adult.')
+        ] }],
+        [{ text: 'Un ghiveci a fost mutat la fereastră și udat mai des. După o săptămână, planta are două frunze noi. O colegă spune că lumina a produs sigur schimbarea.', questions: [
+          Q('De ce nu știm sigur cauza?', ['S-au schimbat și lumina, și udarea', 'Planta nu are deloc frunze noi', 'Frunzele cresc fără lumină și apă'], 0, 'Două condiții s-au modificat simultan, deci nu izolăm cauza.'),
+          Q('Cum am putea verifica mai bine?', ['Schimbăm un singur lucru odată', 'Schimbăm toate condițiile deodată', 'Privim planta o singură dată'], 0, 'O comparație controlată ajută să distingem efectele.')
+        ] },
+        { text: 'Toți copiii care au mâncat azi la cantină au primit supă. Ion spune că nu a primit supă. Nu știm dacă Ion a mâncat la cantină.', questions: [
+          Q('Ce putem spune?', ['Poate Ion nu a mâncat la cantină', 'Ion spune sigur o minciună acum', 'Regula de la cantină e greșită'], 0, 'Regula este despre cei care au mâncat la cantină. Nu știm dacă Ion a fost acolo.'),
+          Q('Ce întrebare ajută?', ['A mâncat Ion la cantină?', 'Îi place lui Ion supa?', 'Ce supă a fost azi?'], 0, 'Răspunsul ne spune dacă regula se aplică lui Ion.')
+        ] },
+        { text: 'Două pahare cu lapte au stat o zi: unul în frigider, altul pe masă. Laptele de pe masă miroase acru. Mara spune: „Căldura strică laptele mai repede.”', questions: [
+          Q('Ce susține observația?', ['Aici, laptele ținut la cald s-a stricat', 'Orice lapte se strică într-o oră', 'Frigiderul strică laptele'], 0, 'Observația este despre aceste două pahare, în aceste condiții.'),
+          Q('Cum ar fi mai sigură concluzia?', ['Repetăm cu mai multe pahare', 'Mirosim o singură dată', 'Aruncăm ambele pahare'], 0, 'Mai multe încercări ne arată dacă rezultatul se repetă.')
+        ] }]
       ],
       observations: [
         [{ text: 'Observații despre o plantă: luni — 2 frunze; miercuri — 3 frunze; vineri — 4 frunze. Numărăm frunzele aceleiași plante.', questions: [
@@ -481,14 +514,32 @@ const Engines = {
   storyRounds(mode, level) {
     const bank = {
       conditions: [
-        ['Regulă: dacă plouă, ia umbrela; altfel, nu. Acum plouă.', 'Iau umbrela', 'Nu iau umbrela', 'Execut ambele ramuri', 'Condiția este adevărată, deci alegem ramura pentru ploaie.'],
-        ['Regulă: dacă numărul este par, îl pun în cutia A; altfel în B. Numărul este 13.', 'Îl pun în B', 'Îl pun în A', 'Îl pun în ambele', '13 este impar, deci condiția „este par” este falsă.'],
-        ['Regulă: dacă numărul este par și mai mare decât 10, aleg A; altfel B. Numărul este 10.', 'Aleg B', 'Aleg A', 'Nu pot verifica', '10 este par, dar nu este mai mare decât 10. Ambele condiții trebuie respectate.']
+        [['Regulă: dacă plouă, ia umbrela; altfel, nu. Acum plouă.', 'Iau umbrela', 'Nu iau umbrela', 'Iau umbrela și o las acasă', 'Condiția este adevărată, deci alegem ramura pentru ploaie.'],
+          ['Regulă: dacă semaforul e roșu, aștepți; altfel, treci cu un adult. Semaforul e roșu.', 'Aștept', 'Trec strada', 'Trec strada în fugă', 'Condiția „roșu” este adevărată, deci urmăm ramura „aștept”.'],
+          ['Regulă: dacă e frig, iau căciula; altfel, nu. Afară e cald.', 'Nu iau căciula', 'Iau căciula', 'Iau două căciuli', 'Condiția „e frig” este falsă, deci nu iau căciula.'],
+          ['Regulă: dacă numărul se termină cu 0, bat din palme. Numărul este 20.', 'Bat din palme', 'Nu bat din palme', 'Bat din picior', '20 se termină cu 0, deci condiția este adevărată.']],
+        [['Regulă: dacă numărul este par, îl pun în cutia A; altfel în B. Numărul este 13.', 'Îl pun în B', 'Îl pun în A', 'Îl pun în ambele', '13 este impar, deci condiția „este par” este falsă.'],
+          ['Regulă: dacă cartonașul e albastru, îl pun în cutia A; altfel în B. Cartonașul e verde.', 'Îl pun în B', 'Îl pun în A', 'Îl pun în ambele', 'Verde nu este albastru, deci condiția este falsă și alegem B.'],
+          ['Regulă: dacă un animal are pene, îl pun la „păsări”. Pinguinul are pene.', 'Îl pun la păsări', 'Îl pun la pești', 'Nu îl pun nicăieri', 'Pinguinul are pene, deci condiția este adevărată, chiar dacă nu zboară.'],
+          ['Regulă: dacă scorul este mai mare decât 5, primești o stea. Scorul este 5.', 'Nu primesc steaua', 'Primesc steaua', 'Primesc două stele', '5 nu este mai mare decât 5, deci condiția este falsă.']],
+        [['Regulă: dacă numărul este par și mai mare decât 10, aleg A; altfel B. Numărul este 10.', 'Aleg B', 'Aleg A', 'Nu pot verifica', '10 este par, dar nu este mai mare decât 10. Ambele condiții trebuie respectate.'],
+          ['Regulă: dacă plouă sau e foarte frig, ne jucăm înăuntru. Nu plouă, dar e foarte frig.', 'Ne jucăm înăuntru', 'Ne jucăm afară', 'Nu ne mai jucăm', 'Cu „sau” ajunge ca o singură condiție să fie adevărată.'],
+          ['Regulă: dacă ai terminat tema și e încă lumină, mergi în parc. Tema e gata, dar s-a întunecat.', 'Rămân acasă', 'Merg în parc', 'Merg în parc singur', 'Cu „și” trebuie să fie adevărate ambele condiții, iar lumina lipsește.'],
+          ['Regulă: dacă numărul nu este par, îl pun în cutia A; altfel în B. Numărul este 7.', 'Îl pun în A', 'Îl pun în B', 'Nu pot decide', '7 nu este par, deci condiția „nu este par” este adevărată.']]
       ],
       digital: [
-        ['Un necunoscut într-un joc îți cere adresa.', 'Nu o trimit și cer ajutor unui adult de încredere', 'Trimit adresa', 'Trimit și numele școlii', 'Adresa este o informație personală, nu un lucru de oferit unui necunoscut.'],
-        ['Primești un link care promite un premiu dacă introduci parola.', 'Nu deschid linkul și arăt mesajul unui adult', 'Introduc parola', 'Trimit linkul tuturor', 'O cerere de parolă pentru un premiu este un semnal de risc.'],
-        ['Ai trimis deja o informație personală și cineva te amenință să păstrezi secretul.', 'Opresc discuția și cer imediat ajutor unui adult de încredere', 'Păstrez secretul de teamă', 'Trimit alte date', 'Poți cere ajutor și după o greșeală. Nu ești vinovat pentru amenințările altcuiva.']
+        [['Un necunoscut dintr-un joc îți cere adresa.', 'Nu o dau și spun unui adult', 'Îi trimit adresa mea', 'Îi spun doar strada și școala', 'Adresa este o informație personală, nu un lucru de oferit unui necunoscut.'],
+          ['Un joc îți cere să descarci ceva ca să primești monede gratuite.', 'Întreb mai întâi un adult', 'Descarc repede', 'Dau parola pentru monede', 'Descărcările necunoscute pot strica dispozitivul. Un adult te ajută să decizi.'],
+          ['Vezi pe ecran ceva care te sperie.', 'Închid și spun unui adult', 'Mă uit mai departe singur', 'Nu spun nimănui nimic', 'Nu ești vinovat pentru ce ai văzut. Un adult te poate ajuta.'],
+          ['Un prieten vrea să afle parola ta de la joc.', 'Nu o spun nici prietenilor', 'I-o spun, fiindcă e prieten', 'O scriu pe tablă', 'Parola se păstrează doar pentru tine și pentru părinții tăi.']],
+        [['Primești un link care promite un premiu dacă introduci parola.', 'Îl arăt unui adult, fără să-l deschid', 'Introduc parola ca să primesc premiul', 'Trimit linkul tuturor prietenilor mei', 'O cerere de parolă pentru un premiu este un semnal de risc.'],
+          ['Cineva postează o poză cu tine fără să te întrebe.', 'Spun unui adult și cer ștergerea', 'Postez și eu poze cu el', 'Tac și nu spun nimănui', 'Ai dreptul să fii întrebat înainte să apară o poză cu tine.'],
+          ['Un coleg scrie mesaje urâte despre altcineva în grupul clasei.', 'Nu le trimit și spun unui adult', 'Adaug și eu un mesaj', 'Râd și le trimit mai departe', 'Mesajele care jignesc fac rău. Un adult poate opri ce se întâmplă.'],
+          ['Vrei să cauți o imagine pentru un proiect.', 'Caut împreună cu un adult', 'Deschid orice link primit', 'Îmi scriu adresa ca să caut', 'Un adult te ajută să găsești pagini sigure.']],
+        [['Ai trimis deja o informație personală și cineva te amenință să păstrezi secretul.', 'Opresc discuția și cer ajutor', 'Păstrez secretul de teamă', 'Trimit și alte informații', 'Poți cere ajutor și după o greșeală. Nu ești vinovat pentru amenințările altcuiva.'],
+          ['Cineva din joc spune că are 8 ani și vrea să vă întâlniți în parc.', 'Nu merg și spun unui adult', 'Merg singur să-l cunosc', 'Îi dau adresa mea de acasă', 'Online nu putem ști cine este cineva cu adevărat. Nu ne întâlnim cu necunoscuți.'],
+          ['Ai stat mult la tabletă și te dor ochii.', 'Fac o pauză și mă mișc', 'Mai joc încă o oră', 'Măresc lumina ecranului', 'Pauzele odihnesc ochii și corpul.'],
+          ['Ai apăsat din greșeală un buton care cere bani.', 'Spun imediat unui adult', 'Apăs din nou ca să anulez', 'Ascund tableta sub pernă', 'E bine să spui imediat: un adult poate rezolva plata.']]
       ],
       health: [
         [['Urmează să mănânci după joaca afară.', 'Mă spăl cu apă și săpun', 'Îmi șterg mâinile de tricou', 'Îmi clătesc doar un deget', 'Spălarea cu apă și săpun îndepărtează murdăria și microbii de pe mâini.'],
@@ -506,49 +557,130 @@ const Engines = {
           ['Te doare burta după ce ai mâncat ceva nou.', 'Spun unui adult ce am mâncat', 'Mai mănânc ca să treacă', 'Nu spun nimic', 'Dacă afli ce și când ai mâncat, adultul poate decide cum te ajută.']]
       ],
       family: [
-        ['Vrei să ajuți la masa de seară.', 'Întreb ce sarcină sigură pot face', 'Folosesc singur un cuțit ascuțit', 'Decid că numai fetele strâng masa', 'Alegem treburi pe care le putem face în siguranță. Fetele și băieții pot ajuta la aceleași treburi.'],
-        ['Un coleg locuiește cu bunica, altul cu un părinte.', 'Respect faptul că familiile pot fi diferite', 'Spun că doar o familie este adevărată', 'Cer detalii personale în fața clasei', 'Familiile pot fi diferite. Nu judecăm familia cuiva și nu îi cerem să povestească lucruri personale.'],
-        ['Un copil spune că nu se simte în siguranță acasă.', 'Îl încurajez să vorbească cu un adult de încredere care îl poate proteja', 'Îi cer să păstreze secretul', 'Îi spun că sigur greșește', 'Siguranța are prioritate. Un adult de încredere din afara casei poate ajuta.']
+        [['Vrei să ajuți la masa de seară.', 'Întreb ce pot face în siguranță', 'Iau singur cuțitul ascuțit', 'Aștept să facă alții tot', 'Alegem o treabă potrivită vârstei. Fetele și băieții pot ajuta la aceleași treburi.'],
+          ['Fratele mai mic plânge pentru că și-a pierdut jucăria.', 'Îl ajut să o caute', 'Îi spun să tacă', 'Mă joc eu cu ea', 'Când ajutăm, celălalt se simte sprijinit.'],
+          ['Bunica e obosită după drum.', 'O întreb ce o ajută', 'Îi cer să se joace cu mine', 'Fac gălăgie lângă ea', 'Întrebarea arată grijă și ne spune de ce are nevoie.'],
+          ['Mama îți cere să-ți strângi jucăriile.', 'Le pun la locul lor', 'Le împing sub pat', 'Le las pentru altcineva', 'Fiecare membru al familiei are grijă de spațiul comun.']],
+        [['Un coleg locuiește cu bunica, altul cu un părinte.', 'Respect că familiile sunt diferite', 'Spun că doar o familie e adevărată', 'Le cer detalii în fața clasei', 'Familiile pot fi diferite. Nu judecăm familia cuiva și nu cerem lucruri personale.'],
+          ['Părinții nu au timp acum să se joace cu tine.', 'Aștept sau mă joc singur', 'Țip până se joacă', 'Spun că nu țin la mine', 'Uneori adulții au alte treburi; asta nu înseamnă că nu țin la tine.'],
+          ['Tu și sora ta vreți același scaun.', 'Stăm pe rând', 'O împing de pe scaun', 'Plâng până îl primesc', 'O înțelegere pe rând este corectă pentru amândoi.'],
+          ['Un coleg spune că familia lui sărbătorește altfel decât a ta.', 'Îl întreb cum sărbătoresc', 'Îi spun că e greșit', 'Râd de obiceiurile lui', 'Familiile pot avea obiceiuri diferite. Curiozitatea respectuoasă ne ajută să învățăm.']],
+        [['Un copil spune că nu se simte în siguranță acasă.', 'Îi spun unui adult de încredere', 'Îi cer să păstreze secretul', 'Îi spun că sigur exagerează', 'Siguranța are prioritate. Un adult de încredere din afara casei poate ajuta.'],
+          ['Părinții se ceartă și te simți îngrijorat.', 'Spun ce simt unui adult apropiat', 'Cred că e vina mea', 'Mă ascund și tac mereu', 'Certurile adulților nu sunt vina copiilor. Poți spune ce simți.'],
+          ['Familia se mută în alt oraș.', 'Spun ce mă îngrijorează', 'Refuz să vorbesc cu oricine', 'Cred că nu voi avea prieteni', 'Schimbările sunt grele. Când vorbim despre ele, primim sprijin.'],
+          ['Un adult din familie îți cere ceva care te face să te simți în pericol.', 'Spun nu și cer ajutor altui adult', 'Fac ce cere, pentru că e adult', 'Păstrez totul secret față de toți', 'Poți spune nu. Un alt adult de încredere te poate proteja.']]
       ],
       friends: [
-        ['Vrei creionul unui coleg.', 'Întreb dacă îl pot împrumuta', 'Îl iau fără să întreb', 'Îl ascund', 'Acordul respectă persoana și lucrurile ei.'],
-        ['Un prieten insistă să joci un joc care te face să te simți inconfortabil.', 'Spun nu și propun alt joc', 'Accept orice de teamă să nu-l pierd', 'Îl jignesc', 'Poți exprima o limită fără să jignești.'],
-        ['Ai spus nu, dar colegul continuă să-ți ia lucrurile.', 'Repet limita și cer sprijin unui adult', 'Cred că trebuie să accept', 'Îl lovesc', 'O limită încălcată repetat poate necesita ajutor. Nu răspundem prin violență.']
+        [['Vrei creionul unui coleg.', 'Întreb dacă îl pot împrumuta', 'Îl iau fără să întreb', 'Îl iau și nu-l mai dau', 'Acordul respectă persoana și lucrurile ei.'],
+          ['Un coleg nou stă singur în pauză.', 'Îl invit să se joace', 'Îl privesc de departe', 'Le spun altora să-l evite', 'O invitație îl ajută pe colegul nou să se simtă primit.'],
+          ['Prietenul tău a câștigat la un joc.', 'Îl felicit', 'Spun că a trișat', 'Plec supărat', 'Ne putem bucura pentru reușita unui prieten.'],
+          ['Ai lovit din greșeală un coleg.', 'Îmi cer iertare', 'Mă prefac că nu am văzut', 'Spun că e vina lui', 'Când greșim, ne cerem iertare și verificăm dacă celălalt e bine.']],
+        [['Un prieten insistă să joci un joc care nu-ți place deloc.', 'Spun nu și propun alt joc', 'Accept, ca să nu-l pierd', 'Îl jignesc ca să tacă', 'Poți spune nu fără să jignești.'],
+          ['Doi prieteni vor să te joci doar cu ei, nu și cu Ana.', 'Propun să ne jucăm toți', 'Îi spun Anei să plece', 'Nu mai vorbesc cu nimeni', 'Un joc deschis nu lasă pe nimeni pe dinafară.'],
+          ['Un prieten îți spune un secret despre o petrecere surpriză.', 'Îl păstrez până la petrecere', 'Îl spun imediat tuturor', 'Spun că nu există surpriză', 'Un secret bun, ca o surpriză, se păstrează. Un secret care sperie se spune unui adult.'],
+          ['Prietenul tău e trist că nu a fost ales în echipă.', 'Îl întreb cum se simte', 'Râd că a rămas ultimul', 'Îi spun că nu contează', 'Întrebarea îi arată că ne pasă de el.']],
+        [['Ai spus nu, dar colegul continuă să-ți ia lucrurile.', 'Repet limita și cer sprijin', 'Cred că trebuie să accept', 'Îl lovesc ca să înceteze', 'O limită încălcată repetat poate cere ajutorul unui adult. Nu răspundem prin violență.'],
+          ['Un prieten îți propune să copiezi tema lui.', 'Îmi fac singur tema', 'Copiez tot în grabă', 'Îi cer să o facă și pe a mea', 'Tema te ajută să înveți; copiată nu te ajută.'],
+          ['Un grup râde mereu de același coleg.', 'Nu râd și spun unui adult', 'Râd ca să fiu în grup', 'Mă alătur glumelor lor', 'Râsul repetat la adresa cuiva rănește. Un adult poate opri situația.'],
+          ['Tu și prietenul tău vreți jocuri diferite.', 'Facem pe rând câte un joc', 'Plec și nu mai vorbesc', 'Îl oblig să joace ce vreau', 'Pe rând, fiecare prieten are parte de jocul lui.']]
       ],
       school: [
-        ['Mai mulți copii vorbesc deodată și nu vă auziți.', 'Stabilim cum vorbim pe rând', 'Vorbesc și mai tare', 'Nu mai ascult pe nimeni', 'Rândurile ne ajută să auzim și să fim auziți.'],
-        ['Ai nevoie de o pauză de mișcare în timpul lecției.', 'Discut cu adultul o pauză sigură', 'Îi împing pe ceilalți', 'Cred că nevoia mea nu contează', 'O regulă poate include adaptări care ajută învățarea.'],
-        ['Un coleg nu poate participa la joc din cauza unei reguli.', 'Propunem să schimbăm regula și cerem ajutor', 'Spunem că regula nu poate fi discutată', 'Îl obligăm să participe la fel', 'Putem schimba regula pentru ca și colegul să poată participa.']
+        [['Mai mulți copii vorbesc deodată și nu vă auziți.', 'Propunem să vorbim pe rând', 'Vorbesc și mai tare', 'Nu mai ascult pe nimeni', 'Rândurile ne ajută să auzim și să fim auziți.'],
+          ['Vrei să spui ceva în timpul lecției.', 'Ridic mâna și aștept', 'Strig ce am de spus', 'Îl întrerup pe coleg', 'Ridicarea mâinii îi lasă pe toți să vorbească pe rând.'],
+          ['Ai terminat de lucrat cu plastilina.', 'O pun la loc în cutie', 'O las pe bancă așa cum e', 'O lipesc sub masa mea', 'Când punem materialele la loc, le găsim și data viitoare.'],
+          ['Sună clopoțelul de pauză.', 'Ies calm, fără să împing', 'Alerg și împing colegii', 'Rămân pe scaun și strig', 'Ieșirea calmă ne ferește de lovituri.']],
+        [['Ai nevoie de o pauză de mișcare în timpul lecției.', 'Discut cu învățătoarea o pauză', 'Îi împing pe ceilalți', 'Cred că nevoia mea nu contează', 'O regulă poate include adaptări care ajută învățarea.'],
+          ['Nu ai înțeles explicația.', 'Întreb învățătoarea', 'Mă prefac că am înțeles', 'Copiez de la colegul meu', 'Întrebările sunt binevenite: așa învățăm.'],
+          ['Ai uitat penarul acasă.', 'Cer politicos un creion', 'Iau un creion fără să întreb', 'Nu lucrez deloc azi', 'O cerere politicoasă rezolvă problema.'],
+          ['Un coleg a vărsat apă pe jos.', 'Anunț și ajut să ștergem', 'Râd de el', 'Trec prin apă alergând', 'Ajutorul și anunțul previn alunecarea.']],
+        [['Un coleg nu poate participa la joc din cauza unei reguli.', 'Propunem schimbarea regulii', 'Spunem că regula nu se schimbă', 'Îl obligăm să joace la fel', 'O regulă se poate schimba ca să poată participa toți.'],
+          ['Clasa face o regulă nouă pentru pauze.', 'Spun ideea mea și îi ascult', 'Las doar copiii mari să decidă', 'Refuz orice regulă nouă', 'O regulă bună ține cont de ideile tuturor.'],
+          ['Vezi un coleg care ia pe ascuns gustarea altuia.', 'Îi spun învățătoarei', 'Iau și eu una', 'Mă fac că nu văd', 'Un adult poate rezolva corect situația.'],
+          ['Regula spune „fără telefon în clasă”, dar un coleg trebuie să-și anunțe părinții.', 'Întreabă învățătoarea', 'Sună pe ascuns', 'Nu își mai anunță părinții', 'Regulile pot avea excepții discutate cu un adult.']]
       ],
       help: [
-        ['Un coleg strânge multe piese.', 'Întreb dacă vrea ajutor', 'Îi iau piesele fără acord', 'Râd de el', 'Întrebăm înainte să ajutăm. Colegul poate alege dacă vrea ajutor.'],
-        ['Un coleg încearcă să rezolve singur și cere doar un indiciu.', 'Ofer un indiciu, apoi îi las timp', 'Fac totul în locul lui', 'Îi ascund materialele', 'Ajutorul potrivit sprijină învățarea, nu o înlocuiește.'],
-        ['Vezi un obiect greu căzut lângă un copil.', 'Chem un adult și păstrez distanța față de risc', 'Încerc singur să ridic orice greutate', 'Îi cer altui copil să intre sub obiect', 'Într-o situație riscantă, cerem ajutor calificat unui adult.']
+        [['Un coleg strânge multe piese.', 'Întreb dacă vrea ajutor', 'Îi iau piesele fără acord', 'Îl privesc și râd', 'Întrebăm înainte să ajutăm. Colegul poate alege dacă vrea ajutor.'],
+          ['Bunicul cară o sacoșă grea.', 'Îl întreb dacă îl ajut', 'Merg repede înainte', 'Îi cer să-mi dea dulciuri', 'Oferta de ajutor arată grijă.'],
+          ['Un copil a scăpat creioanele pe jos.', 'Îl ajut să le adune', 'Calc pe ele fără grijă', 'Râd de el cu ceilalți', 'Un ajutor mic face o mare diferență.'],
+          ['Ai nevoie de ajutor la un puzzle.', 'Cer ajutor politicos', 'Arunc piesele', 'Plâng și renunț', 'Și cererea de ajutor este o alegere bună.']],
+        [['Un coleg încearcă singur și cere doar un indiciu.', 'Îi dau un indiciu și aștept', 'Rezolv totul în locul lui', 'Îi ascund materialele', 'Ajutorul potrivit sprijină învățarea, nu o înlocuiește.'],
+          ['Un coleg spune „nu, mulțumesc” când îi oferi ajutor.', 'Respect răspunsul lui', 'Îl ajut cu forța', 'Mă supăr pe el', 'Și ajutorul se oferă cu acordul celuilalt.'],
+          ['Un copil cu piciorul în ghips vrea să se joace.', 'Căutăm un joc pentru el', 'Îi spunem să stea deoparte', 'Alergăm fără el', 'Putem adapta jocul ca să participe toți.'],
+          ['Un coleg nu vorbește încă bine română.', 'Îi arăt cu gesturi și desene', 'Râd de cum vorbește', 'Nu mai vorbesc cu el', 'Gesturile și desenele ne ajută să ne înțelegem.']],
+        [['Vezi un obiect greu căzut lângă un copil.', 'Chem un adult și stau departe', 'Încerc singur să-l ridic', 'Cer altui copil să-l ridice', 'Într-o situație riscantă, chemăm un adult.'],
+          ['Un copil s-a rătăcit în parc și plânge.', 'Chemăm un adult de încredere', 'Îl duc acasă la mine singur', 'Îl las și plec mai departe', 'Un adult de încredere, de exemplu un paznic sau un polițist, îl poate ajuta.'],
+          ['Ai promis că ajuți un coleg, dar acum vrei să te joci.', 'Îi spun și găsim alt moment', 'Plec fără să-i spun', 'Mă prefac că am uitat', 'Când nu putem, spunem sincer și căutăm o soluție.'],
+          ['Cineva îți cere ajutorul la ceva periculos.', 'Refuz și chem un adult', 'Ajut, ca să nu se supere', 'Ajut, dar pe ascuns', 'Nu ajutăm la lucruri periculoase. Un adult poate ajuta în siguranță.']]
       ],
       nature: [
-        ['După picnic au rămas ambalajele tale.', 'Le strâng și le duc la colectarea potrivită', 'Le las sub un copac', 'Le arunc în apă', 'Nu lăsăm deșeuri în natură.'],
-        ['Vezi un animal sălbatic aproape de potecă.', 'Păstrez distanța și îl observ fără să-l hrănesc', 'Încerc să-l ating', 'Îl urmăresc', 'Distanța protejează animalul și oamenii.'],
-        ['Lângă un loc de joacă este sticlă spartă.', 'Avertizez și anunț un adult', 'O strâng cu mâna', 'O ascund în iarbă', 'Sticla spartă poate răni. Un adult poate organiza strângerea în siguranță.']
+        [['După picnic au rămas ambalajele tale.', 'Le duc la coșul de gunoi', 'Le las sub un copac', 'Le îngrop în iarbă', 'Nu lăsăm deșeuri în natură.'],
+          ['Vezi o floare frumoasă în parc.', 'O privesc și o las acolo', 'O rup ca să o iau', 'O calc din greșeală', 'Florile rămân pentru albine și pentru ceilalți oameni.'],
+          ['Robinetul curge după ce te-ai spălat.', 'Îl închid', 'Îl las deschis', 'Îl deschid mai tare', 'Închiderea robinetului economisește apa.'],
+          ['Ai o sticlă de plastic goală.', 'O pun la reciclare', 'O arunc pe stradă', 'O las în parc', 'Plasticul reciclat poate deveni alte obiecte.']],
+        [['Vezi un animal sălbatic aproape de potecă.', 'Îl privesc de la distanță', 'Încerc să-l ating', 'Îi dau mâncare din mână', 'Distanța protejează animalul și oamenii.'],
+          ['Ieși din cameră și lumina e aprinsă.', 'Sting lumina', 'Las lumina aprinsă', 'Mai aprind o lampă', 'Stingem lumina ca să economisim energie.'],
+          ['Găsești un pui de pasăre căzut din cuib.', 'Chem un adult și nu-l ating', 'Îl iau acasă în buzunar', 'Îl duc la școală', 'Un adult știe cum să ajute puiul fără să-l rănească.'],
+          ['Mergi la cumpărături.', 'Iau o sacoșă de acasă', 'Cer mereu pungi noi', 'Iau pungi multe pentru joacă', 'O sacoșă folosită din nou înseamnă mai puțin plastic aruncat.']],
+        [['Lângă un loc de joacă este sticlă spartă.', 'Anunț un adult și pe ceilalți', 'O strâng singur cu mâna', 'O ascund repede în iarbă', 'Sticla spartă poate răni. Un adult o poate strânge în siguranță.'],
+          ['Grupul vrea să facă focul în pădure.', 'Doar adulții, unde este voie', 'Facem focul oriunde', 'Aprindem singuri un chibrit', 'Focul poate scăpa de sub control. Îl fac doar adulții, unde este voie.'],
+          ['Vezi gunoi aruncat lângă un râu.', 'Îl strângem cu un adult', 'Îl împingem în apă', 'Îl lăsăm, nu e al nostru', 'Râul și animalele lui sunt protejate când strângem gunoiul cu mănuși și cu un adult.'],
+          ['Un copil vrea să ia acasă o broască din lac.', 'O lăsăm în lacul ei', 'O ducem acasă într-o cutie', 'O mutăm într-o baltă', 'Animalele sălbatice trăiesc cel mai bine în locul lor.']]
       ],
       emotions: [
-        ['Te simți supărat după o neînțelegere.', 'Numesc emoția și aleg o pauză sau sprijin', 'Lovesc pentru că sunt supărat', 'Spun că nu am voie să simt nimic', 'Emoția este acceptabilă; alegem comportamente sigure.'],
-        ['Un coleg tace înaintea unei prezentări.', 'Întreb cu grijă dacă dorește sprijin', 'Decid sigur că îi este frică', 'Râd de el', 'Nu putem cunoaște sigur emoția doar din comportament.'],
-        ['Ești și bucuros, și îngrijorat înaintea unei excursii.', 'Accept ambele emoții și discut nevoia de sprijin', 'Cred că trebuie să aleg o singură emoție', 'Îi învinovățesc pe ceilalți', 'Putem avea mai multe emoții simultan.']
+        [['Te simți supărat după o neînțelegere.', 'Spun ce simt și iau o pauză', 'Lovesc ceva pentru că sunt supărat', 'Spun că nu simt nimic deloc', 'Emoția este în regulă; alegem ce facem în siguranță.'],
+          ['Ești foarte bucuros că vine bunica.', 'Le spun și altora', 'Ascund bucuria', 'Cred că e greșit să mă bucur', 'Bucuria se poate împărtăși.'],
+          ['Ți-e frică de întuneric seara.', 'Spun unui adult ce simt', 'Ascund frica de toți', 'Cred că sunt un copil rău', 'Frica este o emoție normală. Un adult te poate ajuta.'],
+          ['Un coleg plânge.', 'Îl întreb ce s-a întâmplat', 'Râd de el', 'Îi spun că plânsul e rușinos', 'Plânsul arată o emoție. Întrebarea arată grijă.']],
+        [['Un coleg tace înaintea unei prezentări.', 'Îl întreb dacă vrea sprijin', 'Decid că sigur îi e frică', 'Râd de el', 'Nu putem ști sigur emoția cuiva doar privindu-l.'],
+          ['Ești gelos pe noua bicicletă a prietenului.', 'Recunosc ce simt și îl felicit', 'Îi stric bicicleta pe ascuns', 'Spun tuturor că e urâtă', 'Gelozia e o emoție. O putem recunoaște fără să facem rău.'],
+          ['Ai pierdut un joc și te simți furios.', 'Respir adânc și număr', 'Arunc piesele pe jos', 'Spun că ceilalți au trișat', 'Respirația ne ajută să ne liniștim.'],
+          ['Te simți rușinat după o greșeală.', 'Îmi amintesc că toți greșim', 'Mă ascund toată ziua', 'Îi învinovățesc pe alții', 'Greșelile ne ajută să învățăm.']],
+        [['Ești și bucuros, și îngrijorat înaintea unei excursii.', 'Accept ambele emoții', 'Aleg o singură emoție', 'Îi învinovățesc pe ceilalți', 'Putem avea mai multe emoții în același timp.'],
+          ['Un prieten spune „sunt bine”, dar pare trist.', 'Îi spun că sunt aici pentru el', 'Îi spun că sigur nu e bine', 'Îl forțez să-mi spună totul', 'Îl lăsăm să aleagă și îi arătăm că suntem aici.'],
+          ['Ești foarte supărat și vrei să spui ceva urât.', 'Fac o pauză înainte să vorbesc', 'Spun primul lucru care îmi vine', 'Țip cât pot de tare', 'O pauză ne ajută să alegem cuvintele.'],
+          ['O tristețe nu trece de mai multe zile.', 'Vorbesc cu un adult de încredere', 'Aștept să treacă singură, în tăcere', 'Nu spun nimănui ce simt', 'Un adult te poate ajuta când o emoție durează mult.']]
       ],
       conflict: [
-        ['Doi copii vor aceeași minge.', 'Discută despre rânduri sau un joc comun', 'Cel mai puternic o ia', 'O ascund ca să nu joace nimeni', 'O soluție respectuoasă ține cont de ambii copii.'],
-        ['Soluția propusă îi lasă mereu pe aceiași copii pe dinafară.', 'Schimbăm regula și îi ascultăm pe toți', 'Spunem că nu contează', 'Îi obligăm să accepte', 'O soluție bună nu îi lasă mereu pe aceiași copii fără rând la joc.'],
-        ['Discuția devine amenințătoare și cineva împinge.', 'Ne îndepărtăm de risc și chemăm un adult', 'Continuăm disputa cu orice preț', 'Răspundem tot prin împingere', 'Siguranța are prioritate față de rezolvarea independentă.']
+        [['Doi copii vor aceeași minge.', 'Se joacă pe rând sau împreună', 'Cel mai puternic o ia', 'O ascund ca să nu joace nimeni', 'O soluție bună ține cont de amândoi.'],
+          ['Doi frați vor ultima felie de prăjitură.', 'O împart în două', 'O ia cel mai rapid', 'Se ceartă până plânge unul', 'Împărțirea este corectă pentru amândoi.'],
+          ['Colegul ți-a stricat desenul din greșeală.', 'Îi spun ce simt și îl ascult', 'Îi stric și eu desenul lui', 'Nu mai vorbesc deloc cu el', 'Ascultarea ne ajută să aflăm că a fost o greșeală.'],
+          ['Tu și o colegă vreți creionul roșu.', 'Îl folosim pe rând', 'Rup creionul în două', 'Îl ascund de ea', 'Pe rând, amândouă puteți colora.']],
+        [['Soluția propusă îi lasă mereu pe aceiași copii pe dinafară.', 'Căutăm o regulă bună pentru toți', 'Spunem că așa e regula și gata', 'Îi obligăm pe ei să accepte', 'O soluție bună nu lasă mereu aceiași copii fără rând.'],
+          ['Doi colegi se ceartă cine a fost primul la rând.', 'Hotărâm o regulă pentru rând', 'Cine strigă mai tare e primul', 'Ne împingem în față', 'O regulă clară oprește cearta.'],
+          ['Un coleg spune că ai trișat, dar nu e adevărat.', 'Explic calm ce am făcut', 'Îl împing', 'Îi spun că el trișează mereu', 'Explicația calmă ajută mai mult decât răzbunarea.'],
+          ['Grupul nu se înțelege ce joc să aleagă.', 'Facem un vot sau pe rând', 'Joc doar ce vreau eu', 'Plec și stric jocul', 'Votul sau rândul sunt moduri corecte de a decide.']],
+        [['Discuția devine amenințătoare și cineva împinge.', 'Ne îndepărtăm și chemăm un adult', 'Continuăm disputa cu orice preț', 'Răspundem tot prin împingere', 'Siguranța are prioritate față de rezolvarea fără adulți.'],
+          ['Doi prieteni se ceartă și fiecare vrea să fii de partea lui.', 'Îi ascult pe amândoi', 'Aleg pe cel mai puternic', 'Le spun altora secretele lor', 'Poți rămâne prieten cu amândoi și îi poți asculta.'],
+          ['Într-o ceartă ai spus ceva urât.', 'Îmi cer iertare', 'Spun că nu am vrut nimic', 'Aștept să uite', 'O scuză sinceră repară relația.'],
+          ['Un conflict se repetă în fiecare pauză.', 'Cerem ajutorul unui adult', 'Ne certăm în fiecare zi', 'Nu mai ieșim la pauză', 'Un adult ne poate ajuta să găsim o soluție care durează.']]
       ],
       boundaries: [
-        ['Vrei să îmbrățișezi un coleg.', 'Întreb și respect răspunsul', 'Îl îmbrățișez fără să întreb', 'Insist până acceptă', 'Întrebăm fără să insistăm. Dacă auzim „nu”, ne oprim.'],
-        ['Un coleg nu vrea să fie fotografiat.', 'Nu fac fotografia', 'O fac pe ascuns', 'Spun că refuzul nu contează', 'Respectăm refuzul unei fotografii.'],
-        ['Cineva îți cere să păstrezi un secret care te sperie.', 'Îl spun unui adult de încredere', 'Îl păstrez chiar dacă mă simt în pericol', 'Cred că este vina mea', 'Poți cere protecție. Nu ești responsabil pentru cererea nepotrivită a altcuiva.']
+        [['Vrei să îmbrățișezi un coleg.', 'Întreb și respect răspunsul', 'Îl îmbrățișez fără să întreb', 'Insist până acceptă', 'Întrebăm fără să insistăm. Dacă auzim „nu”, ne oprim.'],
+          ['Un coleg te gâdilă și tu nu mai vrei.', 'Spun clar „stop”', 'Râd și tac', 'Îl lovesc', 'Poți spune „stop”. Celălalt trebuie să se oprească.'],
+          ['Cineva vrea să se uite în ghiozdanul tău.', 'Spun dacă sunt de acord', 'Îl las, deși nu vreau', 'Îl împing', 'Lucrurile tale îți aparțin. Poți spune da sau nu.'],
+          ['Un coleg spune „nu vreau să mă joc acum”.', 'Respect ce a spus', 'Insist până acceptă', 'Îl trag de mână', 'Un „nu” se respectă.']],
+        [['Un coleg nu vrea să fie fotografiat.', 'Nu fac fotografia', 'O fac pe ascuns', 'Spun că refuzul nu contează', 'Respectăm refuzul unei fotografii.'],
+          ['O rudă vrea să te pupe, dar tu nu vrei.', 'Propun în loc un salut', 'Accept chiar dacă nu vreau', 'Fug și mă ascund', 'Poți alege cum saluți; un adult de încredere te susține.'],
+          ['Prietenul tău îți spune „nu” la un joc.', 'Accept și propun altceva', 'Mă supăr pe el', 'Insist mereu', 'Un prieten poate spune nu fără să piardă prietenia.'],
+          ['Un coleg vrea să-ți citească jurnalul.', 'Spun că este al meu', 'Îl las deși nu vreau', 'Îl rup', 'Jurnalul tău este privat.']],
+        [['Cineva îți cere să păstrezi un secret care te sperie.', 'Îl spun unui adult de încredere', 'Îl păstrez chiar dacă mi-e frică', 'Cred că este vina mea', 'Poți cere protecție. Nu ești responsabil pentru cererea nepotrivită a altcuiva.'],
+          ['Un adult necunoscut îți cere să mergi cu el.', 'Spun nu și merg la un adult cunoscut', 'Merg cu el dacă îmi dă dulciuri', 'Stau și ascult tot ce spune', 'Nu pleci cu necunoscuți. Mergi la un adult de încredere.'],
+          ['Cineva te atinge într-un fel care nu-ți place.', 'Spun nu și anunț un adult', 'Tac ca să nu se supere', 'Cred că e vina mea', 'Corpul tău îți aparține. Ai dreptul să spui nu și să ceri ajutor.'],
+          ['Ai spus nu, dar te simți vinovat.', 'Știu că am dreptul să spun nu', 'Mă răzgândesc ca să fie bine', 'Îmi cer iertare că am spus nu', 'Este în regulă să spui nu. Nu e nevoie să te simți vinovat.']]
       ],
       group: [
-        ['Grupul are trei propuneri de joc.', 'Ascultăm propunerile înainte de alegere', 'Aleg eu fără discuție', 'Nu las pe nimeni să propună', 'Participarea începe prin ascultarea variantelor.'],
-        ['Cei mai mulți aleg un joc la care un coleg nu poate participa.', 'Schimbăm jocul sau alegem unul la care poate participa și colegul', 'Spunem că votul rezolvă orice', 'Îl lăsăm mereu pe dinafară', 'Chiar dacă mulți aleg un joc, ne gândim și la colegul care nu poate participa.'],
-        ['Ați testat o regulă nouă, dar nu funcționează pentru toți.', 'O revizuim folosind observațiile grupului', 'O păstrăm doar fiindcă am votat-o', 'Îi învinovățim pe cei excluși', 'O decizie bună poate fi îmbunătățită după testare.']
+        [['Grupul are trei propuneri de joc.', 'Ascultăm toate propunerile', 'Aleg eu fără discuție', 'Nu las pe nimeni să spună', 'Decizia bună începe cu ascultarea.'],
+          ['Grupul face un desen împreună.', 'Fiecare desenează o parte', 'Desenez doar eu tot', 'Stric partea altora', 'Lucrul în echipă înseamnă că fiecare contribuie.'],
+          ['Echipa ta a pierdut un joc.', 'Îi încurajez pe colegi', 'Îl învinovățesc pe unul', 'Plec supărat', 'Încurajarea ajută echipa data viitoare.'],
+          ['Grupul trebuie să strângă jucăriile.', 'Ne împărțim treaba', 'Las pe alții să strângă', 'Le împrăștii mai tare', 'Împreună terminăm mai repede.']],
+        [['Cei mai mulți aleg un joc la care un coleg nu poate participa.', 'Alegem un joc pentru toți', 'Spunem că votul rezolvă orice', 'Îl lăsăm mereu pe dinafară', 'Chiar dacă mulți aleg un joc, ne gândim și la colegul care nu poate participa.'],
+          ['Un coleg are o idee bună, dar vorbește încet.', 'Îi cerem să o repete', 'Nu-l ascultăm', 'Spunem ideea ca a noastră', 'Fiecare idee merită ascultată, chiar dacă e spusă încet.'],
+          ['Echipa trebuie să aleagă un căpitan.', 'Votăm după ce ascultăm', 'Se alege singur cel mai înalt', 'Doar băieții pot fi căpitani', 'Oricine poate fi căpitan; alegem împreună.'],
+          ['Un coleg nu și-a făcut partea din proiect.', 'Îl întrebăm de ce și îl ajutăm', 'Îl dăm imediat afară din grup', 'Spunem tuturor că e un leneș', 'Întrebarea poate arăta o problemă pe care o rezolvăm împreună.']],
+        [['Ați testat o regulă nouă, dar nu merge pentru toți.', 'O schimbăm după ce vedem', 'O păstrăm, fiindcă am votat', 'Îi învinovățim pe cei excluși', 'O decizie bună poate fi îmbunătățită după testare.'],
+          ['În grup, doi copii decid mereu totul.', 'Propunem să decidem pe rând', 'Lăsăm tot așa, mereu', 'Ne certăm tare cu ei', 'Fiecare copil merită să participe la decizii.'],
+          ['Votul este egal: trei la trei.', 'Căutăm o soluție împreună', 'Decide cel care strigă', 'Renunțăm la joc', 'Când votul e egal, discutăm sau facem pe rând.'],
+          ['Un coleg are o părere diferită de a grupului.', 'Îl ascultăm și ne gândim', 'Îl obligăm să fie de acord', 'Râdem de părerea lui', 'O părere diferită poate aduce o idee nouă.']]
       ]
     };
     const story = item => {
@@ -604,6 +736,8 @@ const Engines = {
       }
       const tokens = list(Array.from(container.querySelectorAll('#round-content .token-pool button'), node => node.textContent));
       if (q.kind === 'arrange' && tokens) parts.push('Piesele de ordonat: ' + tokens + '.');
+      if (q.kind === 'hands-punctuate') parts.push('Propozițiile sunt: ' + q.sentences.map((text, i) => (i + 1) + ': ' + text + '.').join(' '));
+      if (q.kind === 'hands-routine') parts.push('Activitățile sunt: ' + list(q.cards.map(card => card.text)) + '.');
       return parts.join(' ');
     };
     const check = (correct, detail) => {
@@ -677,6 +811,7 @@ const Engines = {
       };
       const workshopKind = ['calculation', 'shape-select', 'geoboard', 'symmetry', 'fraction-paint', 'mosaic'].includes(q.kind);
       if (q.kind.indexOf('mission-') === 0) MissionGames.render(content, q, { button, check, announce, isSolved: () => solved });
+      else if (q.kind.indexOf('hands-') === 0) HandsOn.render(content, q, { button, check, announce, isSolved: () => solved });
       else if (workshopKind) MathWorkshop.render(content, q, { button, check, announce, isSolved: () => solved });
       else if (['choice', 'story'].includes(q.kind)) {
         if (q.balance) content.insertAdjacentHTML('beforeend', MathWorkshop.balanceHTML(q.balance));

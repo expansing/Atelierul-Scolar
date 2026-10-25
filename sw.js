@@ -22,6 +22,7 @@ const ASSETS = [
   'assets/js/speech.js',
   'assets/js/engines.js',
   'assets/js/math-games.js',
+  'assets/js/hands-on.js',
   'assets/js/discovery.js',
   'assets/js/render.js',
   'assets/js/dece.js',

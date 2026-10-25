@@ -67,6 +67,44 @@
         });
       } finally { Speech.supported = realSupported; }
     });
+    test('Hands-on games are solved by doing, reject wrong steps and work by tapping instead of dragging', () => {
+      const solvedNow = () => !fixture.querySelector('#game-next').hidden;
+      const attempt = (q, wrong, right) => {
+        const game = singleRound(q, () => {});
+        wrong();
+        assert(!solvedNow(), q.kind + ': o încercare greșită nu rezolvă sarcina');
+        right();
+        assert(solvedNow(), q.kind + ': rezolvarea corectă este acceptată');
+        game.dispose();
+      };
+      const tasks = [0, 1, 2].flatMap(level => HandsOn.deviceTasks(level));
+      const single = tasks.find(t => t.kind === 'hands-click' && !t.double), double = tasks.find(t => t.kind === 'hands-click' && t.double);
+      attempt(single, () => fixture.querySelector('.hands-target[data-goal="false"]').click(), () => fixture.querySelector('.hands-target[data-goal="true"]').click());
+      attempt(double, () => fixture.querySelector('.hands-target[data-goal="true"]').click(), () => fixture.querySelector('.hands-target[data-goal="true"]').click());
+      const sentence = tasks.find(t => t.kind === 'hands-type' && t.exact);
+      attempt(sentence, () => { fixture.querySelector('#hands-input').value = sentence.target.slice(0, -1); click('Verifică');
+        assert(fixture.querySelector('#game-feedback').textContent.includes('punctul'), 'mesajul numește punctul lipsă'); },
+      () => { fixture.querySelector('#hands-input').value = sentence.target; click('Verifică'); });
+      const sort = HandsOn.deviceTasks(2).find(t => t.kind === 'hands-drag');
+      attempt(sort, () => { fixture.querySelectorAll('.hands-target')[0].click(); fixture.querySelector('.hands-zone[data-zone="' + (1 - sort.items[0].zone) + '"]').click(); },
+        () => sort.items.forEach((item, i) => { fixture.querySelectorAll('.hands-target')[i].click(); fixture.querySelector('.hands-zone[data-zone="' + item.zone + '"]').click(); }));
+      const marks = HandsOn.punctuationTasks(1)[0];
+      const put = list => { list.forEach((mark, i) => { fixture.querySelector('.hands-mark[data-mark="' + mark + '"]').click(); fixture.querySelector('.hands-slot[data-slot="' + i + '"]').click(); }); click('Verifică semnele'); };
+      attempt(marks, () => put(marks.marks.map(m => m === '.' ? '?' : '.')), () => put(marks.marks));
+      const day = HandsOn.routineTasks(0)[0], fixedCard = day.cards.findIndex(card => card.allowed.length === 1);
+      attempt(day, () => {
+        day.cards.forEach((card, i) => {
+          const slot = i === fixedCard ? [0, 1, 2].find(s => !card.allowed.includes(s)) : card.allowed[0];
+          fixture.querySelector('.hands-card[data-card="' + i + '"]').click(); fixture.querySelector('.hands-zone[data-slot="' + slot + '"]').click();
+        });
+        click('Verifică planul');
+        fixture.querySelector('.hands-card[data-card="' + fixedCard + '"]').click(); // îl readuce în listă
+      }, () => {
+        fixture.querySelector('.hands-card[data-card="' + fixedCard + '"]').click();
+        fixture.querySelector('.hands-zone[data-slot="' + day.cards[fixedCard].allowed[0] + '"]').click();
+        click('Verifică planul');
+      });
+    });
     test('All complete rounds and selected game sessions can be completed through their real controls', () => {
       const factory = Engines.rounds;
       let questions;
@@ -172,11 +210,13 @@
                 hour.dispatchEvent(new Event('change')); minute.dispatchEvent(new Event('change')); click('Verifică ceasul');
               } else if (q.kind === 'robot') {
                 click('Șterge programul');
-                if (q.repeat) {
-                  const repetitions = fixture.querySelector('[aria-label="Număr de repetări"]');
-                  repetitions.value = q.goal.y; click('Jos'); repetitions.value = '1';
-                } else for (let i = 0; i < q.goal.y; i++) click('Jos');
-                for (let i = 0; i < q.goal.x; i++) click('Dreapta');
+                const repetitions = fixture.querySelector('[aria-label="Număr de repetări"]');
+                const move = (label, count) => {
+                  if (!count) return;
+                  if (q.repeat) { repetitions.value = String(count); click(label); repetitions.value = '1'; }
+                  else for (let i = 0; i < count; i++) click(label);
+                };
+                move('Jos', q.goal.y); move('Dreapta', q.goal.x);
                 for (let i = 0; i < q.goal.x + q.goal.y; i++) click('Execută un pas');
                 click('Verifică destinația');
               } else if (q.kind === 'writing') {
@@ -204,6 +244,18 @@
                   if (!hide.hidden) hide.click();
                 }
                 assert(safety < 100, 'Memoria poate fi încheiată');
+              } else if (q.kind === 'hands-click') {
+                const goal = fixture.querySelector('.hands-target[data-goal="true"]'); goal.click(); if (q.double) goal.click();
+              } else if (q.kind === 'hands-drag') {
+                q.items.forEach((item, i) => { fixture.querySelectorAll('.hands-target')[i].click(); fixture.querySelector('.hands-zone[data-zone="' + item.zone + '"]').click(); });
+              } else if (q.kind === 'hands-type') {
+                fixture.querySelector('#hands-input').value = q.target; click('Verifică');
+              } else if (q.kind === 'hands-punctuate') {
+                q.marks.forEach((mark, i) => { fixture.querySelector('.hands-mark[data-mark="' + mark + '"]').click(); fixture.querySelector('.hands-slot[data-slot="' + i + '"]').click(); });
+                click('Verifică semnele');
+              } else if (q.kind === 'hands-routine') {
+                q.cards.forEach((card, i) => { fixture.querySelector('.hands-card[data-card="' + i + '"]').click(); fixture.querySelector('.hands-zone[data-slot="' + card.allowed[0] + '"]').click(); });
+                click('Verifică planul');
               } else if (q.kind.indexOf('mission-') !== 0) throw new Error('Tip netestat: ' + q.kind);
               assert(!fixture.querySelector('#game-next').hidden, activity.id + ': rezolvarea este acceptată');
               click('Continuă');
@@ -579,7 +631,7 @@
         assert(fixture.querySelector('#panel-parinte').textContent.includes('fără ridiculizare, pedeapsă'), 'Îndrumare explicită pentru adult');
       });
     });
-    test('All 54 thinking cases allow correction and explain the evidence rather than demand obedience', () => {
+    test('All thinking cases allow correction and explain the evidence rather than demand obedience', () => {
       THINKING_PATH.activities.forEach(id => {
         const activity = ACTIVITIES.find(item => item.id === id);
         for (let level = 0; level < 3; level++) {
