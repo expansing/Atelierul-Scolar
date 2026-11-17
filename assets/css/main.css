@@ -497,3 +497,15 @@ legend { font-weight: bold; max-width: 100%; }
 
 .grade-chip { font-weight: 700; border: 1px solid var(--border); }
 .grade-chip-text { font-weight: 700; color: var(--text); }
+
+/* cutii de câte zece pentru trecerea peste zece */
+.ten-frames { margin: 0.8rem auto; text-align: center; }
+.ten-frames svg { width: 100%; max-width: 560px; height: auto; }
+.tf-box { fill: var(--bg-soft); stroke: var(--border); stroke-width: 2; }
+.tf-bar { fill: #7fb2ff; stroke: #3b6fc4; stroke-width: 2; }
+.tf-bar-text { font: 700 13px var(--font-reading, sans-serif); fill: #13213d; }
+.tf-have { fill: #7fb2ff; stroke: #3b6fc4; stroke-width: 2; }
+.tf-add { fill: #f4a261; stroke: #a3561f; stroke-width: 2; }
+.tf-empty { fill: none; stroke: var(--border); stroke-width: 2; stroke-dasharray: 3 3; }
+.tf-gone { opacity: 0.35; }
+.tf-cross { stroke: #e05a5a; stroke-width: 3; stroke-linecap: round; }

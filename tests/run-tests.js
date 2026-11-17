@@ -200,9 +200,13 @@ test('Visual arithmetic, measurement, fractions, shopping and balance agree with
       if (q.kind === 'calculation') q.fields.forEach(field => assert(Number.isInteger(field.answer) && field.answer >= 0));
       if (i % 5 === 4 && level > 0) {
         const operands = q.numberCard.match(/^(\d+) [−+] (\d+)/), a = Number(operands[1]), b = Number(operands[2]);
-        assert.strictEqual(q.fields[0].answer + q.fields[1].answer, b);
+        const first = q.fields[0].answer;
+        assert(b <= 9 && b > first, 'al doilea număr are o cifră și trece peste zece: ' + q.numberCard);
+        assert.strictEqual(first + q.fields[1].answer, b);
         assert.strictEqual(q.fields[2].answer, mode === 'add' ? a + b : a - b);
-        assert.strictEqual((mode === 'add' ? a + q.fields[0].answer : a - q.fields[0].answer) % 10, 0);
+        assert.strictEqual((mode === 'add' ? a + first : a - first) % 10, 0);
+        assert.strictEqual(JSON.stringify(q.tenFrames), JSON.stringify({ start: a, change: b, subtract: mode === 'subtract' }));
+        assert(data.MathWorkshop.tenFramesHTML(q.tenFrames).includes('<svg'));
       }
     });
   }

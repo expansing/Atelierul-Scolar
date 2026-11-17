@@ -20,13 +20,18 @@ const MathWorkshop = {
     const subtract = mode === 'subtract', limit = [10, 30, 100][level];
     if (level > 0 && index % 5 === 4) {
       const units = Engines.randInt(3, 8), base = (level === 1 ? 1 : Engines.randInt(1, 7)) * 10, a = base + units;
-      const gap = subtract ? units : 10 - units, b = Engines.randInt(gap + 1, gap + 5), answer = subtract ? a - b : a + b;
-      return this.calculation('Calculează în doi pași: ' + a + (subtract ? ' − ' : ' + ') + b + '. Ajungi întâi la ' + (subtract ? base : base + 10) + ', apoi continui cu ce a rămas.',
-        [{ label: 'Cât ' + (subtract ? 'scazi' : 'adaugi') + ' întâi ca să ajungi la ' + (subtract ? base : base + 10) + '?', answer: gap },
-          { label: 'Cât mai rămâne de ' + (subtract ? 'scăzut' : 'adăugat') + '?', answer: b - gap }, { label: 'Rezultatul final', answer }],
-        b + ' = ' + gap + ' + ' + (b - gap) + '. ' + a + (subtract ? ' − ' : ' + ') + gap + ' = ' + (subtract ? base : base + 10) +
-          ', apoi ' + (subtract ? base + ' − ' : (base + 10) + ' + ') + (b - gap) + ' = ' + answer + '.',
-        'Caută cât lipsește până la numărul care se termină cu 0. Folosește doar partea rămasă în al doilea pas.', { numberCard: a + (subtract ? ' − ' : ' + ') + b + ' → ' + (subtract ? base : base + 10) + ' → ?' });
+      // al doilea număr are o singură cifră și trece peste zece (13 + 9, nu 13 + 10); cutiile de câte zece arată pașii
+      const gap = subtract ? units : 10 - units, b = Engines.randInt(gap + 1, 9), answer = subtract ? a - b : a + b;
+      const sign = subtract ? ' − ' : ' + ', ten = subtract ? base : base + 10, rest = b - gap;
+      const frames = { start: a, change: b, subtract };
+      if (subtract) return this.calculation('Ai ' + a + ' buline și iei ' + b + '. Golește întâi cutia începută, apoi iei restul din cutia plină.',
+        [{ label: a + ' − □ = ' + ten, answer: gap }, { label: a + ' − ' + b + ' = ' + ten + ' − □', answer: rest }, { label: a + ' − ' + b + ' = □', answer }],
+        'În cutia începută sunt ' + gap + '. ' + a + ' − ' + gap + ' = ' + ten + '. Din ' + b + ' mai ai de luat ' + rest + ': ' + ten + ' − ' + rest + ' = ' + answer + '.',
+        'Numără bulinele tăiate din cutia începută. Apoi numără câte buline albastre au rămas.', { tenFrames: frames, numberCard: a + sign + b + ' = □' });
+      return this.calculation('Ai ' + a + ' buline albastre și pui ' + b + ' portocalii. Umple întâi cutia începută, apoi pune restul în cutia nouă.',
+        [{ label: a + ' + □ = ' + ten, answer: gap }, { label: a + ' + ' + b + ' = ' + ten + ' + □', answer: rest }, { label: a + ' + ' + b + ' = □', answer }],
+        'În cutia începută încap ' + gap + ': ' + a + ' + ' + gap + ' = ' + ten + '. Din ' + b + ' au mai rămas ' + rest + ': ' + ten + ' + ' + rest + ' = ' + answer + '.',
+        'Numără căsuțele care erau goale în cutia începută. Apoi numără toate bulinele.', { tenFrames: frames, numberCard: a + sign + b + ' = □' });
     }
     const a = Engines.randInt(level === 0 ? 3 : 12, limit - 1);
     const b = Engines.randInt(1, subtract ? Math.min(a - 1, [5, 12, 35][level]) : Math.min(limit - a, [5, 12, 35][level]));
@@ -232,6 +237,40 @@ const MathWorkshop = {
       pan(110, leftY, 'left', data.left) + pan(350, rightY, 'right', data.right) +
       '<circle cx="230" cy="105" r="7" fill="#34415e"/><rect x="180" y="286" width="100" height="12" rx="6" fill="#34415e"/></svg>';
   },
+  // cutii de câte zece: zecile pline ca bare, apoi cutia începută și cutia următoare, cu bulinele adăugate sau tăiate
+  tenFramesHTML(data) {
+    const { start, change, subtract } = data, tens = Math.floor(start / 10), units = start % 10;
+    const fullBars = subtract ? tens - 1 : tens, boxes = [];
+    if (subtract) {
+      const fromFull = change - units;
+      boxes.push(Array.from({ length: 10 }, (_, i) => i < 10 - fromFull ? 'have' : 'gone'));
+      boxes.push(Array.from({ length: 10 }, (_, i) => i < units ? 'gone' : 'empty'));
+    } else {
+      const fill = 10 - units, rest = change - fill;
+      boxes.push(Array.from({ length: 10 }, (_, i) => i < units ? 'have' : 'add'));
+      boxes.push(Array.from({ length: 10 }, (_, i) => i < rest ? 'add' : 'empty'));
+    }
+    const cell = 30, boxW = 5 * cell + 12, barW = 22, gap = 14;
+    const width = fullBars * (barW + 8) + (fullBars ? gap : 0) + 2 * boxW + gap;
+    let x = 0, svg = '';
+    for (let i = 0; i < fullBars; i++, x += barW + 8) {
+      svg += '<rect x="' + x + '" y="4" width="' + barW + '" height="' + (2 * cell + 8) + '" rx="6" class="tf-bar"/>' +
+        '<text x="' + (x + barW / 2) + '" y="' + (cell + 10) + '" text-anchor="middle" class="tf-bar-text">10</text>';
+    }
+    if (fullBars) x += gap;
+    boxes.forEach(box => {
+      svg += '<rect x="' + x + '" y="2" width="' + boxW + '" height="' + (2 * cell + 12) + '" rx="8" class="tf-box"/>';
+      box.forEach((state, i) => {
+        const cx = x + 6 + (i % 5) * cell + cell / 2, cy = 8 + Math.floor(i / 5) * cell + cell / 2;
+        if (state === 'empty') svg += '<circle cx="' + cx + '" cy="' + cy + '" r="10" class="tf-empty"/>';
+        else svg += '<circle cx="' + cx + '" cy="' + cy + '" r="11" class="tf-' + (state === 'gone' ? 'have tf-gone' : state) + '"/>' +
+          (state === 'gone' ? '<path d="M' + (cx - 9) + ' ' + (cy - 9) + 'L' + (cx + 9) + ' ' + (cy + 9) + 'M' + (cx + 9) + ' ' + (cy - 9) + 'L' + (cx - 9) + ' ' + (cy + 9) + '" class="tf-cross"/>' : '');
+      });
+      x += boxW + gap;
+    });
+    const label = subtract ? start + ' buline, din care ' + change + ' sunt tăiate.' : start + ' buline albastre și ' + change + ' portocalii, în cutii de câte zece.';
+    return '<div class="ten-frames"><svg viewBox="-2 0 ' + (width + 2) + ' ' + (2 * cell + 16) + '" role="img" aria-label="' + label + '">' + svg + '</svg></div>';
+  },
   balanceHTML(data) {
     const unknown = data.concealed ? ' + ' + Array(data.unknowns || 1).fill('?').join(' + ') : '';
     return '<div class="balance-model">' + this.balanceSVG(data) + '<div class="balance-readings">' +
@@ -243,6 +282,7 @@ const MathWorkshop = {
     const { button, check, announce, isSolved } = api;
     if (q.ruler) content.insertAdjacentHTML('beforeend', this.rulerHTML(q.ruler));
     if (q.balance) content.insertAdjacentHTML('beforeend', this.balanceHTML(q.balance));
+    if (q.tenFrames) content.insertAdjacentHTML('beforeend', this.tenFramesHTML(q.tenFrames));
     if (q.bars) content.insertAdjacentHTML('beforeend', '<div class="part-whole" aria-label="Două părți ale aceluiași întreg">' + q.bars.map(value => '<span style="flex:' + value + '">' + value + '</span>').join('') + '</div>');
     if (q.numberCard) { const note = document.createElement('p'); note.className = 'math-postcard'; note.textContent = q.numberCard; content.appendChild(note); }
     if (q.products) {
