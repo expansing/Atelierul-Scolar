@@ -1,12 +1,16 @@
 /* Citire vocală comună (explicația lecției și jocurile).
-   Folosește numai o voce română locală: textul nu pleacă de pe dispozitiv. */
+   Folosește întâi o voce română de pe dispozitiv; dacă nu există, vocea română online
+   a browserului. Se citesc numai textele lecțiilor. */
 const Speech = {
   supported() {
     return typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
   },
   // vocile se încarcă asincron în unele browsere: așteptăm scurt evenimentul voiceschanged
   voice() {
-    const pick = () => window.speechSynthesis.getVoices().find(v => /^ro(?:-|_)/i.test(v.lang) || v.lang === 'ro');
+    const pick = () => {
+      const voices = window.speechSynthesis.getVoices().filter(v => /^ro(?:-|_)/i.test(v.lang) || v.lang === 'ro');
+      return voices.find(v => v.localService) || voices[0]; // întâi vocea de pe dispozitiv
+    };
     const now = pick();
     if (now || window.speechSynthesis.getVoices().length) return Promise.resolve(now || null);
     return new Promise(resolve => {
@@ -30,7 +34,8 @@ const Speech = {
     window.speechSynthesis.cancel();
     const voice = await this.voice();
     if (!voice) return 'Browserul nu are o voce română disponibilă. Poți instala una din setările dispozitivului; textul rămâne disponibil pentru citire.';
-    if (!voice.localService) return 'Vocea română disponibilă folosește un serviciu online. Atelierul nu pornește această voce, pentru a păstra textul pe dispozitiv.';
+    // Fără voce română pe dispozitiv folosim vocea online a browserului, ca un copil care
+    // citește greu să nu rămână blocat. Se citesc numai textele lecțiilor, nu ce scrie copilul.
     const speech = new SpeechSynthesisUtterance(text);
     speech.lang = 'ro-RO'; speech.voice = voice; speech.rate = 0.85;
     speech.onend = () => { if (on.end) on.end(); };

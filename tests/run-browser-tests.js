@@ -13,20 +13,33 @@ const TIMEOUT_MS = 180000;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.ttf': 'font/ttf', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8' };
 
-function findBrowser() {
-  if (process.env.BROWSER) return process.env.BROWSER;
+// Toate browserele găsite, în ordinea încercării. Dacă unul nu pornește (de exemplu
+// Firefox instalat ca snap, lansat dintr-un mediu restricționat), se încearcă următorul.
+function findBrowsers() {
+  if (process.env.BROWSER) return [process.env.BROWSER];
+  const found = [];
   for (const name of ['google-chrome', 'google-chrome-stable', 'chromium', 'chromium-browser', 'firefox']) {
-    try { return execFileSync('which', [name], { encoding: 'utf8' }).trim(); } catch (error) { /* nu există */ }
+    try { found.push(execFileSync('which', [name], { encoding: 'utf8' }).trim()); } catch (error) { /* nu există */ }
   }
-  return null;
+  // Chromium fără fereastră descărcat de Playwright, dacă există pe acest calculator
+  const cache = path.join(require('os').homedir(), '.cache', 'ms-playwright');
+  try {
+    fs.readdirSync(cache).filter(dir => dir.startsWith('chromium_headless_shell-')).sort().reverse().forEach(dir => {
+      const file = path.join(cache, dir, 'chrome-headless-shell-linux64', 'chrome-headless-shell');
+      if (fs.existsSync(file)) found.push(file);
+    });
+  } catch (error) { /* fără Playwright */ }
+  return found;
 }
 
 function browserArgs(executable, profile, url) {
   if (/firefox/i.test(path.basename(executable))) return ['-headless', '-no-remote', '-profile', profile, url];
+  if (/headless-shell/i.test(path.basename(executable))) return ['--disable-gpu', '--no-sandbox', '--user-data-dir=' + profile, '--remote-debugging-port=0', url];
   return ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--user-data-dir=' + profile, url];
 }
 
-const executable = findBrowser();
+const candidates = findBrowsers();
+let executable = candidates.shift();
 if (!executable) {
   console.error('Nu am găsit un browser. Instalează Chrome, Chromium sau Firefox, sau setează BROWSER=/cale/către/browser.');
   process.exit(2);
@@ -86,11 +99,23 @@ function report(results) {
 
 server.listen(0, '127.0.0.1', () => {
   const url = 'http://127.0.0.1:' + server.address().port + '/tests/browser.html?report=1';
-  browser = spawn(executable, browserArgs(executable, profile, url), { stdio: 'ignore', detached: true });
-  browser.on('error', error => {
-    console.error('Browserul nu a pornit: ' + error.message);
-    finished = true; cleanup(); process.exitCode = 2;
-  });
+  const launch = () => {
+    let output = '';
+    const started = Date.now();
+    browser = spawn(executable, browserArgs(executable, profile, url), { stdio: ['ignore', 'ignore', 'pipe'], detached: true });
+    browser.stderr.on('data', chunk => { if (output.length < 2000) output += chunk; });
+    const failed = reason => {
+      if (finished) return;
+      console.error(path.basename(executable) + ' nu a pornit: ' + reason + (output.trim() ? '\n' + output.trim() : ''));
+      executable = candidates.shift();
+      if (executable) { console.error('Încerc cu ' + executable + '…'); launch(); return; }
+      finished = true; cleanup(); process.exitCode = 2;
+    };
+    browser.on('error', error => failed(error.message));
+    // un browser care se închide singur în primele secunde, cu eroare, nu a rulat testele
+    browser.on('exit', code => { if (code && Date.now() - started < 15000) failed('s-a închis cu codul ' + code + '.'); });
+  };
+  launch();
   setTimeout(() => {
     if (finished) return;
     finished = true;

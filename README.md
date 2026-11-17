@@ -1,6 +1,19 @@
 # Atelierul Școlar
 
-Atelier educațional static, în limba română, pentru copii de **6–8 ani** și adulții care îi sprijină. Nu necesită cont, server de aplicație, build sau pachete externe.
+Atelier educațional static, în limba română, pentru copii de **6–8 ani** (revizuit în noiembrie 2026 pentru 7–8 ani, clasele I–II) și adulții care îi sprijină. Nu necesită cont, server de aplicație, build sau pachete externe.
+
+## Revizia din noiembrie 2026 (pentru un copil de 7–8 ani)
+
+- **95 de lecții** (erau 76): 9 de matematică (înmulțire, împărțire, numere până la 1000, comparare, bani, tabele, calendar, litru și kilogram, corpuri geometrice), 6 de limba română (linia de dialog, mp/mb/x, într-o/s-a/s-au, texte mai lungi, bilete și invitații, alfabet) și 4 de științe (Pământ și Soare, relief și ape, magneți/electricitate/sunet, nevoile viețuitoarelor). Lecțiile noi au doar jocul lecției, fără cele trei jocuri suplimentare.
+- **Jocul este prima filă.** Lecția are trei file: Joacă, Descoperă, Pentru adulți (obiective, întrebări, sprijin, progres). Jocurile de investigație, reparație și planificare sunt sub „Alte jocuri”.
+- **Răspuns greșit:** varianta aleasă este numită și tăiată, apoi apare un indiciu; când rămâne o singură variantă, apare explicația. Un indiciu general taie o variantă greșită.
+- **Steaua:** cel puțin 75% din prima, fără indiciu (3 din 4), nu 80%.
+- **Jocuri schimbate:** `log-2` (ghicitori cu indicii), `log-4` (sortare în grupe), `log-6` (tabele cu imagini), `log-7` (șiruri cu imagini), `inf-2` (atingere și taste de scris, fără Tab).
+- **Texte:** cerințele de matematică sunt rescrise scurt și fără semnul × în afara lecției de înmulțire; fiecare lecție are un rând scurt pentru copil (`KID` în `data.js`).
+- **Teste în browser:** `npm run test:browser` afișează eroarea browserului care nu pornește și încearcă următorul găsit, inclusiv Chromium-ul fără fereastră din `~/.cache/ms-playwright`.
+- **Povești:** variantele greșite caraghioase din 87 de povești au fost înlocuite cu alegeri tentante, dar nepotrivite.
+- **Citire vocală:** se folosește întâi vocea română de pe dispozitiv; dacă lipsește, vocea română online a browserului (se trimit doar textele lecțiilor). Fără nicio voce română, butonul explică limitarea.
+- **Emoji:** au rămas doar emoji vechi, care se văd și pe tablete cu Android 8.
 
 ## Pornire
 
@@ -15,24 +28,24 @@ Servit prin `http(s)`, atelierul funcționează și **fără internet** după pr
 
 ## Conținut
 
-**76 de activități, fiecare cu trei niveluri deschise** — Descopăr, Exersez, Provocare — și un traseu suplimentar cu 11 opriri despre învățare.
+**95 de activități, fiecare cu trei niveluri deschise** — Descopăr, Exersez, Provocare — și un traseu suplimentar cu 11 opriri despre învățare.
 
 | Disciplină | Activități |
 |---|---:|
-| Matematică | 12 |
-| Limba română | 14 |
+| Matematică | 21 |
+| Limba română | 20 |
 | Logică și gândire | 14 |
 | Informatică | 9 |
-| Științe și natură | 10 |
+| Științe și natură | 14 |
 | Dezvoltare personală | 17 |
 
-**Citire vocală în jocuri.** Lângă fiecare sarcină, butonul „🔊 Ascultă” citește cerința și variantele numerotate, iar după răspuns „🔊 Ascultă mesajul” citește explicația. Se folosește numai o voce română instalată pe dispozitiv; textul nu este trimis nicăieri. Jocurile cu sunete (de exemplu „Litere și sunete”) arată o imagine, iar cuvântul scris apare doar la cererea adultului. Fără voce română, adultul citește cuvântul cu voce tare.
+**Citire vocală în jocuri.** Lângă fiecare sarcină, butonul „🔊 Ascultă” citește cerința și variantele numerotate, iar după răspuns „🔊 Ascultă mesajul” citește explicația. Se folosește întâi o voce română instalată pe dispozitiv. Dacă lipsește, se folosește vocea română online a browserului, căreia i se trimit doar textele lecțiilor. Jocurile cu sunete (de exemplu „Litere și sunete”) arată o imagine, iar cuvântul scris apare doar la cererea adultului. Fără voce română, adultul citește cuvântul cu voce tare.
 
 **Jocuri practice.** Trei lecții se rezolvă făcând, nu alegând o variantă: „Mouse-ul și tastatura” (clic, dublu-clic, tragere, scriere, ștergere cu ⌫), „Atelierul de punctuație” (copilul pune semnul de la finalul fiecărei propoziții) și „Rutina mea” (copilul își așază activitățile dimineața, după-amiaza sau seara; activitățile fără moment fix pot sta oriunde). Orice tragere se poate face și prin două atingeri, deci merge pe tabletă și cu tastatura. Sarcinile se generează la fiecare joc, iar jocul se încheie cu o întrebare din lecție (`assets/js/hands-on.js`).
 
 **Sarcini diferite la reluare.** Un nivel poate avea mai multe sarcini decât rundele unui joc (`rounds`, iar la perechi `show`); la fiecare joc se aleg altele. Validatorul respinge întrebările în care varianta corectă se recunoaște după lungime (cu cel puțin două cuvinte mai lungă decât celelalte) sau în care o variantă are peste 8 cuvinte la nivelurile Descopăr și Exersez. Verificarea citește și sarcinile generate (povești, experimente, lecturi).
 
-Fiecare dintre cele 76 de lecții include explicații suplimentare proprii, cel puțin două noțiuni definite, o rezolvare în minimum trei pași vizibili, patru obiective concrete și patru întrebări de reflecție cu sprijin pentru formularea răspunsului. Sunt păstrate explorarea cu materiale, pașii ghidați, autocontrolul, capcana de evitat și îndrumările pentru adulți. Copilul poate alege materiale, repeta și schimba nivelul fără blocaje sau cronometru.
+Fiecare dintre cele 95 de lecții include explicații suplimentare proprii, cel puțin două noțiuni definite, o rezolvare în minimum trei pași vizibili, patru obiective concrete și patru întrebări de reflecție cu sprijin pentru formularea răspunsului. Sunt păstrate explorarea cu materiale, pașii ghidați, autocontrolul, capcana de evitat și îndrumările pentru adulți. Copilul poate alege materiale, repeta și schimba nivelul fără blocaje sau cronometru.
 
 „Descoperă” este un caiet vizual: copertă ilustrată, cartonașe tematice, masă de explorare, rezolvare cu pași vizibili, notiță de verificare și activitate practică. Ilustrațiile SVG sunt originale și locale. La matematică, copilul poate desface un grup de zece, roti o formă, muta reperele riglei, regla ceasul, echilibra cantități, modifica un buget sau colora optimi. Aceste explorări nu dau stele. La celelalte discipline, opririle interactive invită la predicție, reprezentare și explicarea pașilor lecției. Toate barele numerice au și butoane plus/minus de minimum 48 px; valorile, pașii și limitele sunt aceleași prin atingere, tragere sau tastatură.
 
@@ -84,14 +97,14 @@ Indiciile au două trepte: orientare, apoi explicația verificării. După o gre
 
 ### Alegerea jocului
 
-**Fiecare dintre cele 76 de lecții are minimum patru jocuri distincte**, afișate prin cartonașe cu titlu și obiectiv:
+**Cele 76 de lecții inițiale au câte patru jocuri distincte** (cele 19 adăugate în noiembrie 2026 au doar jocul lecției), afișate prin cartonașe cu titlu și obiectiv:
 
 1. Jocul inițial al lecției, cu mecanicile și evaluarea deja existente.
 2. **Investigație:** copilul alege toate informațiile relevante pentru întrebarea dintr-o poveste și lasă deoparte detaliile adevărate, dar fără legătură.
 3. **Reparație:** găsește unicul pas greșit dintr-o rezolvare și alege o înlocuire corectă. Identificarea locului și corectarea sunt verificate separat în aceeași încercare.
 4. **Construcție și verificare:** construiește un plan în trei pași din patru cartonașe, apoi alege o verificare a rezultatului. Un plan corect nu încheie jocul fără verificarea finală.
 
-Cele trei mecanici noi au titluri și situații redactate pentru fiecare lecție: **228 de jocuri noi**, susținute de **228 de cazuri distincte** (trei cazuri pentru fiecare lecție, câte unul pentru fiecare nivel). Cele trei mecanici lucrează diferit asupra cazului ales. Reluarea repetă același caz, cu opțiuni reordonate; schimbarea nivelului aduce altă situație, nu doar o amestecare a răspunsurilor. Nu promitem generare infinită de cazuri.
+Cele trei mecanici au titluri și situații redactate pentru fiecare dintre cele 76 de lecții inițiale: **228 de jocuri noi**, susținute de **228 de cazuri distincte** (trei cazuri pentru fiecare lecție, câte unul pentru fiecare nivel). Cele trei mecanici lucrează diferit asupra cazului ales. Reluarea repetă același caz, cu opțiuni reordonate; schimbarea nivelului aduce altă situație, nu doar o amestecare a răspunsurilor. Nu promitem generare infinită de cazuri.
 
 Investigațiile, reparațiile și planurile sunt practică fără stele și nu modifică rezultatele salvate. Cazurile de dezvoltare personală verifică informații și acțiuni din povești fictive, nu emoțiile, preferințele, supunerea ori experiențele copilului. Planurile urmăresc dependențe explicite sau ordinea anunțată în poveste; nu impun o singură rutină pentru toate familiile.
 
@@ -121,7 +134,7 @@ Exportul/importul include preferințele. Fișierele vechi fără setări sunt ac
 
 - **Parcurs:** explicația a fost marcată ca citită; nu acordă stele.
 - **Exersat:** s-a încheiat cel puțin o rundă.
-- **Stea de independență:** minimum 80% din sarcini rezolvate din prima, fără niciun indiciu, într-o rundă evaluată obiectiv. Repetarea nu dublează steaua.
+- **Stea de independență:** minimum 75% din sarcini rezolvate din prima (3 din 4), fără niciun indiciu, într-o rundă evaluată obiectiv. Repetarea nu dublează steaua.
 - **Stăpânit:** toate cele trei niveluri ale activității au stea.
 - **Scrierea liberă:** verificări limitate de formă și listă de autoevaluare, fără certificare automată a sensului sau gramaticii și fără stele de competență.
 - **Memoria:** exercițiu de strategie, fără notă sau certificare a inteligenței. Rămâne „Exersat”.
@@ -142,7 +155,7 @@ Erorile de stocare sunt afișate. Dacă salvarea nu funcționează, progresul r�
 - Taburi cu stări ARIA și navigare prin săgeți, Home și End.
 - Mesaje de feedback anunțate cititoarelor de ecran; descrieri pentru forme, ceas și grilă.
 - Aspect adaptat de la 320 px, temă luminoasă/întunecată și reducerea animațiilor prin preferința sistemului.
-- Citirea explicațiilor este opțională și folosește numai o voce română locală, dacă browserul oferă una. Dacă nu există, aplicația explică limitarea.
+- Citirea explicațiilor este opțională și folosește întâi o voce română locală; dacă nu există, vocea română online a browserului. Fără nicio voce română, aplicația explică limitarea.
 - Fontul cursiv opțional **Playwrite RO** este inclus local, cu diacriticele românești și tabelele pentru legarea literelor verificate. Se bazează pe cercetarea scrisului de mână predat în România. Nu este un font oficial al Ministerului Educației, iar modelele din manuale pot avea mici diferențe. Nu se aplică îngroșare sau înclinare artificială. Secțiunea pentru adulți, profilurile, controalele de setări, cifrele tehnice și etichetele balanței folosesc fonturi de sistem pentru lizibilitate.
 - Fără servicii de analiză, cereri către Google Fonts sau trimiterea rezultatelor și textelor scrise către un server. Textele libere nu se salvează în progres.
 - Exemplele de experimente sunt modele simplificate; activitățile reale cer supravegherea adultului și nu folosesc apă fierbinte sau substanțe necunoscute.
@@ -155,7 +168,7 @@ Necesită Node.js 12 sau mai nou. Nu sunt necesare instalări.
 
 ```bash
 npm run check         # sintaxă, structură, conținut generat, teste de regresie
-npm run validate      # 76 de lecții, 228 de niveluri, 11 opriri și legături vechi
+npm run validate      # 95 de lecții, 285 de niveluri, 11 opriri și legături vechi
 npm test              # teste Node fără dependențe
 npm run test:browser  # testele DOM într-un browser fără fereastră
 ```
@@ -166,7 +179,7 @@ Verificările DOM se pot deschide și manual: [tests/browser.html](tests/browser
 
 Testele Node verifică 22.800 de eșantioane lecție–nivel, soluțiile și limitele grilelor, pavarea completă, operațiile în pași, rigla, fracțiile, bugetele și prezența efectivă a glifelor ĂăÂâÎîȘșȚț în font. Verifică și izolarea preferințelor între profiluri, păstrarea progresului la redenumire, persistența, migrarea, importul/exportul, respingerea setărilor invalide și structura traseului de gândire.
 
-Suita DOM parcurge 228 de runde complete, 111 variante suplimentare și 684 de sesiuni ale celor trei mecanici noi: **1.023 de sesiuni în total**. Verifică și corectarea dovezilor, locul și înlocuirea erorii, eliminarea unui pas nepotrivit, ordinea planului și verificarea finală obligatorie. Verifică marcarea practicii fără stele, vocabularul și rezolvările vizibile pentru toate lecțiile, cele patru obiective/reflecții și distanțele reale dintre cartonașele din stânga. Testele Node verifică și că selecția produce exclusiv mecanica cerută, respectă limitele de nivel și respinge explicit opțiunile inexistente.
+Suita DOM parcurge 285 de runde complete (95 de lecții × 3 niveluri), variantele suplimentare și 684 de sesiuni ale celor trei mecanici noi: **peste 1.000 de sesiuni în total**. Verifică și corectarea dovezilor, locul și înlocuirea erorii, eliminarea unui pas nepotrivit, ordinea planului și verificarea finală obligatorie. Verifică marcarea practicii fără stele, vocabularul și rezolvările vizibile pentru toate lecțiile, cele patru obiective/reflecții și distanțele reale dintre cartonașele din stânga. Testele Node verifică și că selecția produce exclusiv mecanica cerută, respectă limitele de nivel și respinge explicit opțiunile inexistente.
 
 Validatorul verifică structura, consistența răspunsurilor și anumite regresii de text. **Nu este un corector gramatical complet și nu certifică adevărul științific.** Conținutul trebuie revizuit editorial când se adaugă sau se schimbă lecții.
 
@@ -181,7 +194,7 @@ settings.html           Preferințe de citire, aspect și profil
 assets/js/data.js       Lecții, niveluri și întrebări redactate
 assets/js/lesson-details.js Vocabular, explicații, rezolvări, obiective și reflecții pentru fiecare lecție
 assets/js/mission-games.js Investigație, reparație și planificare cu verificare
-assets/js/game-missions-*.js Cele 228 de situații redactate pentru toate cele 76 de lecții
+assets/js/game-missions-*.js Cele 228 de situații redactate pentru cele 76 de lecții inițiale
 assets/js/engines.js    Generatoare, controale și evaluare pe rundă
 assets/js/math-games.js Matematică vizuală, grile și verificări geometrice
 assets/js/discovery.js  Caietul ilustrat și explorările fără notă

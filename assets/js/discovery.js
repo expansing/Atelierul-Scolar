@@ -6,6 +6,7 @@ const Discovery = {
       .concat(detail.words.map(pair => pair[0] + '. ' + pair[1]), activity.explanation[1],
         'Urmărește această rezolvare pas cu pas.', detail.worked, 'Cum verificăm. ' + detail.check, activity.explanation[2], activity.guided).join('. ');
   },
+  mathLabFor(activity) { return activity.subject === 'mat' && activity.num <= 12; },
   render(activity) {
     const e = Engines.escape, practice = activity.practical, exploration = this.exploration(activity), detail = activity.detail;
     const themes = { mat: ['Atelierul ideilor', 'Construiește. Schimbă. Verifică.'], lim: ['Povești pe o pagină', 'Ascultă. Citește. Povestește.'],
@@ -13,33 +14,34 @@ const Discovery = {
       sci: ['Carnetul de explorator', 'Întreabă. Observă. Compară.'], civ: ['Împreună în aceeași poveste', 'Ascultă. Alege. Ai grijă.'] };
     const theme = themes[activity.subject];
     return '<div class="discovery-spread" data-discovery="' + activity.id + '">' +
-      '<header class="discovery-cover"><div><p class="eyebrow">' + theme[0] + '</p><h2>' + theme[1] + '</h2><p class="lesson-goal">' + e(activity.objectives[0]) + '</p>' +
+      '<header class="discovery-cover"><div><p class="eyebrow">' + theme[0] + '</p><h2>' + theme[1] + '</h2><p class="lesson-goal">' + e(activity.kid || activity.objectives[0]) + '</p>' +
       '<div class="game-controls"><button class="btn" id="read-lesson">Ascultă explicația</button><button class="btn" id="stop-reading" hidden>Oprește citirea</button></div></div>' +
       '<figure class="discovery-picture">' + this.scene(activity) + '<figcaption>' + e(this.caption(activity)) + '</figcaption></figure></header>' +
-      '<div class="discovery-layout"><div class="discovery-column"><article class="discovery-card idea-card"><p class="eyebrow">Înțelegem ideea</p><h3>Ce învățăm?</h3><p>' + e(activity.explanation[0]) + '</p><p>' + e(detail.explain) + '</p>' +
-      '<h4>Un exemplu</h4><p>' + e(activity.explanation[1]) + '</p>' +
-      '<h4>Cuvinte explicate</h4><dl class="lesson-words">' + detail.words.map(pair => '<dt>' + e(pair[0]) + '</dt><dd>' + e(pair[1]) + '</dd>').join('') + '</dl></article>' +
-      '<article class="discovery-card example-card"><p class="eyebrow">Rezolvăm împreună</p><h3>Urmărește această rezolvare pas cu pas</h3>' +
+      '<div class="discovery-layout"><div class="discovery-column"><article class="discovery-card idea-card"><p class="eyebrow">Înțelegem ideea</p><h3>Ce învățăm?</h3><p>' + e(activity.explanation[0]) + '</p>' +
+      '' + (activity.subject === 'mat' ? '<h4>Un exemplu</h4><p>' + e(activity.explanation[1]) + '</p>' : '') +
+      '<details class="more-text"><summary>📚 Mai multe explicații și cuvinte noi</summary><p>' + e(detail.explain) + '</p>' +
+      '<dl class="lesson-words">' + detail.words.map(pair => '<dt>' + e(pair[0]) + '</dt><dd>' + e(pair[1]) + '</dd>').join('') + '</dl></details></article>' +
+      '<article class="discovery-card example-card"><p class="eyebrow">Rezolvăm împreună</p><h3>Pas cu pas</h3>' +
       '<ol class="discovery-steps">' + detail.worked.map(step => '<li>' + e(step) + '</li>').join('') + '</ol>' +
       '<p class="self-check"><strong>Cum verificăm:</strong> ' + e(detail.check) + '</p></article>' +
       '<aside class="discovery-card detective-note"><p class="eyebrow">Evităm o confuzie</p><h3>Ce te-ar putea păcăli?</h3><p>' + e(activity.explanation[2]) + '</p></aside></div>' +
       '<div class="discovery-column">' +
-      '<section class="discovery-card discovery-workbench"><p class="eyebrow">' + (activity.subject === 'mat' ? 'Experimente pe ecran' : 'Încercăm pas cu pas') +
+      '<section class="discovery-card discovery-workbench"><p class="eyebrow">' + (this.mathLabFor(activity) ? 'Experimente pe ecran' : 'Încercăm pas cu pas') +
       '</p><h3>' + e(exploration.title) + '</h3><p>' + e(exploration.context) + '</p>' +
-      (activity.subject === 'mat' ? '<ol class="exploration-instructions">' + exploration.steps.map(step => '<li>' + e(step) + '</li>').join('') + '</ol>' :
-        '<p class="exploration-example"><strong>Povestea de la care pornim:</strong> ' + e(activity.explanation[1]) + '</p><p><strong>Dacă vrei să lucrezi cu obiecte:</strong> ' + e(practice.materials) + '</p>') +
-      '<p>Aceasta este o încercare liberă, fără notă și fără stele.</p><div data-discovery-lab></div></section>' +
-      '<section class="discovery-card hands-on"><p class="eyebrow">Exersăm cu obiecte</p><h3>Încearcă în afara ecranului</h3><p><strong>Pregătește:</strong> ' + e(practice.materials) + '</p><ol>' +
-      practice.steps.map(step => '<li>' + e(step) + '</li>').join('') + '</ol><p class="self-check"><strong>Ce urmărești:</strong> ' + e(detail.check) + '</p>' +
-      '<p class="safety-note">Alege materialele și ritmul potrivit. Pentru obiecte mici sau activități afară, cere supravegherea unui adult.</p></section>' +
-      '<section class="discovery-card reflection-card"><p class="eyebrow">Bilet de explorator</p><h3>Arată cum ai gândit</h3><p>' + e(activity.questions[0]) + '</p><p>Poți răspunde printr-un desen, cu obiecte sau printr-o scurtă poveste.</p>' +
-      '<button class="btn btn-primary" data-open-game>Îmi testez ideea în atelier</button></section></div></div></div>';
+      (this.mathLabFor(activity) ? '<ol class="exploration-instructions">' + exploration.steps.map(step => '<li>' + e(step) + '</li>').join('') + '</ol>' :
+        '<p class="exploration-example"><strong>Povestea de la care pornim:</strong> ' + e(activity.explanation[1]) + '</p>') +
+      '<div data-discovery-lab></div></section>' +
+      '<section class="discovery-card hands-on"><details class="more-text"><summary>✋ Încearcă și cu obiecte, lângă un adult</summary><p><strong>Pregătește:</strong> ' + e(practice.materials) + '</p><ol>' +
+      practice.steps.map(step => '<li>' + e(step) + '</li>').join('') + '</ol>' +
+      '<p class="safety-note">Pentru obiecte mici sau activități afară, cere unui adult să stea cu tine.</p></details></section>' +
+      '<section class="discovery-card reflection-card"><p class="eyebrow">Gândește-te</p><h3>' + e(activity.questions[0]) + '</h3><p>Spune, desenează sau arată cu obiecte.</p>' +
+      '<button class="btn btn-primary" data-open-game>🎮 Hai la joc!</button></section></div></div></div>';
   },
   exploration(activity) {
-    if (activity.subject !== 'mat') return {
+    if (!this.mathLabFor(activity)) return {
       title: 'Exersează: ' + activity.title,
-      context: 'Pornește de la exemplul de mai jos. Apasă pe rând butoanele numerotate ca să vezi ce ai de făcut. Răspunsul îl spui, îl desenezi sau îl arăți cu obiecte; nu trebuie să scrii în pagină.' +
-        (activity.subject === 'civ' ? ' Poți folosi personaje inventate. Nu trebuie să povestești experiențe personale.' : '')
+      context: 'Apasă pe rând butoanele cu numere. Răspunsul îl spui sau îl desenezi; nu trebuie să scrii.' +
+        (activity.subject === 'civ' ? ' Poți folosi personaje inventate.' : '')
     };
     const experiments = {
       1: ['Construiește același număr în două feluri', 'Începem cu 34: trei bare de câte zece și patru unități separate. Fiecare bară are zece segmente.',
@@ -72,6 +74,7 @@ const Discovery = {
     return { title: experiment[0], context: experiment[1], steps: experiment[2] };
   },
   caption(activity) {
+    if (activity.subject === 'mat' && activity.num > 12) return 'Numerele ne ajută să numărăm, să măsurăm și să comparăm.';
     if (activity.subject !== 'mat') return { lim: 'Din semne și cuvinte construim o poveste.', log: 'Piese diferite pot ascunde aceeași regulă.', inf: 'Un plan se urmărește pas cu pas.',
       sci: 'În natură observăm înainte să tragem concluzii.', civ: 'Fiecare persoană are o perspectivă care merită ascultată.' }[activity.subject];
     return { 1: 'Un grup de zece poate fi desfăcut în zece unități.', 2: 'Două grupe se întâlnesc într-un întreg.', 3: 'Ce a rămas? Ce s-a schimbat?', 4: 'Un oraș construit din contururi.',
@@ -102,6 +105,8 @@ const Discovery = {
       [[180, 82], [211, 82], [180, 122], [211, 122]].forEach(p => { art += '<rect x="' + p[0] + '" y="' + p[1] + '" width="19" height="24" fill="#fff1c5"/>'; });
     } else if (activity.subject === 'mat' && n === 8) {
       art = '<path d="M65 90h230l-20 88H85z" fill="#d99c67"/><path d="M110 94l45-66m90 66-45-66" fill="none" stroke="#34415e" stroke-width="6"/><rect x="120" y="68" width="55" height="72" rx="4" fill="#8a9dcd"/><path d="M130 68v72" stroke="#fff4d5" stroke-width="3"/><path d="M193 65l19 7-24 75-18-7z" fill="#edbe64"/><circle cx="245" cy="123" r="25" fill="#fff1c4"/><text x="245" y="132" text-anchor="middle" font-size="25" fill="#34415e">3</text>';
+    } else if (activity.subject === 'mat' && n > 12) {
+      art = '<text x="180" y="105" text-anchor="middle" font-size="64" fill="#438577">' + Engines.escape(activity.icon) + '</text><text x="180" y="175" text-anchor="middle" font-size="30" fill="#34415e">1 · 10 · 100 · 1000</text>';
     } else if (activity.subject === 'mat') {
       for (let i = 0; i < 8; i++) art += '<rect x="' + (55 + i % 4 * 61) + '" y="' + (38 + Math.floor(i / 4) * 61) + '" width="57" height="57" rx="4" fill="' + (i % 4 < 2 ? '#75ae9f' : '#fff3d9') + '" stroke="#53647c" stroke-width="2"/>';
       art += '<text x="180" y="192" text-anchor="middle" font-size="23" fill="#34415e">4 optimi = o jumătate</text>';
@@ -128,7 +133,7 @@ const Discovery = {
       const activity = ACTIVITIES.find(a => a.id === spread.dataset.discovery), lab = spread.querySelector('[data-discovery-lab]');
       if (!activity || !lab || lab.dataset.ready) return;
       lab.dataset.ready = 'true';
-      if (activity.subject === 'mat') this.mathLab(lab, activity);
+      if (this.mathLabFor(activity)) this.mathLab(lab, activity);
       else this.thinkingLab(lab, activity);
     });
   },
@@ -153,7 +158,7 @@ const Discovery = {
         b.disabled = number < 10;
         if (b.disabled) b.value = 0;
         picture.innerHTML = '<div class="base-ten-art" aria-hidden="true">' + Array(tens).fill('<span class="ten-rod"></span>').join('') + '<div class="unit-bunch">' + Array(units).fill('<i></i>').join('') + '</div></div>';
-        status.textContent = number + ' = ' + tens + ' × 10 + ' + units + '. ' + (split ? 'Am desfăcut un grup de zece în zece unități. Totalul a rămas același.' : 'Schimbă gruparea fără să schimbi cantitatea.');
+        status.textContent = number + ' = ' + tens * 10 + ' + ' + units + '. ' + (split ? 'Am desfăcut un grup de zece în zece unități. Totalul a rămas același.' : 'Schimbă gruparea fără să schimbi cantitatea.');
       };
     } else if ([4, 9].includes(n)) {
       const label = document.createElement('label'); label.textContent = 'Forma de explorat';

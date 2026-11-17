@@ -34,7 +34,7 @@ const MathWorkshop = {
     const explain = a + ' ' + sign + ' ' + b + ' = ' + answer + '. Verificăm prin ' + (subtract ? answer + ' + ' + b + ' = ' + a : answer + ' − ' + b + ' = ' + a) + '.';
     if (index % 4 === 0) return { kind: 'numberline', prompt: 'Un salt, un plan: ' + a + ' ' + sign + ' ' + b + '. Unde ajungi pe axă?',
       start: a, step: b, subtract, answer, max: limit, explain, hint: 'Pornește de la ' + a + ' și fă ' + b + ' pași ' + (subtract ? 'înapoi.' : 'înainte.') };
-    if (index % 4 === 1) return this.calculation('Detectivul numărului ascuns: ' + a + ' ' + sign + ' □ = ' + answer + '.',
+    if (index % 4 === 1) return this.calculation('Găsește numărul ascuns: ' + a + ' ' + sign + ' □ = ' + answer + '.',
       [{ label: 'Ce număr lipsește?', answer: b }], explain, 'Folosește operația inversă. Reprezintă diferența pe axă.', { numberCard: a + ' ' + sign + ' ? = ' + answer });
     if (index % 4 === 2) {
       const first = subtract ? answer : a, second = b;
@@ -47,22 +47,22 @@ const MathWorkshop = {
     const change = Engines.randInt(1, Math.min(5, answer));
     return this.calculation('În atelier erau ' + Engines.quantity(a, 'jeton', 'jetoane') + '. ' +
       (subtract ? (b === 1 ? 'A fost luat ' : 'Au fost luate ') : (b === 1 ? 'A fost adăugat ' : 'Au fost adăugate ')) +
-      Engines.quantity(b, 'jeton', 'jetoane') + '. Apoi mai primești ' + change + '. Construiește calculul în doi pași.',
-      [{ label: 'Câte sunt după prima schimbare?', answer }, { label: 'Câte sunt la final?', answer: answer + change }],
+      Engines.quantity(b, 'jeton', 'jetoane') + '. Apoi mai primești ' + change + '. Calculează în doi pași.',
+      [{ label: 'Câte sunt după primul pas?', answer }, { label: 'Câte sunt la final?', answer: answer + change }],
       explain + ' Apoi ' + answer + ' + ' + change + ' = ' + (answer + change) + '.',
       'Nu combina toate numerele din prima. Păstrează rezultatul fiecărei schimbări.', { numberCard: a + ' → ' + (subtract ? '−' : '+') + b + ' → +' + change });
   },
   story(level, index) {
-    const a = Engines.randInt(6, [10, 25, 60][level]), b = Engines.randInt(2, [5, 9, 18][level]), c = Engines.randInt(1, Math.min(a, 5 + level * 3));
+    const a = Engines.randInt(6, [10, 25, 38][level]), b = Engines.randInt(2, [5, 9, 18][level]), c = Engines.randInt(1, Math.min(a, 5 + level * 3));
     const stories = [
       ['Ai ' + Engines.quantity(a, 'timbru', 'timbre') + '. Primești ' + b + ', apoi oferi ' + c + '.', a + b, a + b - c, a + ' + ' + b, '− ' + c],
       ['În autobuz sunt ' + Engines.quantity(a, 'călător', 'călători') + '. Coboară ' + c + ', apoi urcă ' + b + '.', a - c, a - c + b, a + ' − ' + c, '+ ' + b],
       ['Un raft are ' + Engines.quantity(a, 'carte', 'cărți') + ', iar altul are cu ' + b + ' mai multe. Câte cărți are al doilea raft și câte sunt pe ambele?', a + b, a * 2 + b, a + ' + ' + b, '+ ' + a]
     ];
     const story = stories[index % stories.length];
-    return this.calculation(story[0], [{ label: index % 3 === 2 ? 'Cărți pe al doilea raft' : 'Rezultatul primului pas', answer: story[1] }, { label: 'Rezultatul final', answer: story[2] }],
+    return this.calculation(story[0], [{ label: index % 3 === 2 ? 'Cărți pe al doilea raft' : 'După primul pas', answer: story[1] }, { label: 'La final', answer: story[2] }],
       'Primul pas: ' + story[3] + ' = ' + story[1] + '. Al doilea: ' + story[1] + ' ' + story[4] + ' = ' + story[2] + '.',
-      'Desenează câte o stare pentru fiecare moment. Nu confunda o comparație cu o schimbare.', { numberCard: 'Observă → reprezintă → calculează → verifică' });
+      'Fă un desen pentru fiecare pas. Calculează întâi primul pas.', { numberCard: 'Citesc → desenez → calculez → verific' });
   },
   shopping(level, index) {
     const products = [
@@ -73,15 +73,15 @@ const MathWorkshop = {
     const total = products.reduce((sum, p) => sum + p.price, 0), paid = Math.ceil(total / 10) * 10 + 10;
     if (level === 2 && index % 2) {
       const budget = Engines.randInt(20, 45), price = products[0].price, quantity = Math.floor(budget / price);
-      return this.calculation('Ai ' + budget + ' de lei pentru caiete identice, de ' + Engines.quantity(price, 'leu', 'lei') + ' fiecare. Cumpără cât mai multe fără să depășești bugetul.',
-        [{ label: 'Numărul maxim de caiete', answer: quantity }, { label: 'Bani rămași', answer: budget - quantity * price }],
-        quantity + ' × ' + price + ' = ' + quantity * price + '. Încă un caiet ar depăși bugetul de ' + budget + ' de lei.',
-        'Adună repetat prețul până când următorul caiet nu mai încape în buget.', { products: [products[0]], budget });
+      return this.calculation('Ai ' + budget + ' de lei. Un caiet costă ' + Engines.quantity(price, 'leu', 'lei') + '. Câte caiete poți cumpăra cel mult?',
+        [{ label: 'Câte caiete?', answer: quantity }, { label: 'Câți lei îți rămân?', answer: budget - quantity * price }],
+        Array(quantity).fill(price).join(' + ') + ' = ' + quantity * price + '. Pentru încă un caiet nu mai ajung banii.',
+        'Adună prețul de mai multe ori: un caiet, două caiete… Oprește-te înainte să treci de banii tăi.', { products: [products[0]], budget });
     }
-    return this.calculation('Pregătește bonul cumpărăturilor. Iei câte un produs din fiecare fel și dai la plată ' + paid + ' de lei.',
-      [{ label: 'Costul tuturor produselor', answer: total }, { label: 'Restul primit', answer: paid - total }],
-      'Adunăm prețurile: ' + products.map(p => p.price).join(' + ') + ' = ' + total + '. Restul: ' + paid + ' − ' + total + ' = ' + (paid - total) + '.',
-      'Scrie întâi totalul bonului, apoi compară cu suma dată.', { products, budget: paid });
+    return this.calculation((products.length === 1 ? 'Cumperi un produs' : 'Cumperi câte unul din fiecare produs') + ' și plătești cu ' + paid + ' de lei. Cât costă și ce rest primești?',
+      [{ label: 'Cât costă în total?', answer: total }, { label: 'Ce rest primești?', answer: paid - total }],
+      (products.length === 1 ? 'Produsul costă ' + Engines.quantity(total, 'leu', 'lei') : 'Adunăm prețurile: ' + products.map(p => p.price).join(' + ') + ' = ' + total) + '. Restul: ' + paid + ' − ' + total + ' = ' + (paid - total) + '.',
+      'Află întâi cât costă tot. Apoi scade din banii dați.', { products, budget: paid });
   },
   balance(level, index) {
     const a = Engines.randInt(2, [8, 18, 35][level]), delta = Engines.randInt(1, 7);
@@ -89,27 +89,27 @@ const MathWorkshop = {
     if (level === 0) return Engines.choice('Cuburile sunt identice. În stânga: ' + Engines.quantity(a, 'cub', 'cuburi') + '. În dreapta: ' + Engines.quantity(b, 'cub', 'cuburi') + '. Ce observi la balanță?',
       ['Coboară stânga', 'Coboară dreapta', 'Rămâne în echilibru'], a > b ? 0 : b > a ? 1 : 2,
       'Comparăm ' + a + ' cu ' + b + '. ' + (a === b ? 'Cantitățile sunt egale.' : 'Talerul cu mai multe cuburi identice coboară.'),
-      'Nu presupune că dreapta este mereu mai grea. Compară ambele cantități.', { balance: { left: a, right: b, concealed: false } });
-    const known = Engines.randInt(2, 9), missing = Engines.randInt(2, level === 1 ? 10 : 25);
-    if (level === 1 || index % 2 === 0) return this.calculation('Balanța trebuie să fie în echilibru. Află masa piesei cu semnul întrebării, exprimată în unități.',
-      [{ label: 'Masa piesei necunoscute', answer: missing }],
-      known + ' + ' + missing + ' = ' + (known + missing) + '. Piesa necunoscută completează diferența.',
-      'Înlătură mental aceeași cantitate cunoscută din ambele talere.',
+      'Numără cuburile din fiecare parte. Unde sunt mai multe?', { balance: { left: a, right: b, concealed: false } });
+    const known = Engines.randInt(2, 9), missing = Engines.randInt(2, level === 1 ? 10 : 12);
+    if (level === 1 || index % 2 === 0) return this.calculation('Balanța stă dreaptă. Cât cântărește piesa cu semnul întrebării?',
+      [{ label: 'Piesa cu ? cântărește', answer: missing }],
+      known + ' + ' + missing + ' = ' + (known + missing) + '. Piesa cu ? cântărește cât lipsea.',
+      'Ia aceleași cuburi de pe ambele talere. Ce rămâne în dreapta?',
       { balance: { left: known, right: known + missing, concealed: true } });
-    return this.calculation('Două piese identice cu semnul întrebării și ' + known + ' unități echilibrează ' + (known + missing * 2) + ' unități. Cât are o singură piesă?',
-      [{ label: 'Masa unei piese', answer: missing }],
-      'Scădem ' + known + ': rămân ' + missing * 2 + ' unități pentru două piese. Împărțim în două grupe egale: ' + missing + '.',
-      'Află întâi cât cântăresc împreună cele două piese, apoi împarte egal.',
+    return this.calculation('Două piese la fel, cu semnul întrebării, și încă ' + known + ' cântăresc cât ' + (known + missing * 2) + '. Cât cântărește o piesă?',
+      [{ label: 'O piesă cântărește', answer: missing }],
+      'Scădem ' + known + ': rămân ' + missing * 2 + ' pentru două piese. ' + missing + ' + ' + missing + ' = ' + missing * 2 + ', deci o piesă cântărește ' + missing + '.',
+      'Află întâi cât cântăresc împreună cele două piese. Apoi caută numărul care, adunat cu el însuși, dă atât.',
       { balance: { left: known, right: known + missing * 2, concealed: true, unknowns: 2 } });
   },
   measurement(level, index) {
     const start = level === 0 ? 0 : Engines.randInt(2, 6), length = Engines.randInt(3, [9, 12, 14][level]);
-    if (level < 2 || index % 2 === 0) return this.calculation('Rigla nu trebuie ghicită: citește cele două capete ale benzii și află lungimea.',
+    if (level < 2 || index % 2 === 0) return this.calculation('Câți centimetri are banda? Uită-te unde începe și unde se termină.',
       [{ label: 'Lungimea benzii, în centimetri', answer: length }],
       'Capătul final este la ' + (start + length) + ' cm, începutul la ' + start + ' cm: ' + (start + length) + ' − ' + start + ' = ' + length + ' cm.',
       'Lungimea este distanța dintre repere, nu întotdeauna numărul de la capătul din dreapta.', { ruler: { start, end: start + length, max: 22 } });
     const cut = Engines.randInt(1, length - 1);
-    return this.calculation('Măsoară panglica din desen. Apoi taie mental ' + cut + ' cm și calculează cât rămâne.',
+    return this.calculation('Măsoară panglica din desen. Apoi tai din ea ' + cut + ' cm. Cât rămâne?',
       [{ label: 'Lungimea inițială, în cm', answer: length }, { label: 'Lungimea rămasă, în cm', answer: length - cut }],
       'Lungimea inițială: ' + (start + length) + ' − ' + start + ' = ' + length + ' cm. Apoi ' + length + ' − ' + cut + ' = ' + (length - cut) + ' cm.',
       'Fă întâi măsurarea de la reperul de început, apoi scăderea.', { ruler: { start, end: start + length, max: 22 } });
@@ -135,7 +135,7 @@ const MathWorkshop = {
         [{ x: 0, y: 0 }, { x: width, y: 0 }, { x: width, y: height }, { x: 0, y: height }];
       const area = level === 2 ? width * height : null;
       return { kind: 'geoboard', size, goal: { shape: target, area }, solution,
-        prompt: 'Arhitect pe grilă: construiește ' + (target === 'triangle' ? 'un triunghi' : target === 'square' ? 'un pătrat' : 'un dreptunghi') +
+        prompt: 'Desenează pe grilă ' + (target === 'triangle' ? 'un triunghi' : target === 'square' ? 'un pătrat' : 'un dreptunghi') +
           (area ? ' care acoperă ' + Engines.quantity(area, 'pătrățel', 'pătrățele') : '') + '. Sunt acceptate toate construcțiile corecte.',
         explain: 'Am verificat laturile, unghiurile, conturul fără încrucișări' + (area ? ' și suprafața de ' + Engines.quantity(area, 'pătrățel', 'pătrățele') : '') + '. Poziția și orientarea pot fi diferite.',
         hint: 'Alege vârfurile pe rând de-a lungul conturului. Pentru un pătrat, laturile sunt egale și unghiurile sunt drepte.' };
@@ -146,8 +146,8 @@ const MathWorkshop = {
       for (let y = 0; y < size - 1; y++) for (let x = 0; x < half; x++) candidates.push({ x, y });
       Engines.shuffle(candidates).slice(0, 3 + level * 2).forEach(p => points.push(p));
       return { kind: 'symmetry', size, fixed: points, solution: points.map(p => ({ x: size - 1 - p.x, y: p.y })),
-        prompt: 'Oglinda atelierului: completează desenul în partea dreaptă. Fiecare pătrățel trebuie să fie la aceeași distanță de linia din mijloc.',
-        explain: 'Piesele sunt pe același rând și la distanțe egale de axa verticală. Reflexia nu este doar mutarea desenului spre dreapta.',
+        prompt: 'Desenează în oglindă! Colorează în dreapta, la fel de departe de linia din mijloc.',
+        explain: 'În oglindă, fiecare pătrățel stă pe același rând și la fel de departe de linie.',
         hint: 'Pornește de lângă axă. Numără același număr de pătrățele în partea cealaltă.' };
     }
     if (variant === 2) {
@@ -156,7 +156,7 @@ const MathWorkshop = {
       if (width % 2) for (let y = 0; y < height; y += 2) solution.push([{ x: width - 1, y }, { x: width - 1, y: y + 1 }]);
       const blocked = level === 2 ? solution.splice(Engines.randInt(0, solution.length - 1), 1)[0] : [];
       return { kind: 'mosaic', width, height, blocked, solution,
-        prompt: 'Pavator de mozaic: acoperă toate pătrățelele libere cu piese de câte două pătrățele. Fără suprapuneri și fără spații.',
+        prompt: 'Acoperă toate pătrățelele libere cu piese de câte două. Piesele nu stau una peste alta.',
         explain: 'Fiecare piesă acoperă exact două pătrățele vecine. Poți găsi și alte pavări decât modelul inițial.',
         hint: 'Alege orientarea, apoi primul pătrățel al piesei. Dacă te blochezi, scoate o piesă și încearcă altă așezare.' };
     }
@@ -167,15 +167,15 @@ const MathWorkshop = {
       const target = level === 0 ? 4 : level === 1 ? Engines.pick([3, 4, 5, 6]) : 4;
       const correct = shapes.map((s, i) => ({ s, i })).filter(item => level === 2 ? ['square', 'rectangle'].includes(item.s.shape) : corners[item.s.shape] === target).map(item => item.i);
       return { kind: 'shape-select', shapes, correct,
-        prompt: level === 2 ? 'Colecționar de proprietăți: selectează toate figurile cu patru unghiuri drepte. Un pătrat este și un dreptunghi.' :
-          'Selectează toate figurile cu ' + target + ' vârfuri. Culoarea, mărimea și rotirea nu schimbă numărul de vârfuri.',
-        explain: 'Am verificat proprietatea fiecărei figuri, nu asemănarea cu un singur desen memorat.',
+        prompt: level === 2 ? 'Alege toate figurile cu patru colțuri drepte, ca la o foaie de hârtie. Și pătratul le are!' :
+          'Alege toate figurile cu ' + target + ' colțuri. Nu contează culoarea sau mărimea.',
+        explain: 'Am numărat la fiecare figură, pe rând. Așa nu ne păcălește mărimea sau culoarea.',
         hint: 'Urmărește conturul fiecărei figuri. Pot exista mai multe răspunsuri corecte.' };
     }
     const width = Engines.randInt(2, 6), height = Engines.randInt(2, 5);
-    return this.calculation('Grădina are ' + width + ' pătrățele pe lungime și ' + height + ' pe lățime. Numără suprafața și drumul de jur împrejur.',
+    return this.calculation('Grădina are ' + width + ' pătrățele pe lungime și ' + height + ' pe lățime. Numără pătrățelele dinăuntru și drumul de jur împrejur.',
       [{ label: 'Pătrățele în interior', answer: width * height }, { label: 'Laturi de pătrățel pe contur', answer: 2 * (width + height) }],
-      'Suprafața: ' + width + ' × ' + height + ' = ' + width * height + '. Conturul: ' + width + ' + ' + height + ' + ' + width + ' + ' + height + ' = ' + 2 * (width + height) + '.',
+      'Înăuntru sunt ' + width * height + ' pătrățele. De jur împrejur: ' + width + ' + ' + height + ' + ' + width + ' + ' + height + ' = ' + 2 * (width + height) + '.',
       'Interiorul se numără pe rânduri. Conturul este doar drumul de pe margine.', { garden: { width, height } });
   },
   polygonArea(points) {

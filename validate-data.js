@@ -21,14 +21,13 @@ function validate(data) {
   const unique = values => new Set(values).size === values.length;
   const integer = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
   requireValue(SUBJECTS.length === 6, 'Sunt necesare șase discipline.');
-  requireValue(ACTIVITIES.length >= 60 && ACTIVITIES.length <= 80, 'Inventarul trebuie să aibă între 60 și 80 de activități.');
+  requireValue(ACTIVITIES.length >= 60 && ACTIVITIES.length <= 120, 'Inventarul trebuie să aibă între 60 și 120 de activități.');
   requireValue(LEVELS.length === 3, 'Sunt necesare trei niveluri.');
   requireValue(unique(SUBJECTS.map(s => s.id)), 'ID-uri duplicate de discipline.');
   requireValue(unique(ACTIVITIES.map(a => a.id)), 'ID-uri duplicate de activități.');
   requireValue(Object.keys(data.LESSON_DETAILS).length === ACTIVITIES.length &&
     Object.keys(data.LESSON_DETAILS).every(id => ACTIVITIES.some(a => a.id === id)), 'Explicațiile trebuie să acopere exact toate lecțiile.');
-  requireValue(Object.keys(data.GAME_MISSIONS).length === ACTIVITIES.length &&
-    Object.keys(data.GAME_MISSIONS).every(id => ACTIVITIES.some(a => a.id === id)), 'Jocurile noi trebuie să acopere exact toate lecțiile.');
+  requireValue(Object.keys(data.GAME_MISSIONS).every(id => ACTIVITIES.some(a => a.id === id)), 'Jocurile suplimentare trebuie să aparțină unor lecții existente.');
   requireValue(THINKING_PATH && text(THINKING_PATH.title) && text(THINKING_PATH.description) &&
     texts(THINKING_PATH.activities) && THINKING_PATH.activities.length === 6 &&
     unique(THINKING_PATH.activities) && THINKING_PATH.activities.every(id => ACTIVITIES.some(activity => activity.id === id)),
@@ -58,7 +57,8 @@ function validate(data) {
     const id = activity.id;
     const detail = activity.detail;
     const mission = data.GAME_MISSIONS[id];
-    requireValue(mission && mission.titles && data.MissionGames.modes.every(mode => text(mission.titles[mode])) &&
+    // lecțiile adăugate în noiembrie 2026 au doar jocul lecției; jocurile suplimentare sunt opționale
+    requireValue(!mission || mission.titles && data.MissionGames.modes.every(mode => text(mission.titles[mode])) &&
       unique(Object.values(mission.titles)) && Array.isArray(mission.cases) && mission.cases.length === 3, id + ': minimum trei jocuri noi, fiecare cu trei cazuri.');
     if (mission && Array.isArray(mission.cases)) {
       requireValue(unique(mission.cases.map(scenario => scenario.context)), id + ': situații repetate între niveluri.');
