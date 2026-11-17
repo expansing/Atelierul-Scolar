@@ -242,6 +242,11 @@ const Engines = {
             'Adăugăm câte o sută: după ' + (h + 2) * 100 + ' vine ' + (h + 3) * 100 + '.', 'Numără sutele ca pe degete: una, două, trei…');
           return this.numeric('Câte sute are numărul ' + n + '?', h, 'În ' + n + ', prima cifră arată sutele: ' + h + '.', 'La un număr cu trei cifre, sutele sunt scrise primele.');
         }
+        if (level > 0 && index % 4 === 3) {
+          const zero = level === 2 ? h * 100 + this.randInt(1, 9) : h * 100 + t * 10, swap = Math.floor(zero / 100) * 100 + (zero % 10) * 10 + Math.floor(zero % 100 / 10);
+          const opts = this.shuffle([zero, swap === zero ? zero + 10 : swap, Math.floor(zero / 100) * 10 + zero % 10].map(String));
+          return this.choice('Cum se scrie cu cifre: „' + this.words(zero) + '”?', opts, opts.indexOf(String(zero)), '„' + this.words(zero) + '” se scrie ' + zero + '. Fiecare cifră stă la locul ei: sute, zeci, unități.', 'Câte sute? Câte zeci? Câte unități? Unde nu e nimic, scrii 0.');
+        }
         if (level === 1) {
           if (index % 3 === 0) return this.numeric('Ce număr vine imediat după ' + (n === 999 ? 998 : n) + '?', (n === 999 ? 998 : n) + 1, 'Adăugăm 1: ' + ((n === 999 ? 998 : n) + 1) + '.', 'Adaugă o unitate. Dacă unitățile sunt 9, se face o zece nouă.');
           if (index % 3 === 1) { const base = this.randInt(1, 7) * 100 + this.randInt(0, 9) * 10, add = this.randInt(1, 2) * 100; return this.numeric('Cât face ' + base + ' + ' + add + '?', base + add, 'Adunăm doar sutele: ' + base + ' + ' + add + ' = ' + (base + add) + '. Zecile rămân la fel.', 'Câte sute are primul număr? Mai adaugă sutele din al doilea.'); }
@@ -263,6 +268,8 @@ const Engines = {
       }
       if (mode === 'money') {
         const notes = level === 0 ? [1, 5, 10] : [1, 5, 10, 50];
+        if (level === 2 && index % 5 === 3) { const big = this.draw([100, 200, 500], 2).sort((x, y) => y - x), total = big[0] + big[1]; return this.numeric('Ai o bancnotă de ' + big[0] + ' de lei și una de ' + big[1] + ' de lei. Câți lei ai?', total, big[0] + ' + ' + big[1] + ' = ' + total + ' de lei.', 'Adună sutele: câte sute are fiecare bancnotă?', { scene: '💵 ' + big[0] + ' lei   +   💵 ' + big[1] + ' lei' }); }
+        if (level === 2 && index % 5 === 4) { const k = this.randInt(2, 5), e = this.pick([5, 10, 20]); return this.numeric('În alte țări se plătește în euro. Ai ' + k + ' bancnote de ' + this.quantity(e, 'euro', 'euro') + '. Câți euro ai?', k * e, Array(k).fill(e).join(' + ') + ' = ' + this.quantity(k * e, 'euro', 'euro') + '. Un euro are 100 de cenți, cum un leu are 100 de bani.', 'Adună valoarea fiecărei bancnote.'); }
         if (level === 2 && index % 3 === 0) { const a = this.randInt(2, 6) * 5, b = this.randInt(1, 4) * 5; return this.numeric('Ai 100 de lei. Cumperi o carte de ' + this.quantity(a, 'leu', 'lei') + ' și un joc de ' + this.quantity(b, 'leu', 'lei') + '. Câți lei îți rămân?', 100 - a - b, a + ' + ' + b + ' = ' + (a + b) + '. Apoi 100 − ' + (a + b) + ' = ' + (100 - a - b) + '.', 'Află întâi cât costă amândouă. Apoi scade din 100.'); }
         if (level === 2 && index % 3 === 1) { const k = this.randInt(2, 9); return this.numeric('Câte bancnote de 10 lei fac ' + k * 10 + ' de lei?', k, Array(k).fill(10).join(' + ') + ' = ' + k * 10 + '. Sunt ' + k + ' bancnote.', 'Numără din 10 în 10 până la ' + k * 10 + '.'); }
         if (level === 2) { const k = this.randInt(2, 5); return this.numeric('Un leu are 100 de bani. Câți bani au ' + k + ' lei?', k * 100, Array(k).fill(100).join(' + ') + ' = ' + k * 100 + ' de bani.', 'Adună 100 pentru fiecare leu.'); }
@@ -296,6 +303,17 @@ const Engines = {
     if (type === 'matrix') return this.matrixRound(mode, level, index);
     if (type === 'robot') return this.robotRound(mode, level, index);
     throw new Error('Generator indisponibil: ' + type);
+  },
+  // numerele de la 0 la 1000 scrise în litere (clasa a II-a cere citirea și scrierea lor)
+  words(n) {
+    const u = ['zero', 'unu', 'doi', 'trei', 'patru', 'cinci', 'șase', 'șapte', 'opt', 'nouă'];
+    const teen = ['zece', 'unsprezece', 'doisprezece', 'treisprezece', 'paisprezece', 'cincisprezece', 'șaisprezece', 'șaptesprezece', 'optsprezece', 'nouăsprezece'];
+    const tens = ['', '', 'douăzeci', 'treizeci', 'patruzeci', 'cincizeci', 'șaizeci', 'șaptezeci', 'optzeci', 'nouăzeci'];
+    const below100 = x => x < 10 ? u[x] : x < 20 ? teen[x - 10] : tens[Math.floor(x / 10)] + (x % 10 ? ' și ' + u[x % 10] : '');
+    if (n === 1000) return 'o mie';
+    if (n < 100) return below100(n);
+    const h = Math.floor(n / 100), rest = n % 100;
+    return (h === 1 ? 'o sută' : (h === 2 ? 'două' : u[h]) + ' sute') + (rest ? ' ' + below100(rest) : '');
   },
   time(hour, minute) { return hour + ':' + String(minute).padStart(2, '0'); },
 
@@ -853,11 +871,15 @@ const Engines = {
     const canSpeak = typeof Speech !== 'undefined' && Speech.supported();
     const taskText = q => {
       const list = nodes => nodes.map(text => Speech.clean(text)).filter(Boolean).join(', ');
-      const options = Array.from(container.querySelectorAll('#round-content .quiz-opt'), (node, i) => (i + 1) + ': ' + Speech.clean(node.textContent) + '.');
+      // desenele (emoji) nu se pot citi: atunci spunem doar să privească desenele
+      const optionTexts = Array.from(container.querySelectorAll('#round-content .quiz-opt'), node => Speech.clean(node.textContent));
+      const options = optionTexts.every(Boolean) ? optionTexts.map((text, i) => (i + 1) + ': ' + text + '.') : [];
       const firstSelect = container.querySelector('#round-content .match-select select');
       const parts = [q.prompt, q.passage, q.say ? 'Cuvântul este: ' + q.say + '.' : ''].filter(Boolean).map(text => Speech.clean(text));
-      if (q.scene) parts.push(q.scene.split('\n').map((row, index) => 'Rândul ' + (index + 1) + ': ' + Speech.clean(row) + '.').join(' '));
+      const rows = q.scene ? q.scene.split('\n').map(row => Speech.clean(row)) : [];
+      if (rows.length && rows.every(Boolean)) parts.push(rows.map((row, index) => 'Rândul ' + (index + 1) + ': ' + row + '.').join(' '));
       if (options.length) parts.push('Variantele sunt. ' + options.join(' '));
+      else if (optionTexts.length || (rows.length && !rows.every(Boolean))) parts.push('Privește desenele, apoi alege răspunsul.');
       if (q.kind === 'experiment') parts.push('Variantele sunt: ' + q.options.map((option, index) => (index + 1) + ': ' + Speech.clean(option)).join('. ') + '.');
       if (q.fields) parts.push('Completează: ' + list(q.fields.map(field => field.label)) + '.');
       if (q.products) parts.push(q.products.map(product => product.name + ': ' + this.quantity(product.price, 'leu', 'lei')).join('. ') + '.');
