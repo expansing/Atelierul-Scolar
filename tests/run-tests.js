@@ -507,9 +507,9 @@ test('Explorations explain the concrete activity instead of asking an undefined 
     }
   });
 });
-test('New profiles default to readable text and validated independent preferences', () => {
+test('New profiles default to serif text and validated independent preferences', () => {
   const { Progress: p, Preferences: preferences } = fixture();
-  assert.strictEqual(preferences.get(p.profile()).font, 'readable');
+  assert.strictEqual(preferences.get(p.profile()).font, 'serif');
   assert.strictEqual(preferences.get(p.profile()).size, 100);
   p.record('civ-1', result()); p.journeyComplete(2);
   const chosen = Object.assign({}, preferences.defaults(), { font: 'handwriting', size: 150, avatar: 'fox', theme: 'dark', sound: false, motion: true, level: 2 });
@@ -519,7 +519,7 @@ test('New profiles default to readable text and validated independent preference
   assert.strictEqual(p.totalStars(), 1);
   assert.strictEqual(p.profile().journey[0], 2);
   p.addProfile('Ariciul');
-  assert.strictEqual(p.profile().preferences.font, 'readable');
+  assert.strictEqual(p.profile().preferences.font, 'serif');
   assert.strictEqual(p.profile().preferences.level, 0);
   p.selectProfile('learner-1');
   assert.strictEqual(p.profile().name, 'Vulpea curioasă');
@@ -531,22 +531,42 @@ test('New profiles default to readable text and validated independent preference
 test('Preferences survive persistence, export/import and old profiles without settings', () => {
   const f = fixture(), p = f.Progress;
   p.markViewed('civ-1');
-  p.updateProfile('Țestoasa', Object.assign({}, f.Preferences.defaults(), { font: 'serif', size: 125 }));
+  p.updateProfile('Țestoasa', Object.assign({}, f.Preferences.defaults(), { font: 'readable', size: 125 }));
   const exported = p.exportData();
   p.cache = null;
   assert.strictEqual(p.exportData(), exported);
+  assert.strictEqual(p.profile().preferences.font, 'readable');
   const imported = fixture();
   imported.Progress.importData(exported);
   assert.strictEqual(imported.Progress.exportData(), exported);
+  assert.strictEqual(imported.Progress.profile().preferences.font, 'readable');
   const legacy = JSON.parse(exported);
   delete legacy.profiles['learner-1'].preferences;
   const migrated = fixture({ 'atelier-scolar-progress-v2': JSON.stringify(legacy), 'atelier-scolar-theme': 'dark', 'atelier-scolar-sound': 'off' });
   assert.strictEqual(migrated.Progress.profile().preferences.theme, 'dark');
   assert.strictEqual(migrated.Progress.profile().preferences.sound, false);
-  assert.strictEqual(migrated.Progress.profile().preferences.font, 'readable');
+  assert.strictEqual(migrated.Progress.profile().preferences.font, 'serif');
   assert.strictEqual(migrated.Progress.status('civ-1'), 'viewed');
   imported.Progress.importData(JSON.stringify(legacy));
-  assert.strictEqual(imported.Preferences.get(imported.Progress.profile()).font, 'readable');
+  assert.strictEqual(imported.Preferences.get(imported.Progress.profile()).font, 'serif');
+});
+test('Early preferences use serif before storage access and preserve saved fonts', () => {
+  const source = require('fs').readFileSync(require('path').join(__dirname, '../assets/js/early-preferences.js'), 'utf8');
+  const boot = (raw, blocked) => {
+    const root = { dataset: {}, style: {} }, matchMedia = () => ({ matches: false });
+    require('vm').runInNewContext(source, {
+      document: { documentElement: root }, window: { matchMedia }, matchMedia,
+      localStorage: { getItem(key) { if (blocked) throw new Error('Storage blocked'); return key === 'atelier-scolar-progress-v2' ? raw : null; } }
+    });
+    return root.dataset.font;
+  };
+  assert.strictEqual(boot(null), 'serif');
+  assert.strictEqual(boot('{corrupt'), 'serif');
+  assert.strictEqual(boot(null, true), 'serif');
+  ['readable', 'handwriting', 'serif'].forEach(font => {
+    const stored = JSON.stringify({ active: 'learner-1', profiles: { 'learner-1': { preferences: { font } } } });
+    assert.strictEqual(boot(stored), font);
+  });
 });
 test('Malformed preference imports and invalid pseudonyms cannot overwrite profiles', () => {
   const { Progress: p, Preferences: preferences } = fixture();

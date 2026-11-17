@@ -2,7 +2,7 @@
   "name": "atelierul-scolar",
   "version": "2.0.0",
   "private": true,
-  "description": "Atelier educațional static în limba română pentru copii de 6-8 ani: matematică, limba română, logică, informatică, științe și dezvoltare personală.",
+  "description": "Atelier educațional static în limba română pentru copii de 6-8 ani: matematică, limba română, logică, tehnologie, științe și dezvoltare personală.",
   "engines": {
     "node": ">=12"
   },
