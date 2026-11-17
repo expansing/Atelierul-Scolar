@@ -4,8 +4,9 @@
    ca în preferences.js; app.js le aplică din nou, complet, după încărcare. */
 (function () {
   'use strict';
+  const root = document.documentElement;
+  root.dataset.font = 'serif';
   try {
-    const root = document.documentElement;
     let prefs = null;
     const raw = localStorage.getItem('atelier-scolar-progress-v2');
     if (raw) {

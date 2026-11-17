@@ -35,7 +35,7 @@ Servit prin `http(s)`, atelierul funcționează și **fără internet** după pr
 | Matematică | 21 |
 | Limba română | 20 |
 | Logică și gândire | 14 |
-| Informatică | 9 |
+| Descoperim tehnologia | 9 |
 | Științe și natură | 14 |
 | Dezvoltare personală | 17 |
 
@@ -126,7 +126,7 @@ Pagina [Setări](settings.html) este accesibilă din antetul tuturor paginilor. 
 - alegerea unui avatar local și schimbarea pseudonimului, fără date personale;
 - nivel de joc preferat, fără blocarea celorlalte niveluri.
 
-Fontul implicit este cel simplu, la 100%. Preferințele de aspect se salvează automat; pseudonimul are buton separat de salvare. Butoanele rapide pentru temă și sunet modifică preferințele profilului activ. Modificarea exclusivă a preferințelor în altă filă actualizează aspectul fără să abandoneze jocul în curs; schimbarea profilului sau a progresului rămâne anunțată și oprește runda neîncheiată. Reducerea mișcării cerută de dispozitiv este întotdeauna respectată. Restabilirea setărilor nu șterge pseudonimul sau progresul; resetarea progresului nu șterge setările.
+Fontul implicit este „Litere de tipar cu serife”, la 100%, pentru profilurile noi sau fără preferințe. Un font deja salvat rămâne neschimbat. Preferințele de aspect se salvează automat; pseudonimul are buton separat de salvare. Butoanele rapide pentru temă și sunet modifică preferințele profilului activ. Modificarea exclusivă a preferințelor în altă filă actualizează aspectul fără să abandoneze jocul în curs; schimbarea profilului sau a progresului rămâne anunțată și oprește runda neîncheiată. Reducerea mișcării cerută de dispozitiv este întotdeauna respectată. Restabilirea setărilor nu șterge pseudonimul sau progresul; resetarea progresului nu șterge setările.
 
 Exportul/importul include preferințele. Fișierele vechi fără setări sunt acceptate, iar valorile invalide sunt respinse înainte de înlocuirea datelor. La încărcarea profilurilor vechi sunt preluate preferințele anterioare de temă și sunet de pe dispozitiv. Setările sunt locale, nu se sincronizează între dispozitive. Dacă salvarea eșuează, eroarea este afișată, iar datele din sesiune pot fi exportate.
 

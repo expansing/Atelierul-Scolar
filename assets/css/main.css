@@ -190,6 +190,7 @@ legend { font-weight: bold; max-width: 100%; }
 .level-result { border-bottom: 1px solid var(--border); padding-bottom: 0.6rem; }
 .level-result h3 { margin-top: 1rem; }
 .dece-banner { display: flex; align-items: center; gap: 1rem; background: var(--bg-card); padding: 1.2rem; border: 2px solid var(--s-sci); border-radius: var(--radius); text-decoration: none; color: var(--text); }
+.dece-banner + .dece-banner { margin-block-start: 1.25rem; }
 .dece-banner strong { display: block; }
 .dece-banner > span:first-child { font-size: 2rem; }
 .journey-grid { display: grid; gap: 0.3rem; }

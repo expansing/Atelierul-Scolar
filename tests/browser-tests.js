@@ -451,6 +451,8 @@
         cards.slice(1).forEach((card, i) => assert(Math.abs(card.getBoundingClientRect().top - cards[i].getBoundingClientRect().bottom - gap) < 1, activity.id + ': fără spații întinse între casete'));
       });
       fixture.innerHTML = Render.home(); assert(fixture.querySelectorAll('.subject-card').length === 6, 'Discipline');
+      const banners = fixture.querySelectorAll('.dece-banner');
+      assert(banners.length === 2 && banners[1].getBoundingClientRect().top - banners[0].getBoundingClientRect().bottom >= 20, 'Casetele de jos au spațiu între ele');
       assert(!fixture.querySelector('.profile-panel'), 'Profilurile se gestionează numai în Setări');
       fixture.innerHTML = Render.settings(); assert(fixture.querySelector('.profile-panel'), 'Setările păstrează gestionarea profilurilor');
       fixture.innerHTML = Render.dece(); assert(fixture.querySelectorAll('.journey-stop').length === 11, 'Opriri');

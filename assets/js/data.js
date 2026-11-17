@@ -3,7 +3,7 @@ const SUBJECTS = [
   { id: 'mat', title: 'Matematică', icon: '🔢', color: 'var(--s-mat)', desc: 'Construim numere, descoperim relații și rezolvăm probleme din viața de zi cu zi.', tagline: 'Gândesc și verific', age: '6–8 ani' },
   { id: 'lim', title: 'Limba română', icon: '📖', color: 'var(--s-lim)', desc: 'Ascultăm sunete, construim cuvinte, citim cu înțeles și scriem povești.', tagline: 'Citesc și povestesc', age: '6–8 ani' },
   { id: 'log', title: 'Logică și gândire', icon: '🔍', color: 'var(--s-log)', desc: 'Căutăm reguli, verificăm dovezi și explicăm cum am ajuns la o concluzie.', tagline: 'Gândesc și verific', age: '6–8 ani' },
-  { id: 'inf', title: 'Informatică', icon: '💻', color: 'var(--s-inf)', desc: 'Construim instrucțiuni, reparăm programe și învățăm să folosim tehnologia în siguranță.', tagline: 'Planific și testez', age: '6–8 ani' },
+  { id: 'inf', title: 'Descoperim tehnologia', icon: '💻', color: 'var(--s-inf)', desc: 'Construim instrucțiuni, reparăm programe și învățăm să folosim tehnologia în siguranță.', tagline: 'Planific și testez', age: '6–8 ani' },
   { id: 'sci', title: 'Științe și natură', icon: '🌱', color: 'var(--s-sci)', desc: 'Observăm, spunem ce credem că se va întâmpla, comparăm rezultate și descoperim natura.', tagline: 'Întreb și cercetez', age: '6–8 ani' },
   { id: 'civ', title: 'Dezvoltare personală', icon: '🤝', color: 'var(--s-civ)', desc: 'Ne cunoaștem, avem grijă de noi, construim relații respectuoase și învățăm să învățăm.', tagline: 'Mă cunosc și cresc', age: '6–8 ani' }
 ];

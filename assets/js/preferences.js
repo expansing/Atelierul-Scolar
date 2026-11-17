@@ -3,7 +3,7 @@ const Preferences = {
   avatars: { owl: '🦉', fox: '🦊', cat: '🐱', turtle: '🐢', hedgehog: '🦔', star: '🌟' },
   avatarNames: { owl: 'Bufniță', fox: 'Vulpe', cat: 'Pisică', turtle: 'Țestoasă', hedgehog: 'Arici', star: 'Stea' },
   sizes: [100, 110, 125, 150],
-  defaults() { return { font: 'readable', size: 100, theme: 'auto', sound: true, motion: false, level: 0, avatar: 'owl' }; },
+  defaults() { return { font: 'serif', size: 100, theme: 'auto', sound: true, motion: false, level: 0, avatar: 'owl' }; },
   validate(value) {
     if (!value || typeof value !== 'object' || Array.isArray(value) ||
       !Object.prototype.hasOwnProperty.call(this.fonts, value.font) || !this.sizes.includes(value.size) ||
