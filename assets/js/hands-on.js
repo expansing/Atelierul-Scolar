@@ -28,9 +28,9 @@ const HandsOn = {
       const items = pick(things, level === 0 ? 3 : 4), goal = Engines.randInt(0, items.length - 1);
       return {
         kind: 'hands-click', double, items: items.map(item => item[0]), names: items.map(item => item[1]), goal,
-        prompt: double ? 'Apasă de două ori, repede, pe ' + items[goal][1] + '.' : 'Apasă o dată pe ' + items[goal][1] + '.',
-        explain: double ? 'Două apăsări rapide, una după alta, se numesc dublu-clic.' : 'O apăsare scurtă se numește clic. Așa alegem un obiect.',
-        hint: double ? 'Apasă de două ori, fără pauză între apăsări.' : 'Caută desenul numit în cerință și apasă-l o singură dată.'
+        prompt: double ? 'Apasă de două ori pe ' + items[goal][1] + '. Nu te grăbi.' : 'Apasă o dată pe ' + items[goal][1] + '.',
+        explain: double ? 'Ai apăsat de două ori pe același desen. În acest joc nu trebuie să te grăbești.' : 'O apăsare scurtă se numește clic. Așa alegem un obiect.',
+        hint: double ? 'Apasă desenul o dată. Apoi apasă-l încă o dată.' : 'Caută desenul numit în cerință și apasă-l o singură dată.'
       };
     };
     const drag = () => {
@@ -77,8 +77,8 @@ const HandsOn = {
         return {
           kind: 'hands-type', start: '', target, exact: true,
           prompt: 'Scrie propoziția „' + target + '”, cu literă mare la început și punct la final.',
-          explain: 'Pentru litera mare folosești tasta Shift (⇧); punctul este pe tastă separată.',
-          hint: 'Ține apăsat Shift (⇧) când scrii prima literă. Nu uita punctul de la final.'
+          explain: 'Tasta ⇧ pregătește litera mare. La final scriem punct.',
+          hint: 'Pe tabletă apasă ⇧, apoi prima literă. La tastatura cu butoane ții Shift apăsat. Nu uita punctul.'
         };
       }
       const word = Engines.pick(words);
@@ -134,7 +134,7 @@ const HandsOn = {
       ['Mă joc afară', [0, 1], 'ne jucăm afară cât este lumină'],
       ['Citesc o poveste', [0, 1, 2], 'poți citi oricând'],
       ['Desenez', [0, 1, 2], 'poți desena oricând'],
-      ['Fac tema', [1, 2], 'tema se face după școală'],
+      ['Fac tema', [0, 1, 2], 'poți alege momentul pentru temă'],
       ['Fac o pauză de mișcare', [0, 1, 2], 'o pauză de mișcare ajută oricând'],
       ['Ajut la treburile casei', [0, 1, 2], 'poți ajuta oricând']
     ];
@@ -144,7 +144,7 @@ const HandsOn = {
       return {
         kind: 'hands-routine', slots: ['Dimineața', 'După-amiaza', 'Seara'],
         cards: cards.map(card => ({ text: card[0], allowed: card[1], why: card[2] })),
-        prompt: 'Așază activitățile în planul zilei: dimineața, după-amiaza sau seara.',
+        prompt: 'În acest plan, școala este dimineața. Așază activitățile la momentul potrivit.',
         explain: 'Unele activități au un moment potrivit, de exemplu micul dejun dimineața. Altele, ca desenul sau cititul, le poți alege tu: planul tău poate fi diferit de al unui coleg.',
         hint: 'Începe cu mesele și culcarea: ele au un moment clar. Apoi alege unde pui restul.'
       };
@@ -157,15 +157,15 @@ const HandsOn = {
     const { button, check, announce, isSolved } = tools;
     if (q.kind === 'hands-click') {
       const row = document.createElement('div'); row.className = 'hands-row';
-      let last = 0;
+      let taps = 0;
       q.items.forEach((icon, i) => {
         const node = button(icon, () => {
           if (isSolved()) return;
-          if (i !== q.goal) { check(false, 'Acesta este ' + q.names[i] + '. Caută ' + q.names[q.goal] + '.'); return; }
+          if (i !== q.goal) { taps = 0; check(false, 'Ai apăsat pe ' + q.names[i] + '. Caută ' + q.names[q.goal] + '.'); return; }
           if (!q.double) { check(true); return; }
-          const now = Date.now();
-          if (now - last < 800) { node.textContent = '📭'; check(true); }
-          else { last = now; announce('Bine! Acum încă o dată, repede.', false); }
+          taps++;
+          if (taps === 2) { node.textContent = '📭'; check(true); }
+          else announce('Mai apasă o dată pe același desen. Nu te grăbi.', false);
         }, 'hands-target');
         node.dataset.goal = String(i === q.goal);
         node.setAttribute('aria-label', q.names[i]);
@@ -222,7 +222,7 @@ const HandsOn = {
         nodes[i].disabled = true; nodes[i].classList.add('placed');
         zoneNodes[z].textContent += ' ' + item.icon;
         if (placed.size === q.items.length) check(true);
-        else announce('Bine! Mai sunt ' + (q.items.length - placed.size) + ' de mutat.', false);
+        else announce('Bine! ' + (q.items.length - placed.size === 1 ? 'Mai este un obiect' : 'Mai sunt ' + (q.items.length - placed.size) + ' obiecte') + ' de mutat.', false);
       };
       content.appendChild(pool); content.appendChild(zones);
       return;
@@ -271,7 +271,7 @@ const HandsOn = {
         if (chosen.some(m => !m)) { announce('Mai sunt propoziții fără semn.', true); return; }
         const wrong = chosen.findIndex((m, i) => m !== q.marks[i]);
         if (wrong < 0) { slots.forEach(s => { s.disabled = true; }); check(true); return; }
-        check(false, 'Recitește propoziția ' + (wrong + 1) + ': „' + q.sentences[wrong] + '”. Ce face ea: spune, întreabă sau arată o emoție?');
+        check(false, 'Ai pus ' + names[chosen[wrong]] + ' la propoziția ' + (wrong + 1) + ': „' + q.sentences[wrong] + '”. Ce face ea: spune, întreabă sau arată o emoție?');
       }, 'btn btn-primary'));
       return;
     }

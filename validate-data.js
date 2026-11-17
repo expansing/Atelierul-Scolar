@@ -187,7 +187,7 @@ if (require.main === module) {
   errors.forEach(error => console.error('✗ ' + error));
   if (errors.length) process.exitCode = 1;
   else console.log('✓ ' + content.SUBJECTS.length + ' discipline, ' + content.ACTIVITIES.length + ' activități, ' +
-    content.ACTIVITIES.length * (content.MissionGames.modes.length + 1) + ' jocuri principale, ' +
+    (content.ACTIVITIES.length + Object.keys(content.GAME_MISSIONS).length * content.MissionGames.modes.length) + ' jocuri principale, ' +
     Object.values(content.GAME_MISSIONS).reduce((sum, mission) => sum + mission.cases.length, 0) +
     ' cazuri noi și 11 opriri valide structural. Revizia lingvistică și factuală rămâne și o responsabilitate editorială.');
   const warnings = quality(content), bySubject = {};
