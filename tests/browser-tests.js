@@ -114,7 +114,7 @@
         ACTIVITIES.forEach(activity => Engines.gameOptions(activity.demo).forEach(option => {
           sessions.push({ id: activity.id + '/' + option.id, demo: Object.assign({}, activity.demo, { focus: option.id }), minLevel: option.minLevel || 0 });
         }));
-        ACTIVITIES.forEach(activity => MissionGames.modes.forEach(mode => {
+        ACTIVITIES.filter(activity => GAME_MISSIONS[activity.id]).forEach(activity => MissionGames.modes.forEach(mode => {
           sessions.push({ id: activity.id + '/mission-' + mode, demo: MissionGames.demo(activity.id, mode) });
         }));
         let completed = 0;
@@ -163,7 +163,7 @@
               if (q.kind === 'experiment') {
                 const radio = Array.from(fixture.querySelectorAll('input[type=radio]')).find(input => input.parentElement.textContent.trim() === q.options[q.answer]);
                 assert(radio, 'Predicție disponibilă'); radio.checked = true; radio.dispatchEvent(new Event('change'));
-                click('Pornește modelul și observă');
+                click('▶ Pornește experimentul');
               }
               if (['choice', 'story', 'experiment'].includes(q.kind)) click(q.options[q.answer]);
               else if (q.kind === 'arrange') {
@@ -396,10 +396,12 @@
     test('All render surfaces include guided practice and accessible tabs', () => {
       ACTIVITIES.forEach(activity => {
         fixture.innerHTML = Render.activity(activity.id);
-        assert(fixture.querySelectorAll('[role=tab]').length === 6, activity.id + ': taburi');
+        fixture.querySelector('#panel-explicatie').hidden = false; // măsurăm caietul din a doua filă
+        assert(fixture.querySelectorAll('[role=tab]').length === 3, activity.id + ': taburi');
+        assert(fixture.querySelector('[role=tab][aria-selected=true]').dataset.tab === 'joc', activity.id + ': jocul este prima filă');
         assert(fixture.querySelector('.hands-on'), activity.id + ': explorare');
         assert(fixture.querySelectorAll('[data-level]').length === 3, activity.id + ': niveluri');
-        assert(fixture.querySelectorAll('[data-mission-game]').length === 4, activity.id + ': minimum patru jocuri vizibile');
+        assert(fixture.querySelectorAll('[data-mission-game]').length === (GAME_MISSIONS[activity.id] ? 4 : 0), activity.id + ': jocurile suplimentare apar doar unde există');
         MissionGames.options(activity.id).forEach(option => assert(fixture.textContent.includes(option.title), activity.id + ': titlu propriu pentru joc'));
         assert(fixture.querySelectorAll('.lesson-words dt').length >= 2, activity.id + ': vocabular explicat');
         assert(fixture.querySelectorAll('.example-card > ol > li').length >= 3, activity.id + ': rezolvare vizibilă');
@@ -437,6 +439,7 @@
     test('Every slider has working touch-sized plus/minus buttons with synchronized boundaries', () => {
       ACTIVITIES.filter(a => a.subject === 'mat').forEach(activity => {
         fixture.innerHTML = Render.activity(activity.id); Discovery.init(fixture);
+        fixture.querySelector('#panel-explicatie').hidden = false; // explorarea este în a doua filă
         fixture.querySelectorAll('input[type=range]').forEach(input => {
           const group = input.closest('.range-control'); assert(group, activity.id + ': butoane pentru fiecare bară');
           const minus = group.querySelector('[data-direction="-1"]'), plus = group.querySelector('[data-direction="1"]');

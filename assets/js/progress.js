@@ -38,7 +38,7 @@ const Progress = {
             !['objective', 'self', 'practice'].includes(level.evaluation) ||
             !integer(level.hints, 0, 1000000) || !integer(level.errors, 0, 1000000) ||
             typeof level.finishedAt !== 'string' || Number.isNaN(Date.parse(level.finishedAt))) throw new Error('Rezultat salvat invalid.');
-          if (level.mastered && (level.evaluation !== 'objective' || level.best < 80)) throw new Error('Competență incompatibilă cu rezultatul.');
+          if (level.mastered && (level.evaluation !== 'objective' || level.best < 75)) throw new Error('Competență incompatibilă cu rezultatul.');
         });
       });
     });
@@ -110,7 +110,7 @@ const Progress = {
     const activity = profile.activities[id] || { viewed: true, levels: {} };
     profile.activities[id] = activity;
     const old = activity.levels[result.level];
-    const mastered = result.evaluation === 'objective' && result.percent >= 80 && result.hints === 0;
+    const mastered = result.evaluation === 'objective' && result.percent >= 75 && result.hints === 0;
     activity.levels[result.level] = {
       attempts: (old ? old.attempts : 0) + 1,
       best: Math.max(old ? old.best : 0, result.percent), latest: result.percent,

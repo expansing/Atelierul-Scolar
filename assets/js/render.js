@@ -47,61 +47,59 @@ const Render = {
   },
   home() {
     const recommendations = Progress.recommendations();
-    return '<section class="hero"><div class="mascot-big" aria-hidden="true">🦉</div><h1>Descoperă. Încearcă. Explică.</h1>' +
-      '<p>Un atelier cu ' + ACTIVITIES.length + ' de activități, minimum patru jocuri pentru fiecare lecție și trei niveluri deschise. Înveți în ritmul tău, fără cronometru.</p>' +
+    return '<div class="home-kid"><section class="hero"><div class="mascot-big" aria-hidden="true">🦉</div><h1>Ce vrei să înveți azi?</h1>' +
       '<div class="hero-motto">' + Engines.quantity(Progress.totalPracticed(), 'activitate exersată', 'activități exersate') + ' · ' +
       Engines.quantity(Progress.totalCompleted(), 'activitate stăpânită', 'activități stăpânite') + ' · ' + Engines.quantity(Progress.totalStars(), 'stea', 'stele') + '</div></section>' +
-      '<a class="dece-banner" href="dece.html"><span aria-hidden="true">🌱</span><span><strong>Cum învățăm?</strong> Curiozitate, strategii, practică și pauze.</span></a>' +
-      '<a class="dece-banner" href="activity.html?activity=' + THINKING_PATH.activities[0] + '"><span aria-hidden="true">🔎</span><span><strong>' +
-        this.escape(THINKING_PATH.title) + '</strong> Verific dovezile și învăț să spun respectuos „Nu sunt de acord”.</span></a>' +
-      (recommendations.length ? '<section class="callout"><h2>Merită să revenim</h2><p>Aici ai exersat cu ajutor sau ai avut nevoie de corectări. Poți începe de la un nivel mai simplu.</p>' +
-        this.list(recommendations.map(a => a.title)) + recommendations.map(a => '<a class="btn" href="activity.html?activity=' + a.id + '">' + this.escape(a.title) + '</a>').join(' ') + '</section>' : '') +
       '<div class="subjects-grid">' + SUBJECTS.map(s => {
         const acts = ACTIVITIES_BY_SUBJECT[s.id], count = acts.filter(a => ['practiced', 'mastered'].includes(Progress.status(a.id))).length;
         return '<a class="subject-card" href="subject.html?subject=' + s.id + '" style="--sc:' + s.color + '">' +
           '<div class="sc-icon" aria-hidden="true">' + s.icon + '</div><h2>' + s.title + '</h2><p>' + s.desc + '</p>' +
-          '<div class="sc-meta"><span class="chip">' + acts.length + ' activități</span><span class="chip">' + count + (count === 1 ? ' exersată' : ' exersate') + '</span></div>' +
+          '<div class="sc-meta"><span class="chip">' + Engines.quantity(acts.length, 'activitate', 'activități') + '</span><span class="chip">' + count + (count === 1 ? ' exersată' : ' exersate') + '</span></div>' +
           '<progress aria-label="Activități exersate la ' + s.title + '" max="' + acts.length + '" value="' + count + '"></progress></a>';
       }).join('') + '</div>' +
-      '<section class="callout"><h2>Pentru adulții care sprijină învățarea</h2><p>Steaua arată minimum 80% răspunsuri corecte din prima, fără indicii, la un nivel evaluat obiectiv. Scrierea liberă și memoria sunt exerciții, nu certificări. Progresul nu este un diagnostic și nu înlocuiește feedbackul unui profesor.</p></section>';
+      (recommendations.length ? '<section class="callout"><h2>Mai încearcă o dată</h2><p>La aceste lecții ai avut nevoie de ajutor. Le poți relua, de la un nivel mai ușor.</p>' +
+        recommendations.map(a => '<a class="btn" href="activity.html?activity=' + a.id + '">' + this.escape(a.title) + '</a>').join(' ') + '</section>' : '') +
+      '<a class="dece-banner" href="dece.html"><span aria-hidden="true">🌱</span><span><strong>Cum învățăm?</strong> Curiozitate, strategii, practică și pauze.</span></a>' +
+      '<a class="dece-banner" href="activity.html?activity=' + THINKING_PATH.activities[0] + '"><span aria-hidden="true">🔎</span><span><strong>' +
+        this.escape(THINKING_PATH.title) + '</strong> Pentru copii mai mari sau împreună cu un adult: dovezi, păreri și „Nu sunt de acord”.</span></a></div>' +
+      '<section class="callout"><h2>Pentru adulții care sprijină învățarea</h2><p>Steaua arată că aproape toate răspunsurile au fost corecte din prima (cel puțin 3 din 4), fără indicii, la un nivel evaluat obiectiv. Scrierea liberă și memoria sunt exerciții, nu certificări. Progresul nu este un diagnostic și nu înlocuiește feedbackul unui profesor.</p></section>';
   },
   subject(id) {
     const subject = SUBJECTS.find(s => s.id === id);
     if (!subject) return this.invalid('Disciplina nu a fost găsită.');
-    return '<section class="subject-hero" style="--sc:' + subject.color + '"><div class="sh-icon" aria-hidden="true">' + subject.icon + '</div><h1>' + subject.title + '</h1><p>' + subject.desc + '</p><p>Alege liber. Poți reveni la obiecte concrete și poți schimba nivelul oricând.</p></section>' +
-      (THINKING_PATH.activities.some(activityId => ACTIVITIES_BY_SUBJECT[id].some(activity => activity.id === activityId)) ? this.thinkingPath() : '') +
+    return '<section class="subject-hero" style="--sc:' + subject.color + '"><div class="sh-icon" aria-hidden="true">' + subject.icon + '</div><h1>' + subject.title + '</h1><p>' + subject.desc + '</p><p>Alege ce lecție vrei.</p></section>' +
       '<div class="activities-list">' + ACTIVITIES_BY_SUBJECT[id].map(a => '<a class="activity-card" href="activity.html?activity=' + a.id + '" style="--sc:' + subject.color + '">' +
-        '<div class="ac-num">' + a.num + '</div><div class="ac-icon" aria-hidden="true">' + a.icon + '</div><div class="ac-body"><h2>' + a.title + '</h2><p>' + this.escape(a.objectives[0]) + '</p>' +
-        '<span class="chip">' + Progress.label(a.id) + '</span> <span class="chip">4 jocuri · 3 niveluri</span></div></a>').join('') + '</div>';
+        '<div class="ac-num">' + a.num + '</div><div class="ac-icon" aria-hidden="true">' + a.icon + '</div><div class="ac-body"><h2>' + a.title + '</h2><p class="kid-line">' + this.escape(a.kid || a.objectives[0]) + '</p>' +
+        '<span class="chip">' + Progress.label(a.id) + '</span></div></a>').join('') + '</div>' +
+      (THINKING_PATH.activities.some(activityId => ACTIVITIES_BY_SUBJECT[id].some(activity => activity.id === activityId)) ? this.thinkingPath() : '');
   },
   activity(id) {
     const activity = ACTIVITIES.find(a => a.id === id);
     if (!activity) return this.invalid('Activitatea nu a fost găsită.');
     const subject = SUBJECTS.find(s => s.id === activity.subject), acts = ACTIVITIES_BY_SUBJECT[subject.id], index = acts.indexOf(activity);
     const preferredLevel = Preferences.get(Progress.profile()).level;
-    const tabs = [['explicatie', 'Descoperă'], ['joc', 'Atelier de joc'], ['obiective', 'Obiective'], ['intrebari', 'Reflectează'], ['parinte', 'Pentru adulți'], ['trecere', 'Progres']];
+    const tabs = [['joc', '🎮 Joacă'], ['explicatie', '📖 Descoperă'], ['parinte', '👪 Pentru adulți']];
+    const part = (pid, content) => '<section class="adult-part" id="panel-' + pid + '">' + content + '</section>';
     return '<section class="lesson-hero" style="--sc:' + subject.color + '"><div class="lh-icon" aria-hidden="true">' + activity.icon + '</div>' +
-      '<a href="subject.html?subject=' + subject.id + '">' + subject.title + '</a><h1>' + activity.title + '</h1><p>4 jocuri · 3 niveluri · ' + activity.duration + ', cu pauze când ai nevoie · <span id="activity-status">' + Progress.label(id) + '</span></p></section>' +
+      '<a href="subject.html?subject=' + subject.id + '">' + subject.title + '</a><h1>' + activity.title + '</h1><p>' + activity.duration + ' · <span id="activity-status">' + Progress.label(id) + '</span></p></section>' +
       '<div class="tabs" role="tablist" aria-label="Secțiunile lecției">' + tabs.map((t, i) => '<button class="tab' + (i === 0 ? ' active' : '') +
         '" role="tab" id="tab-' + t[0] + '" aria-controls="panel-' + t[0] + '" aria-selected="' + (i === 0) + '" tabindex="' + (i === 0 ? '0' : '-1') + '" data-tab="' + t[0] + '">' + t[1] + '</button>').join('') + '</div>' +
       '<div class="panels">' +
-      this.panel('explicatie', Discovery.render(activity), true) +
-      this.panel('joc', '<h2>Patru jocuri, patru feluri de a exersa</h2><p>Alege un cartonaș, apoi nivelul. Cele trei jocuri noi folosesc alte situații la fiecare nivel. Schimbarea jocului, nivelului sau profilului reîncepe încercarea, nu șterge rezultatele salvate.</p>' +
-        this.gameCards(activity) +
-        '<div class="level-picker" role="group" aria-label="Dificultatea jocului">' + LEVELS.map((l, i) => '<button class="level-button' + (i === preferredLevel ? ' selected' : '') +
-          '" data-level="' + i + '" aria-pressed="' + (i === preferredLevel) + '"><strong>' + l.title + '</strong><span>' + l.description + '</span></button>').join('') + '</div>' + this.gameMenu(activity.demo) +
-        '<p class="game-rules">Jocul inițial păstrează evaluarea lui. Investigația, reparația și planificarea sunt practică fără stele și nu modifică progresul deja salvat. Poți cere indicii și poți corecta.</p>' +
-        '<h3 id="selected-game-title">Jocul lecției</h3><p id="selected-game-description" role="status">Încearcă, corectează și citește explicația. „Continuă” apare după rezolvare.</p><div class="game" id="game-area"></div>') +
-      this.panel('obiective', '<h2>Ce exersezi</h2><p>Lucrăm pe rând la aceste obiective. Nu trebuie să le poți face pe toate de la început.</p>' + this.list(activity.objectives) +
+      this.panel('joc', '<div class="level-picker" role="group" aria-label="Dificultatea jocului">' + LEVELS.map((l, i) => '<button class="level-button' + (i === preferredLevel ? ' selected' : '') +
+          '" data-level="' + i + '" aria-pressed="' + (i === preferredLevel) + '"><strong>' + ['🌱 ', '🌿 ', '🌳 '][i] + l.title + '</strong></button>').join('') + '</div>' +
+        '<h2 class="game-title" id="selected-game-title" hidden>Jocul lecției</h2><p class="game-rules" id="selected-game-description" role="status" hidden>Încearcă. Dacă greșești, mai încearcă o dată.</p><div class="game" id="game-area"></div>' +
+        (MissionGames.options(activity.id).length ? '<details class="more-games"><summary>🎲 Alte jocuri (se citește mai mult)</summary><p>Trei jocuri de gândit, bune de făcut împreună cu un adult. Sunt exercițiu, fără stele.</p>' +
+        this.gameCards(activity) + this.gameMenu(activity.demo) + '</details>' : ''), true) +
+      this.panel('explicatie', Discovery.render(activity) + '<div class="lesson-actions"><button class="btn" id="btn-complete">Am citit explicația</button></div>') +
+      this.panel('parinte', part('obiective', '<h2>Ce exersează copilul</h2><p>Lucrăm pe rând la aceste obiective. Nu trebuie să le poți face pe toate de la început.</p>' + this.list(activity.objectives) +
         '<h3>Cum îți dai seama că ai înțeles?</h3><p>' + this.escape(activity.detail.check) + '</p><p>Începe cu exemplul rezolvat, încearcă o situație nouă și explică ce ai verificat. Poți cere obiecte, desen sau un indiciu.</p>') +
-      this.panel('intrebari', '<h2>Reflectează: explică, compară, verifică</h2><p>Alege o întrebare și gândește-te la exemplul lecției. Nu este un test cu răspuns obligatoriu și nu primești notă.</p><div class="reflection-prompts">' +
+      part('intrebari', '<h2>Reflectează: explică, compară, verifică</h2><p>Alege o întrebare și gândește-te la exemplul lecției. Nu este un test cu răspuns obligatoriu și nu primești notă.</p><div class="reflection-prompts">' +
         activity.reflection.map((item, i) => '<article class="discovery-card"><h3>' + (i + 1) + '. ' + this.escape(item.question) + '</h3><p>' + this.escape(item.support) + '</p></article>').join('') +
         '</div><p>Poți explica prin vorbe, desen, gesturi sau obiecte. Nu trebuie să vorbești despre experiențe personale dacă nu dorești.</p>') +
-      this.panel('parinte', '<h2>Sprijin fără grabă</h2><h3>Ce observăm</h3>' + this.list(activity.parent.watch) + '<h3>Cum ajutăm</h3>' + this.list(activity.parent.help) + '<h3>Când revenim la concret</h3>' + this.list(activity.parent.support)) +
-      this.panel('trecere', '<h2>Parcurs, exersat, stăpânit</h2><p>Parcurs = ai marcat lecția citită. Exersat = ai încheiat o rundă. Stăpânit = ai câștigat steaua la toate cele trei niveluri evaluate obiectiv.</p>' +
+      part('sprijin', '<h2>Sprijin fără grabă</h2><h3>Ce observăm</h3>' + this.list(activity.parent.watch) + '<h3>Cum ajutăm</h3>' + this.list(activity.parent.help) + '<h3>Când revenim la concret</h3>' + this.list(activity.parent.support)) +
+      part('trecere', '<h2>Parcurs, exersat, stăpânit</h2><p>Parcurs = lecția a fost marcată citită. Exersat = o rundă încheiată. Stea = cel puțin 3 din 4 răspunsuri corecte din prima, fără indiciu. Stăpânit = stea la toate cele trei niveluri.</p>' +
         '<p>Scrierea liberă și memoria rămân „Exersat”: nu pretindem că un algoritm simplu certifică aceste competențe.</p>' + this.list(activity.pass) +
-        '<div id="level-results">' + this.results(id) + '</div>') + '</div>' +
-      '<div class="lesson-actions"><button class="btn" id="btn-complete">Am parcurs explicația (fără stea)</button></div>' +
+        '<div id="level-results">' + this.results(id) + '</div>')) + '</div>' +
       (THINKING_PATH.activities.includes(id) ? this.thinkingPath(id) : '') +
       '<nav class="lesson-nav" aria-label="Alte lecții">' +
       (index > 0 ? '<a href="activity.html?activity=' + acts[index - 1].id + '">← ' + acts[index - 1].title + '</a>' : '<a href="subject.html?subject=' + subject.id + '">← Înapoi la disciplină</a>') +

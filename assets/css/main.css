@@ -378,3 +378,63 @@ legend { font-weight: bold; max-width: 100%; }
   .symmetry-grid .paint-cell { min-height: 26px; }
   .geoboard .peg { min-height: 30px; }
 }
+
+/* —— Revizie noiembrie 2026: jocul întâi, text mai puțin, ținte de atingere mai mari —— */
+.nav-link { min-height: 44px; display: inline-flex; align-items: center; padding: 0.5rem 0.5rem; }
+.nav .chip, .active-profile { min-height: 44px; display: inline-flex; align-items: center; }
+.lesson-hero { padding-block: 0.9rem; }
+.lesson-hero .lh-icon { font-size: 2rem; float: inline-end; }
+.lesson-hero > a { display: inline-flex; align-items: center; min-height: 44px; }
+.lesson-hero h1 { margin-block: 0.1rem 0.3rem; font-size: clamp(1.5rem, 3.4vw, 2.2rem); }
+.tab { min-height: 52px; font-size: 1.05rem; }
+.level-picker { margin-bottom: 0.8rem; }
+.level-button { text-align: center; padding: 0.7rem 0.5rem; min-height: 52px; }
+.game-title { font-size: 1.15rem; margin-block: 0.4rem 0.2rem; }
+.game-rules { margin-top: 0; }
+.quiz-opt { font-size: 1.1rem; }
+.quiz-opt.wrong { opacity: 0.55; text-decoration: line-through; border-style: dashed; border-color: var(--danger); }
+.quiz-opt.correct { border-color: var(--focus); box-shadow: inset 0 0 0 2px var(--focus); font-weight: 700; }
+.more-games { margin-top: 2rem; border: 2px dashed var(--border); border-radius: var(--radius-sm); padding: 0.4rem 1rem; }
+.more-games > summary { cursor: pointer; font-weight: 700; min-height: 48px; display: flex; align-items: center; }
+.more-games[open] { padding-bottom: 1rem; }
+.adult-part + .adult-part { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.more-text { margin-block: 0.8rem; }
+.more-text > summary { cursor: pointer; font-weight: 700; min-height: 44px; display: flex; align-items: center; }
+.eyebrow, .learning-matrix { font-size: max(0.875rem, 14px); }
+.kid-line { font-size: 1.05rem; }
+.home-kid .hero { padding: 0.4rem 0; margin-bottom: 1rem; }
+.home-kid .mascot-big { font-size: 2.6rem; }
+.home-kid .hero h1 { font-size: clamp(1.5rem, 3.5vw, 2.2rem); margin-block: 0.2rem; }
+
+.count-scene { white-space: pre-line; line-height: 1.5; }
+
+/* lecția: antet pe un rând, ca sarcina și variantele să încapă pe primul ecran al tabletei */
+.lesson-hero { display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 1rem; padding: 0.5rem 1rem; margin-bottom: 0.6rem; }
+.lesson-hero .lh-icon { order: 3; margin-inline-start: auto; font-size: 1.6rem; float: none; }
+.lesson-hero h1 { font-size: clamp(1.3rem, 2.6vw, 1.8rem); margin: 0; }
+.lesson-hero p { margin: 0; color: var(--text-soft); font-size: 0.95rem; }
+.tabs { padding-block: 0.2rem 0.6rem; }
+.tab { min-height: 46px; padding: 0.45rem; }
+#panel-joc { padding-top: 0.9rem; }
+.level-button { min-height: 46px; padding: 0.45rem 0.5rem; }
+#panel-joc .g-status { margin-block: 0.2rem; }
+#panel-joc .prompt-row { margin-block: 0.4rem; }
+#panel-joc .count-scene { margin-block: 0.3rem; }
+@media (max-width: 700px) {
+  .level-picker { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.35rem; }
+  .level-button { font-size: 0.86rem; padding: 0.3rem 0.15rem; }
+  .tabs { flex-wrap: nowrap; gap: 0.35rem; }
+  .tab { flex: 1 1 0; min-width: 0; font-size: 0.86rem; padding: 0.3rem 0.15rem; }
+}
+
+.quiz-opt.emoji-opt { font-size: 2rem; line-height: 1.2; }
+
+.subject-hero { display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 1rem; padding: 0.6rem 1rem; margin-bottom: 0.8rem; }
+.subject-hero .sh-icon { font-size: 1.8rem; }
+.subject-hero h1 { font-size: clamp(1.4rem, 3vw, 2rem); margin: 0; }
+.subject-hero p { margin: 0; flex-basis: 100%; color: var(--text-soft); }
+.subject-hero p + p { display: none; }
+@media (min-width: 900px) {
+  .activities-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  .activities-list .activity-card { margin: 0; }
+}

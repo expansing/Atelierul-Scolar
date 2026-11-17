@@ -4,13 +4,13 @@ const MissionGames = {
   modes: ['evidence', 'repair', 'plan'],
   options(activityId) {
     const mission = GAME_MISSIONS[activityId];
-    if (!mission) throw new Error('Lipsesc jocurile pentru ' + activityId + '.');
+    if (!mission) return []; // lecțiile fără jocuri suplimentare au doar jocul lecției
     return [
       { id: 'mission-evidence', mode: 'evidence', title: mission.titles.evidence, icon: '🔎',
         description: 'Investighezi o situație și alegi toate informațiile care ajută la răspuns. Separi dovezile relevante de detaliile fără legătură.' },
       { id: 'mission-repair', mode: 'repair', title: mission.titles.repair, icon: '🔧',
         description: 'Găsești pasul greșit într-o rezolvare și îl înlocuiești. Nu refaci la întâmplare pașii care sunt deja potriviți.' },
-      { id: 'mission-plan', mode: 'plan', title: mission.titles.plan, icon: '🧩',
+      { id: 'mission-plan', mode: 'plan', title: mission.titles.plan, icon: '📋',
         description: 'Construiești un plan din cartonașe, lași deoparte pasul nepotrivit și alegi cum verifici rezultatul.' }
     ];
   },

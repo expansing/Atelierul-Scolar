@@ -36,9 +36,9 @@ const HandsOn = {
     const drag = () => {
       if (level === 2) {
         const fruits = pick([['🍎', 'măr'], ['🍐', 'pară'], ['🍌', 'banană'], ['🍇', 'struguri']], 2);
-        const toys = pick([['🧸', 'ursuleț'], ['⚽', 'minge'], ['🪀', 'yo-yo'], ['🚂', 'trenuleț']], 2);
+        const toys = pick([['🐻', 'ursuleț'], ['⚽', 'minge'], ['🎈', 'balon'], ['🚂', 'trenuleț']], 2);
         return {
-          kind: 'hands-drag', zones: ['🧺 Coșul cu fructe', '📦 Cutia cu jucării'],
+          kind: 'hands-drag', zones: ['🛒 Coșul cu fructe', '📦 Cutia cu jucării'],
           items: Engines.shuffle(fruits.map(f => ({ icon: f[0], name: f[1], zone: 0 })).concat(toys.map(t => ({ icon: t[0], name: t[1], zone: 1 })))),
           prompt: 'Trage fructele în coș și jucăriile în cutie.',
           explain: 'Ai mutat fiecare obiect în locul potrivit. Așa mutăm și fișierele în dosare.',
@@ -47,7 +47,7 @@ const HandsOn = {
       }
       const item = Engines.pick([['🍎', 'mărul'], ['🍐', 'para'], ['🍌', 'banana']]);
       return {
-        kind: 'hands-drag', zones: ['🧺 Coșul'], items: [{ icon: item[0], name: item[1], zone: 0 }],
+        kind: 'hands-drag', zones: ['🛒 Coșul'], items: [{ icon: item[0], name: item[1], zone: 0 }],
         prompt: 'Trage ' + item[1] + ' în coș.',
         explain: 'Ai tras un obiect: l-ai ținut apăsat și l-ai mutat.',
         hint: 'Ține apăsat pe ' + item[1] + ' și mută-l în coș. Sau apasă ' + item[1] + ', apoi coșul.'

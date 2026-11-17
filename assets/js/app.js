@@ -41,7 +41,7 @@
         const saved = Progress.record(activity.id, result);
         updateProgress();
         if (saved.newStar) { Sound.win(); Confetti.burst(); }
-        if (saved.saved) message(saved.newStar ? 'Ai câștigat o stea: minimum 80% din prima, fără indicii!' : 'Rundă înregistrată. Ai exersat și ai verificat pașii.');
+        if (saved.saved) message(saved.newStar ? 'Bravo! Ai câștigat o stea!' : 'Rundă terminată. Ai exersat bine. Mai încearcă pentru stea!');
       });
     } catch (error) {
       console.error('Jocul nu a putut fi pornit.', error);
@@ -115,9 +115,11 @@
     });
     const mission = MissionGames.options(activity.id).find(option => option.mode === missionMode);
     title.textContent = mission ? mission.title : 'Jocul lecției';
+    // jocul lecției nu are nevoie de titlu și reguli: lăsăm loc sarcinii
+    title.hidden = !mission; document.getElementById('selected-game-description').hidden = !mission;
     document.getElementById('selected-game-description').textContent = mission ?
-      mission.description + ' Practică fără stele. Fiecare nivel are o altă situație; reluarea repetă cazul ales.' :
-      'Încearcă, corectează și citește explicația. „Continuă” apare după rezolvare.';
+      mission.description + ' Exercițiu fără stele.' :
+      'Încearcă. Dacă greșești, mai încearcă o dată.';
     const select = document.getElementById('game-select');
     if (!select) return;
     const options = Engines.gameOptions(activity.demo);
@@ -127,7 +129,7 @@
     const chosen = options.find(option => option.id === focusGame);
     if (chosen && level < (chosen.minLevel || 0)) {
       focusGame = '';
-      document.querySelector('[data-mission-game=""]').setAttribute('aria-pressed', 'true');
+      const first = document.querySelector('[data-mission-game=""]'); if (first) first.setAttribute('aria-pressed', 'true');
       message('Acest joc începe de la nivelul Exersez. La Descopăr am selectat runda completă.');
     }
     select.value = focusGame;
@@ -173,6 +175,7 @@
     if (activity) document.title = activity.title + ' — Atelierul Școlar';
     Discovery.init(main);
     initTabs(); initProfiles(); initSettings(); initReading(); updateProgress();
+    if (activity && document.getElementById('game-area')) startGame();
     if (typeof Dece !== 'undefined') Dece.init();
     if (assetVersion) document.querySelectorAll('a[href]').forEach(link => {
       if (!/^[a-z-]+\.html(?:[?#]|$)/.test(link.getAttribute('href'))) return;
@@ -183,7 +186,7 @@
     const complete = document.getElementById('btn-complete');
     if (complete && activity) complete.addEventListener('click', () => {
       const saved = Progress.markViewed(activity.id); updateProgress();
-      if (saved) message('Explicație marcată ca parcursă. Jocul și competențele se înregistrează separat.');
+      if (saved) message('Ai citit explicația. Acum poți juca!');
     });
   }
   function initProfiles() {
