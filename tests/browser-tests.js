@@ -46,6 +46,11 @@
           }
         });
         assert(Speech.clean('?') === 'semnul întrebării' && Speech.clean('🍎 Mere') === 'Mere', 'semnele și emoji-urile nu sunt pregătite pentru voce');
+        assert(Speech.clean('🍎 🍐') === 'măr, pară' && Speech.clean('🔵') === 'cerc albastru', 'Variantele vizuale au nume pentru ascultare');
+        Speech.supported = () => false;
+        const game = start(ACTIVITIES[0].demo, 0);
+        assert(fixture.querySelector('#game-listen'), 'Ascultă rămâne disponibil pentru a explica lipsa vocii');
+        game.dispose();
       } finally { Speech.speak = realSpeak; Speech.supported = realSupported; }
     });
     test('Sound games keep the word hidden until an adult reveals it, with a picture fallback without a voice', () => {
@@ -80,7 +85,15 @@
       const tasks = [0, 1, 2].flatMap(level => HandsOn.deviceTasks(level));
       const single = tasks.find(t => t.kind === 'hands-click' && !t.double), double = tasks.find(t => t.kind === 'hands-click' && t.double);
       attempt(single, () => fixture.querySelector('.hands-target[data-goal="false"]').click(), () => fixture.querySelector('.hands-target[data-goal="true"]').click());
-      attempt(double, () => fixture.querySelector('.hands-target[data-goal="true"]').click(), () => fixture.querySelector('.hands-target[data-goal="true"]').click());
+      const realNow = Date.now;
+      try {
+        let time = 1000;
+        Date.now = () => time;
+        attempt(double, () => fixture.querySelector('.hands-target[data-goal="true"]').click(), () => {
+          time += 60000;
+          fixture.querySelector('.hands-target[data-goal="true"]').click();
+        });
+      } finally { Date.now = realNow; }
       const sentence = tasks.find(t => t.kind === 'hands-type' && t.exact);
       attempt(sentence, () => { fixture.querySelector('#hands-input').value = sentence.target.slice(0, -1); click('Verifică');
         assert(fixture.querySelector('#game-feedback').textContent.includes('punctul'), 'mesajul numește punctul lipsă'); },
@@ -222,7 +235,7 @@
               } else if (q.kind === 'writing') {
                 fixture.querySelector('textarea').value = 'Mara merge încet în parcul liniștit. Acolo vede o floare galbenă și frumoasă. La final se întoarce bucuroasă acasă.';
                 fixture.querySelectorAll('input[type=checkbox]').forEach(input => { input.checked = true; });
-                click('Verifică forma și încheie autoevaluarea');
+                click('Verifică textul');
               } else if (q.kind === 'memory') {
                 const cards = Array.from(fixture.querySelectorAll('.memory-card')), known = new Map();
                 let safety = 0;
@@ -263,7 +276,7 @@
             assert(result && result.level === level && result.total === questions.length, activity.id + ': rezultat complet');
             if (activity.demo.focus || activity.demo.type === 'mission') {
               assert(result.evaluation === 'practice', 'Selected games cannot certify the whole lesson');
-              assert(fixture.textContent.includes('fără modificarea progresului salvat'), 'Practice outcome is explicit');
+              assert(fixture.textContent.includes('joc în plus, fără stele'), 'Practice outcome is explicit');
             } else Progress.record(activity.id, result);
             completed++;
             game.dispose();
@@ -355,14 +368,40 @@
       fixture.querySelectorAll('select').forEach((select, i) => { select.value = String(i); select.dispatchEvent(new Event('change')); });
       click('Verifică perechile'); assert(!fixture.querySelector('#game-next').hidden, 'Perechile pot fi corectate'); game.dispose();
     });
+    test('Wrong constructed answers name the attempted choice and include a hint', () => {
+      const verifyFeedback = (question, act, expected) => {
+        const game = singleRound(question);
+        act();
+        const text = fixture.querySelector('#game-feedback').textContent;
+        assert(text.includes(expected), question.kind + ': alegerea greșită trebuie numită');
+        assert(text.includes(Engines.nudge(question)), question.kind + ': indiciul trebuie să apară imediat');
+        assert(fixture.querySelector('#game-next').hidden, question.kind + ': nu trece singur mai departe');
+        game.dispose();
+      };
+      const calculation = MathWorkshop.arithmetic('add', 0, 1);
+      verifyFeedback(calculation, () => {
+        fixture.querySelector('.calculation-form input').value = '0';
+        click('Verifică planul');
+      }, 'ai scris „0”');
+      verifyFeedback({ kind: 'arrange', prompt: 'Refă Ana citește.', tokens: ['Ana', 'citește.'], hint: 'Caută litera mare.', explain: 'Ana citește.' }, () => {
+        click('citește.'); click('Ana'); click('Verifică ordinea');
+      }, '„citește.”');
+      verifyFeedback({ kind: 'match', prompt: 'Potrivește.', pairs: [{a:'rece',b:'cald'},{a:'mic',b:'mare'}], hint: 'Caută sensul opus.', explain: 'Rece și cald sunt opuse.' }, () => {
+        fixture.querySelectorAll('select').forEach((select,index) => { select.value=String(1-index); select.dispatchEvent(new Event('change')); });
+        click('Verifică perechile');
+      }, '„rece” de „mare”');
+      verifyFeedback(Engines.generate('placevalue', 'build', 0, 0), () => click('Verifică numărul'), 'Ai construit numărul 0');
+    });
     test('Writing rejects xxx in the actual interface and never claims grammatical certification', () => {
       let result;
       const game = start(Content.task('type', 'story'), 0, value => { result = value; });
-      fixture.querySelector('textarea').value = 'xxx'; click('Verifică forma și încheie autoevaluarea');
+      assert(fixture.textContent.includes('Jocul nu poate verifica dacă povestea are sens.'), 'Limita verificării este explicată simplu');
+      assert(!/certificare|feedback|server|competență/.test(fixture.textContent), 'Fără jargon în jocul copilului');
+      fixture.querySelector('textarea').value = 'xxx'; click('Verifică textul');
       assert(fixture.querySelector('#game-next').hidden, 'xxx este respins');
       fixture.querySelector('textarea').value = 'Mara merge în parc.';
       fixture.querySelectorAll('input[type=checkbox]').forEach(input => { input.checked = true; });
-      click('Verifică forma și încheie autoevaluarea'); click('Continuă');
+      click('Verifică textul'); click('Continuă');
       assert(result.evaluation === 'self', 'Scrierea nu certifică o competență automat'); game.dispose();
     });
     test('Robot accepts a valid route and rejects a blocked command', () => {
@@ -397,7 +436,8 @@
       ACTIVITIES.forEach(activity => {
         fixture.innerHTML = Render.activity(activity.id);
         fixture.querySelector('#panel-explicatie').hidden = false; // măsurăm caietul din a doua filă
-        assert(fixture.querySelectorAll('[role=tab]').length === 3, activity.id + ': taburi');
+        assert(fixture.querySelectorAll('[role=tab]').length === 2, activity.id + ': doar două file pentru copil');
+        assert(!fixture.querySelector('#panel-parinte'), activity.id + ': îndrumările pentru adulți sunt la disciplină');
         assert(fixture.querySelector('[role=tab][aria-selected=true]').dataset.tab === 'joc', activity.id + ': jocul este prima filă');
         assert(fixture.querySelector('.hands-on'), activity.id + ': explorare');
         assert(fixture.querySelectorAll('[data-level]').length === 3, activity.id + ': niveluri');
@@ -405,8 +445,7 @@
         MissionGames.options(activity.id).forEach(option => assert(fixture.textContent.includes(option.title), activity.id + ': titlu propriu pentru joc'));
         assert(fixture.querySelectorAll('.lesson-words dt').length >= 2, activity.id + ': vocabular explicat');
         assert(fixture.querySelectorAll('.example-card > ol > li').length >= 3, activity.id + ': rezolvare vizibilă');
-        assert(fixture.querySelectorAll('#panel-obiective > ul > li').length === 4, activity.id + ': patru obiective');
-        assert(fixture.querySelectorAll('.reflection-prompts > article').length === 4, activity.id + ': patru întrebări cu sprijin');
+        assert(fixture.querySelector('.safety-note'), activity.id + ': avertismentele rămân în lecție');
         const column = fixture.querySelector('.discovery-column'), cards = Array.from(column.children);
         const gap = parseFloat(getComputedStyle(column).rowGap);
         cards.slice(1).forEach((card, i) => assert(Math.abs(card.getBoundingClientRect().top - cards[i].getBoundingClientRect().bottom - gap) < 1, activity.id + ': fără spații întinse între casete'));
@@ -415,6 +454,32 @@
       assert(!fixture.querySelector('.profile-panel'), 'Profilurile se gestionează numai în Setări');
       fixture.innerHTML = Render.settings(); assert(fixture.querySelector('.profile-panel'), 'Setările păstrează gestionarea profilurilor');
       fixture.innerHTML = Render.dece(); assert(fixture.querySelectorAll('.journey-stop').length === 11, 'Opriri');
+    });
+    test('Subjects group adult guidance in accessible lesson disclosures with unique IDs', () => {
+      SUBJECTS.forEach(subject => {
+        fixture.innerHTML = Render.subject(subject.id);
+        const tabs = fixture.querySelectorAll('[role="tab"]'), panel = fixture.querySelector('#panel-parinte');
+        assert(tabs.length === 2 && tabs[0].dataset.tab === 'lectii', subject.id + ': lecțiile rămân prima filă');
+        assert(panel.hidden && tabs[0].getAttribute('aria-selected') === 'true', subject.id + ': ghidul nu se deschide automat');
+        tabs.forEach(tab => assert(fixture.querySelector('#' + tab.getAttribute('aria-controls')).getAttribute('aria-labelledby') === tab.id, 'Legături ARIA complete'));
+        const ids = Array.from(fixture.querySelectorAll('[id]'), node => node.id);
+        assert(new Set(ids).size === ids.length, subject.id + ': identificatori unici');
+        const lessons = panel.querySelectorAll('.adult-lesson');
+        assert(lessons.length === ACTIVITIES_BY_SUBJECT[subject.id].length, subject.id + ': ghid pentru fiecare lecție');
+        panel.hidden = false;
+        lessons.forEach((lesson, index) => {
+          const activity = ACTIVITIES_BY_SUBJECT[subject.id][index], summary = lesson.querySelector('summary');
+          assert(!lesson.open && summary.textContent.includes(activity.title), activity.id + ': titlu propriu, închis inițial');
+          assert(summary.getBoundingClientRect().height >= 44, activity.id + ': țintă tactilă de minimum 44 px');
+          summary.click();
+          assert(lesson.open, activity.id + ': se poate deschide');
+          assert(lesson.querySelectorAll('#adult-' + activity.id + '-obiective > ul > li').length === 4, activity.id + ': patru obiective');
+          assert(lesson.querySelectorAll('.reflection-prompts > article').length === 4, activity.id + ': patru întrebări cu sprijin');
+          assert(lesson.querySelectorAll('.level-result').length === 3, activity.id + ': progresul tuturor nivelurilor');
+          summary.click();
+          assert(!lesson.open, activity.id + ': se poate închide');
+        });
+      });
     });
     test('Every discovery workbench initializes and changes its observation without grading', () => {
       const before = Progress.exportData();
@@ -577,10 +642,27 @@
     test('Fractions accept separated equal parts and protect the precolored model', () => {
       const q = MathWorkshop.fractions(2, 1), game = singleRound(q);
       const cells = fixture.querySelectorAll('.paint-cell');
-      assert(cells[0].disabled && cells[1].disabled, 'Sfertul inițial este protejat');
+      assert(cells.length === 4 && cells[0].disabled && !cells[1].disabled, 'Sfertul inițial este protejat');
       click('Verifică părțile'); assert(fixture.querySelector('#game-next').hidden, 'Colorarea incompletă nu este acceptată');
-      [2, 4, 6, 7].forEach(i => cells[i].click()); click('Verifică părțile');
-      assert(!fixture.querySelector('#game-next').hidden, 'Șase optimi sunt trei sferturi, chiar în poziții diferite'); game.dispose();
+      [2, 3].forEach(i => cells[i].click()); click('Verifică părțile');
+      assert(!fixture.querySelector('#game-next').hidden, 'Trei sferturi sunt acceptate și în poziții diferite'); game.dispose();
+    });
+    test('Every learning-path stop reads its task, choices and feedback', () => {
+      const realSpeak = Speech.speak, spoken = [];
+      Speech.speak = text => { spoken.push(text); return Promise.resolve(''); };
+      try {
+        fixture.innerHTML = Render.dece();
+        Dece.init();
+        const stops = fixture.querySelectorAll('.journey-stop');
+        assert(stops.length === 11, 'Toate opririle sunt prezente');
+        stops.forEach((stop, index) => {
+          stop.querySelector('[data-listen-stop]').click();
+          const text = spoken.pop();
+          assert(text.includes(DECE_CAMPS[index].question) && DECE_CAMPS[index].options.every(option => text.includes(option)), 'Sarcina și variantele se citesc');
+          stop.querySelector('[data-answer="1"]').click();
+          assert(stop.querySelector('.journey-feedback').textContent.includes(DECE_CAMPS[index].options[1]), 'Alegerea greșită este numită');
+        });
+      } finally { Speech.speak = realSpeak; }
     });
     test('Guided reflection exposes the actual situation and concrete steps from the start', () => {
       const before = Progress.exportData();
@@ -631,7 +713,8 @@
         const current = fixture.querySelectorAll('.thinking-path [aria-current="page"]');
         assert(current.length === 1 && current[0].getAttribute('href') === 'activity.html?activity=' + id, 'Lecția curentă este marcată');
         assert(fixture.querySelector('.exploration-stop').getAttribute('aria-pressed') === 'true', 'Explorare cu primul pas deschis');
-        assert(fixture.querySelector('#panel-parinte').textContent.includes('fără ridiculizare, pedeapsă'), 'Îndrumare explicită pentru adult');
+        fixture.innerHTML = Render.subject(ACTIVITIES.find(activity => activity.id === id).subject);
+        assert(fixture.querySelector('#adult-' + id).textContent.includes('fără ridiculizare, pedeapsă'), 'Îndrumare explicită pentru adult, păstrată la disciplină');
       });
     });
     test('All thinking cases allow correction and explain the evidence rather than demand obedience', () => {

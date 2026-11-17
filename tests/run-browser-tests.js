@@ -82,7 +82,8 @@ function cleanup() {
       try { process.kill(-browser.pid, 'SIGTERM'); } catch (error) { /* deja închis sau fără permisiune */ }
       try { process.kill(browser.pid, 'SIGTERM'); } catch (error) { /* idem */ }
     }
-    fs.rmSync(profile, { recursive: true, force: true });
+    if (fs.rmSync) fs.rmSync(profile, { recursive: true, force: true });
+    else if (fs.existsSync(profile)) fs.rmdirSync(profile, { recursive: true });
     process.exit();
   }, 3000);
 }

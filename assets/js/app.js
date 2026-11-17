@@ -41,7 +41,8 @@
         const saved = Progress.record(activity.id, result);
         updateProgress();
         if (saved.newStar) { Sound.win(); Confetti.burst(); }
-        if (saved.saved) message(saved.newStar ? 'Bravo! Ai câștigat o stea!' : 'Rundă terminată. Ai exersat bine. Mai încearcă pentru stea!');
+        if (saved.saved) message(result.evaluation !== 'objective' ? 'Rundă terminată. Ai exersat! La acest joc nu se dau stele.' :
+          saved.newStar ? 'Bravo! Ai câștigat o stea!' : 'Rundă terminată. Ai exersat și ai verificat răspunsurile.');
       });
     } catch (error) {
       console.error('Jocul nu a putut fi pornit.', error);

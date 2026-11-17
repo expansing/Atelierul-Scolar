@@ -161,7 +161,7 @@ const Engines = {
       if (index % 3 === 1) {
         const tens = this.randInt(1, [3, 7, 9][level]), units = this.randInt(0, 9), number = tens * 10 + units;
         return MathWorkshop.calculation('Desfă numărul ' + number + ' în zeci și unități.',
-          [{ label: 'Cât fac ' + (tens === 1 ? 'o zece' : tens + ' zeci') + '?', answer: tens * 10 }, { label: 'Câte unități mai sunt?', answer: units }],
+          [{ label: 'Cât ' + (tens === 1 ? 'face o zece' : 'fac ' + tens + ' zeci') + '?', answer: tens * 10 }, { label: 'Câte unități mai sunt?', answer: units }],
           number + ' = ' + tens * 10 + ' + ' + units + '. Cifra zecilor arată grupe de câte zece.',
           'Nu confunda cifra scrisă cu valoarea ei. Construiește grupele de zece.', { numberCard: String(number) });
       }
@@ -169,7 +169,7 @@ const Engines = {
         const tens = this.randInt(1, [2, 5, 8][level]), units = this.randInt(10, 19), number = tens * 10 + units;
         return MathWorkshop.calculation('Ai ' + this.quantity(tens, 'grupă de câte zece', 'grupe de câte zece') + ' și ' + units + ' unități. Fă încă o grupă de zece din unități.',
           [{ label: 'Câte grupe de zece ai acum?', answer: tens + 1 }, { label: 'Câte unități au rămas?', answer: units - 10 }],
-          units + ' unități = un grup de zece și ' + (units - 10) + ' unități separate. Totalul rămâne ' + number + '.',
+          units + ' unități = un grup de zece și ' + this.quantity(units - 10, 'unitate separată', 'unități separate') + '. Totalul rămâne ' + number + '.',
           'Ia zece dintre unitățile separate și formează o nouă grupă.', { bars: [tens * 10, units] });
       }
       const initial = level === 2 ? this.randInt(40, 90) : null;
@@ -198,8 +198,8 @@ const Engines = {
       const end = (hour * 60 + minutes + elapsed) % 720;
       const answer = this.time(Math.floor(end / 60) || 12, end % 60);
       const options = this.shuffle([answer, this.time((Math.floor(end / 60) + 1) % 12 || 12, end % 60), this.time(Math.floor(end / 60) || 12, (end % 60 + 30) % 60)]);
-      const round = this.choice(elapsed ? 'Ce oră va fi peste ' + elapsed + ' minute față de ceasul afișat?' : 'Ce oră arată ceasul?',
-        options, options.indexOf(answer), elapsed ? 'Pornim de la ' + this.time(hour, minutes) + ' și adăugăm ' + elapsed + ' minute: ' + answer + '.' :
+      const round = this.choice(elapsed ? 'Ce oră va fi peste ' + this.quantity(elapsed, 'minut', 'minute') + ' față de ceasul afișat?' : 'Ce oră arată ceasul?',
+        options, options.indexOf(answer), elapsed ? 'Pornim de la ' + this.time(hour, minutes) + ' și adăugăm ' + this.quantity(elapsed, 'minut', 'minute') + ': ' + answer + '.' :
           'Ceasul arată ' + answer + '. Acul scurt se află între ore când minutele nu sunt zero.',
         elapsed ? 'Citește ora de început. Adaugă minutele și treci la ora următoare dacă depășești 60.' : 'Citește întâi acul scurt, apoi numără minutele câte 5.',
         { clock: { hour, minutes } });
@@ -234,7 +234,7 @@ const Engines = {
           'Împarte ' + this.quantity(total, 'bilă', 'bile') + ' în ' + groups + ' grămezi egale. Câte sunt într-o grămadă?');
       }
       if (mode === 'thousand') {
-        const h = this.randInt(1, 9), t = this.randInt(0, 9), u = this.randInt(0, 9), n = h * 100 + t * 10 + u;
+        const h = this.randInt(1, level === 0 && index % 3 === 1 ? 7 : 9), t = this.randInt(0, 9), u = this.randInt(0, 9), n = h * 100 + t * 10 + u;
         if (level === 0) {
           if (index % 3 === 0) return this.numeric(this.quantity(h, 'sută', 'sute') + ', ' + this.quantity(t, 'zece', 'zeci') + ' și ' + this.quantity(u, 'unitate', 'unități') + '. Ce număr este?', n,
             h * 100 + ' + ' + t * 10 + ' + ' + u + ' = ' + n + '.', 'Scrie cifrele pe rând: sutele, apoi zecile, apoi unitățile.');
@@ -252,7 +252,7 @@ const Engines = {
         const big = a + b; return this.numeric('Cât face ' + big + ' − ' + a + '?', b, 'Scădem unitățile, zecile și sutele: ' + big + ' − ' + a + ' = ' + b + '. Proba: ' + b + ' + ' + a + ' = ' + big + '.', 'Scrie numerele unul sub altul. Începe cu unitățile.');
       }
       if (mode === 'compare') {
-        const max = level === 2 ? 999 : 100, nums = this.draw(Array.from({ length: 40 }, () => this.randInt(level === 2 ? 100 : 10, max)).filter((x, i, all) => all.indexOf(x) === i), 3);
+        const max = level === 2 ? 999 : 99, nums = this.draw(Array.from({ length: 40 }, () => this.randInt(level === 2 ? 100 : 10, max)).filter((x, i, all) => all.indexOf(x) === i), 3);
         const sorted = nums.slice().sort((x, y) => x - y), text = nums.map(String);
         if (level === 0) return index % 2 ? this.choice('Care număr este cel mai mic?', text, nums.indexOf(sorted[0]), sorted[0] + ' este cel mai mic. Ne uităm întâi la zeci, apoi la unități.', 'Compară întâi zecile. Dacă sunt la fel, compară unitățile.') :
           this.choice('Care număr este cel mai mare?', text, nums.indexOf(sorted[2]), sorted[2] + ' este cel mai mare. Ne uităm întâi la zeci, apoi la unități.', 'Compară întâi zecile. Dacă sunt la fel, compară unitățile.');
@@ -276,7 +276,7 @@ const Engines = {
         const passage = set.map((row, i) => row[1] + ': ' + row[0].repeat(counts[i]) + '  (' + counts[i] + ')').join('\n'), names = set.map(row => row[1]);
         const most = counts.indexOf(Math.max.apply(null, counts)), least = counts.indexOf(Math.min.apply(null, counts));
         const hint = 'Numără desenele de pe fiecare rând.';
-        if (level === 0) return index % 2 ? this.numeric('Câte desene sunt pe rândul „' + names[0] + '”?', counts[0], 'Pe rândul „' + names[0] + '” sunt ' + counts[0] + ' desene.', hint, { passage }) :
+        if (level === 0) return index % 2 ? this.numeric('Câte desene sunt pe rândul „' + names[0] + '”?', counts[0], 'Pe rândul „' + names[0] + '” ' + (counts[0] === 1 ? 'este ' : 'sunt ') + this.quantity(counts[0], 'desen', 'desene') + '.', hint, { passage }) :
           this.choice('Din ce sunt cele mai multe?', names, most, 'Rândul „' + names[most] + '” este cel mai lung: ' + counts[most] + '.', 'Caută rândul cel mai lung.', { passage });
         if (level === 1) return index % 2 ? this.choice('Din ce sunt cele mai puține?', names, least, 'Rândul „' + names[least] + '” este cel mai scurt: ' + counts[least] + '.', 'Caută rândul cel mai scurt.', { passage }) :
           this.numeric('Câte desene are în plus rândul „' + names[most] + '” față de rândul „' + names[least] + '”?', counts[most] - counts[least], counts[most] + ' − ' + counts[least] + ' = ' + (counts[most] - counts[least]) + '.', 'Numără cele două rânduri. Apoi scade numărul mic din cel mare.', { passage });
@@ -285,7 +285,7 @@ const Engines = {
       }
       if (mode === 'nature') {
         const insects = this.randInt(1, level + 2), birds = this.randInt(1, level + 2);
-        if (level === 0) return this.numeric('Pe ramură vezi ' + this.quantity(insects, 'pasăre', 'păsări') + '. Apoi mai vin ' + this.quantity(birds, 'pasăre', 'păsări') + '. Câte păsări sunt în total?', insects + birds,
+        if (level === 0) return this.numeric('Pe ramură vezi ' + this.quantity(insects, 'pasăre', 'păsări') + '. Apoi mai ' + (birds === 1 ? 'vine ' : 'vin ') + this.quantity(birds, 'pasăre', 'păsări') + '. Câte păsări sunt în total?', insects + birds,
           insects + ' + ' + birds + ' = ' + (insects + birds) + '.', 'Unește cele două grupe de păsări.');
         if (level === 1) return this.numeric('Vezi ' + this.quantity(insects, 'fluture', 'fluturi') + '. Fiecare are 4 aripi. Câte aripi au în total?', insects * 4,
           'Adunăm câte 4 pentru fiecare fluture: ' + (insects === 1 ? '4' : Array(insects).fill(4).join(' + ') + ' = ' + insects * 4) + '.', 'Desenează patru aripi pentru fiecare fluture.');
@@ -325,7 +325,7 @@ const Engines = {
     return this.choice('Piesa care lipsește stă pe rândul „' + forms[row] + '” și coloana „' + colors[col] + '”. O vopsim în ' + changed + '. Ce piesă avem acum?',
       [forms[row] + ' ' + changed, label, forms[(row + 1) % size] + ' ' + changed], 0,
       'Piesa care lipsea era ' + label + '. Am schimbat doar culoarea. Forma rămâne ' + forms[row] + '.',
-      'Rezolvă intersecția, apoi aplică schimbarea fără să modifici forma.',
+      'Găsește forma și culoarea de la locul gol. Apoi schimbă doar culoarea.',
       { matrix: { forms, colors, row, col } });
   },
   robotRound(mode, level, index) {
@@ -350,7 +350,7 @@ const Engines = {
       const words = [
         [['ca', 'me', 'ră'], ['pă', 'pu', 'șă'], ['pi', 'si', 'că'], ['ba', 'na', 'nă'], ['ro', 'chi', 'ță'], ['ma', 'și', 'nă'], ['al', 'bi', 'nă'], ['pă', 'du', 're'], ['gră', 'di', 'nă'], ['mo', 'ne', 'dă']],
         [['fe', 'reas', 'tră'], ['flu', 'tu', 're'], ['stră', 'du', 'ță'], ['cio', 'co', 'la', 'tă'], ['a', 'ni', 'ma', 'le'], ['po', 'ves', 'ti', 're'], ['pră', 'ji', 'tu', 'ră'], ['te', 'le', 'vi', 'zor'], ['bi', 'ci', 'cle', 'tă'], ['pri', 'mă', 'va', 'ră']],
-        [['bi', 'bli', 'o', 'te', 'că'], ['că', 'lă', 'to', 'ri', 'e'], ['în', 'ghe', 'ța', 'tă'], ['ca', 'lu', 'lu', 'ui'], ['lo', 'co', 'mo', 'ti', 'vă'], ['e', 'le', 'fan', 'tul'], ['cu', 'ri', 'o', 'zi', 'ta', 'te'], ['mul', 'țu', 'mes', 'cu'], ['în', 'vă', 'ță', 'toa', 're'], ['bu', 'cu', 'ri', 'e']]
+        [['bi', 'bli', 'o', 'te', 'că'], ['că', 'lă', 'to', 'ri', 'e'], ['în', 'ghe', 'ța', 'tă'], ['ca', 'len', 'da', 'rul'], ['lo', 'co', 'mo', 'ti', 'vă'], ['e', 'le', 'fan', 'tul'], ['cu', 'ri', 'o', 'zi', 'ta', 'te'], ['mul', 'țu', 'mi', 're'], ['în', 'vă', 'ță', 'toa', 're'], ['bu', 'cu', 'ri', 'e']]
       ][level];
       return this.draw(words, count).map(tokens => ({ kind: 'arrange', prompt: 'Construiește cuvântul „' + tokens.join('') + '” din silabe.', tokens,
         explain: tokens.join('-') + ': ' + tokens.length + ' silabe. Citim silabele împreună pentru a verifica cuvântul.',
@@ -374,9 +374,9 @@ const Engines = {
         ['Scrie cel puțin trei enunțuri: început, întâmplare, încheiere.', 'Scrie o poveste de trei enunțuri despre un robot care se rătăcește.', 'Scrie o poveste de trei enunțuri despre o excursie la munte.']
       ][level]),
       minimum: [1, 2, 3][level], minWords: [4, 8, 15][level],
-      checklist: ['Mesajul are sens pentru un cititor.', 'Am numit personajul și am legat ideile.', 'Am recitit acordurile, diacriticele și semnele finale.'],
+      checklist: ['Se înțelege ce am vrut să spun.', 'Se înțelege despre cine am scris.', 'Am verificat litera mare și semnul de la final.'],
       hint: 'Spune mai întâi cu voce tare ce vrei să scrii. Începe cu cine și unde, de exemplu „Mara era în parc.”, apoi adaugă ce s-a întâmplat.',
-      explain: 'Ai folosit o listă de revizuire. Verificarea automată urmărește numai câteva criterii de formă, nu confirmă gramatica sau sensul. Cere feedback unui adult.',
+      explain: 'Ai scris și ai recitit. Jocul verifică doar câteva reguli de scriere. Un adult te poate ajuta să vezi dacă textul are sens și este scris corect.',
       evaluation: 'self'
     }];
   },
@@ -424,12 +424,12 @@ const Engines = {
           Q('De ce nu votează imediat?', ['Verifică mai întâi accesul tuturor', 'Nu vor să citească', 'Nu există nicio carte'], 0, 'Grupul caută mai întâi formate pe care le pot folosi toți.'),
           Q('Ce concluzie este susținută de text?', ['O alegere bună ține cont și de accesibilitate', 'Votul este întotdeauna o alegere greșită', 'Toți copiii din club preferă cărțile audio'], 0, 'Textul nu respinge votul, ci arată pregătirea unei alegeri incluzive.')
         ] },
-        { text: 'Victor a ajuns la școală ud leoarcă. Avea ghiozdanul în mână, dar umbrela rămăsese acasă, lângă ușă. Doamna învățătoare i-a dat un prosop.', questions: [
-          Q('De ce a ajuns Victor ud?', ['Ploua și nu avea umbrela', 'A sărit într-un lac', 'S-a udat la cișmea'], 0, 'Textul nu spune direct „ploua”, dar umbrela uitată și hainele ude sunt indicii.'),
+        { text: 'Afară ploua. Victor a ajuns la școală ud. Avea ghiozdanul în mână, dar umbrela rămăsese acasă, lângă ușă. Doamna învățătoare i-a dat un prosop.', questions: [
+          Q('De ce a ajuns Victor ud?', ['Ploua și nu avea umbrela', 'A sărit într-un lac', 'S-a udat la cișmea'], 0, 'Textul spune că ploua și că umbrela rămăsese acasă.'),
           Q('Ce a făcut învățătoarea?', ['I-a dat un prosop', 'L-a trimis acasă', 'I-a adus umbrela'], 0, 'Ultima propoziție spune că i-a dat un prosop.')
         ] },
         { text: 'Pe banca din parc stau o carte și o sticlă de apă. Lângă bancă, o fetiță se uită în jur îngrijorată. Ea strigă: „Cine a văzut cartea mea cu dinozauri?”', questions: [
-          Q('Ce caută probabil fetița?', ['Cartea de pe bancă', 'O sticlă de apă', 'Un dinozaur adevărat'], 0, 'Fetița întreabă de cartea ei, iar pe bancă stă o carte.'),
+          Q('Ce caută probabil fetița?', ['Cartea de pe bancă', 'O sticlă de apă', 'O jucărie pierdută'], 0, 'Fetița întreabă de cartea ei, iar pe bancă stă o carte.'),
           Q('Ce cuvânt arată cum se simte fetița?', ['îngrijorată', 'bancă', 'strigă'], 0, '„Îngrijorată” spune ce simte fetița.')
         ] }]
       ],
@@ -492,7 +492,7 @@ const Engines = {
         ] },
         { text: 'Becul din cameră nu se aprinde. Lampa de pe birou merge. Ieri becul mergea.', questions: [
           Q('Care este o presupunere?', ['Becul s-a ars', 'Lampa de pe birou merge', 'Becul nu se aprinde'], 0, '„S-a ars” este o explicație posibilă; celelalte două sunt observații.'),
-          Q('Ce verificare ajută?', ['Încercăm un bec nou', 'Aprindem lampa din nou', 'Așteptăm până mâine'], 0, 'Cu un bec nou aflăm dacă becul era de vină.')
+          Q('Ce verificare poate face un adult?', ['Verifică becul în siguranță', 'Privește culoarea abajurului', 'Așteaptă până mâine'], 0, 'Doar adultul verifică sau schimbă becul, cu electricitatea oprită. Copilul nu umblă la bec sau la fire.')
         ] },
         { text: 'Câinele Rex latră la ușă. Se aude soneria. Bunica spune că sigur a venit poștașul.', questions: [
           Q('Ce se știe sigur?', ['Câinele latră și sună soneria', 'A venit sigur poștașul', 'Rex vrea să iasă afară'], 0, 'Lătratul și soneria se aud. Cine este la ușă nu știm încă.'),
@@ -561,9 +561,9 @@ const Engines = {
     const bank = {
       plants: [
         [E('Vrei să afli dacă o plantă are nevoie de apă. Ce schimbi între două plante la fel?', ['Doar cantitatea de apă', 'Apa și lumina', 'Doar culoarea ghiveciului'], 'Schimbăm un singur lucru, apa, și păstrăm restul la fel.',
-            'În model, planta udată rămâne verde; cea neudată începe să se ofilească.', ['Planta are nevoie de apă', 'Planta crește mai bine fără apă', 'Ghiveciul face planta verde']),
+            'În model, planta udată rămâne verde; cea neudată începe să se ofilească.', ['Planta are nevoie de apă', 'Planta crește mai bine fără apă', 'Udarea nu a schimbat nimic']),
           E('O plantă stă într-un dulap întunecat, alta la fereastră. Ce prezici?', ['Cea de la fereastră crește mai bine', 'Cea din dulap crește mai bine', 'Vor arăta la fel'], 'Plantele au nevoie de lumină ca să crească sănătoase.',
-            'În model, după o săptămână, planta din dulap are frunze palide și o tulpină subțire.', ['Plantele au nevoie de lumină', 'Plantele cresc mai bine la întuneric', 'Dulapul udă plantele']),
+            'În model, după o săptămână, planta din dulap are frunze palide și o tulpină subțire.', ['Plantele au nevoie de lumină', 'Plantele cresc mai bine la întuneric', 'Lumina nu a schimbat nimic']),
           E('O sămânță de fasole stă pe vată. Ce îi trebuie ca să încolțească?', ['Vată udă', 'Vată uscată', 'Vată pusă la congelator'], 'Sămânța are nevoie de apă și de căldură potrivită ca să încolțească.',
             'În model, după câteva zile, din sămânța de pe vata udă apare un firicel alb: rădăcina.', ['Sămânța are nevoie de apă', 'Sămânța încolțește în gheață', 'Vata singură face sămânța să crească'])],
         [E('Două plante primesc aceeași lumină. A este udată potrivit, B prea puțin. Ce prezici?', ['A va crește mai bine', 'B va crește mai bine', 'Vor crește sigur la fel'], 'Apa este necesară, dar rezultatul se vede în timp; predicția nu este o garanție.',
@@ -581,29 +581,29 @@ const Engines = {
       ],
       water: [
         [E('Un cub de gheață stă într-o cameră caldă. Ce prezici?', ['Se topește treptat', 'Se face mai mare', 'Rămâne la fel'], 'Gheața primește căldură și se transformă în apă lichidă.',
-            'În model, cubul se micșorează și apare apă lichidă.', ['Gheața s-a topit și a devenit apă', 'Gheața s-a transformat într-o piatră', 'Gheața s-a făcut mai mare la căldură']),
+            'În model, cubul se micșorează și apare apă lichidă.', ['Gheața s-a topit și a devenit apă', 'Gheața a rămas la fel de mare', 'Gheața s-a făcut mai mare la căldură']),
           E('Pui un pahar cu apă în congelator. Ce prezici după câteva ore?', ['Apa devine gheață', 'Apa începe să fiarbă', 'Apa se face abur'], 'La frig mare, apa îngheață și devine solidă.',
             'În model, apa din pahar s-a întărit: acum este gheață.', ['La frig, apa poate îngheța', 'La frig, apa fierbe', 'Frigul face apa abur']),
-          E('Rufele ude stau la soare. Ce se întâmplă cu apa din ele?', ['Se evaporă în aer', 'Coboară în pământ prin sârmă', 'Rămâne mereu în rufe'], 'Apa trece în aer sub formă de vapori: se evaporă.',
-            'În model, după câteva ore, rufele sunt uscate.', ['Apa a trecut în aer ca vapori', 'Apa a rămas ascunsă în rufe', 'Soarele a îngreunat rufele'])],
-        [E('Un pahar foarte rece stă în aer umed. Ce se poate forma pe exterior?', ['Picături de apă', 'Apă venită prin sticlă', 'Bucăți de zahăr'], 'Vaporii din aer se transformă în picături pe suprafața rece.',
+          E('Rufele nu mai picură. Stau la soare și se usucă. Unde ajunge apa?', ['Se evaporă în aer', 'Se scurge toată pe jos', 'Rămâne toată în rufe'], 'Apa trece în aer sub formă de vapori: se evaporă.',
+            'În model, după câteva ore, rufele sunt uscate.', ['Apa a trecut în aer ca vapori', 'Apa a rămas ascunsă în rufe', 'Toată apa s-a scurs pe jos'])],
+        [E('Pe exteriorul unui pahar rece apar picături. De unde vine apa?', ['Din vaporii din aer', 'Din apa trecută prin sticlă', 'Din gheața aflată în pahar'], 'Vaporii din aer se transformă în picături pe suprafața rece.',
             'În model, apar picături pe exteriorul paharului rece.', ['Vaporii din aer au format picături', 'Apa a trecut prin sticlă', 'Paharul a produs apa singur']),
           E('Iarna, pe geamul rece apar picături pe partea dinăuntru. De unde vin?', ['Din vaporii din aerul camerei', 'Prin sticlă, de afară', 'Din vopseaua ramei'], 'Aerul cald din cameră are vapori, care se fac picături pe geamul rece.',
             'În model, aerul cald din cameră atinge geamul rece și apar picături.', ['Vaporii se fac picături pe geamul rece', 'Apa de afară trece prin sticlă', 'Picăturile vin din rama ferestrei']),
           E('Un adult fierbe apă într-o oală cu capac. Ce apare pe capac?', ['Picături de apă', 'Bucăți de gheață', 'Nu apare nimic'], 'Aburul urcă, atinge capacul mai rece și se transformă înapoi în apă.',
             'În model, aburul urcă și pe capac se strâng picături. Doar adultul lucrează cu apa fierbinte.', ['Aburul poate redeveni apă lichidă', 'Aburul devine gheață pe capac', 'Capacul produce apa'])],
-        [E('O baltă se micșorează fără să fiarbă. Ce explicație este potrivită?', ['O parte din apă se evaporă', 'Apa se evaporă doar când fierbe', 'Apa se transformă în pământ'], 'Evaporarea are loc și fără fierbere; apa trece în aer ca vapori.',
-            'În model, nivelul apei scade treptat, fără fierbere.', ['Apa se evaporă și fără să fiarbă', 'Apa dispare numai când fierbe', 'Apa din baltă s-a făcut pământ']),
+        [E('O baltă se micșorează fără să fiarbă. Ce explicație este potrivită?', ['O parte din apă se evaporă', 'Apa se evaporă doar când fierbe', 'Apa îngheață la căldură'], 'Evaporarea are loc și fără fierbere; apa trece în aer ca vapori.',
+          'În model, nivelul apei scade treptat, fără fierbere.', ['Apa se evaporă și fără să fiarbă', 'Apa se evaporă numai când fierbe', 'Apa a rămas la același nivel']),
           E('Două farfurii au aceeași cantitate de apă: una la soare, una la umbră. Ce prezici?', ['La soare se evaporă mai repede', 'La umbră se evaporă mai repede', 'Se evaporă la fel de repede'], 'Căldura grăbește evaporarea.',
-            'În model, după o oră, în farfuria de la soare a rămas mai puțină apă.', ['Căldura grăbește evaporarea', 'Apa se evaporă doar la soare', 'Umbra adaugă apă în farfurie']),
+            'În model, după o oră, în farfuria de la soare a rămas mai puțină apă.', ['Căldura grăbește evaporarea', 'Apa se evaporă doar la soare', 'Apa a scăzut la fel în ambele']),
           E('Un cub de gheață stă pe o farfurie, altul învelit într-un prosop. Care se topește mai încet?', ['Cel învelit în prosop', 'Cel de pe farfurie', 'Se topesc la fel'], 'Prosopul încetinește trecerea căldurii din aer spre gheață.',
             'În model, cubul din prosop mai are gheață când celălalt s-a topit.', ['Prosopul încetinește topirea', 'Prosopul răcește gheața', 'Gheața învelită nu se topește'])]
       ],
       fair: [
         [E('Vrei să afli care minge sare mai sus. Ce păstrezi la fel?', ['Înălțimea de la care le lași', 'Culoarea și desenul fiecărei mingi', 'Mingea pe care o folosești'], 'Lăsăm mingile de la aceeași înălțime, pe aceeași podea; doar mingea diferă.',
             'În model, ambele mingi cad de la aceeași înălțime, pe aceeași podea.', ['Testul compară corect mingile', 'Culoarea a făcut diferența', 'Testul nu arată nimic']),
-          E('Vrei să afli dacă locul (soare sau umbră) schimbă topirea. Ce păstrezi la fel?', ['Mărimea cuburilor', 'Locul cuburilor', 'Culoarea farfuriei'], 'Schimbăm doar locul; cuburile trebuie să fie la fel de mari.',
-            'În model folosim două cuburi egale și același timp de observare.', ['Diferența vine de la loc', 'Diferența vine de la mărime', 'Cuburile nu se topesc']),
+          E('Compari topirea la soare și la umbră. Ce cuburi alegi?', ['Două cuburi de aceeași mărime', 'Un cub mare și unul mic', 'Un cub întreg și unul spart'], 'Folosim cuburi la fel și farfurii identice. Le urmărim la fel de mult timp. Schimbăm doar locul.',
+            'În model, cuburile sunt la fel, pe farfurii identice. După același timp, cubul de la soare s-a topit mai mult.', ['Aici, soarele a grăbit topirea', 'Aici, umbra a grăbit topirea', 'Ambele cuburi s-au topit la fel']),
           E('Vrei să afli ce hârtie absoarbe mai multă apă. Ce faci?', ['Pun aceeași apă pe fiecare', 'Pun câtă apă vreau', 'Pun apă doar pe una'], 'Aceeași cantitate de apă pe fiecare hârtie face comparația corectă.',
             'În model, pe fiecare hârtie cade câte o linguriță de apă.', ['Diferența vine de la hârtie', 'Mai multă apă face hârtia mai bună', 'Nu putem compara hârtiile'])],
         [E('Schimbi și locul, și mărimea cubului. Ce problemă apare?', ['Nu știi ce a produs diferența', 'Rezultatul devine mai sigur', 'Gheața nu se mai topește'], 'Nu știm care schimbare a produs diferența observată.',
@@ -612,12 +612,12 @@ const Engines = {
             'În model, cubul cu sare se topește mai repede decât cel fără nimic.', ['Aici, sarea a grăbit topirea', 'Sarea a încetinit topirea', 'Cuburile s-au topit la fel']),
           E('Faci testul o singură dată și rezultatul pare ciudat. Ce faci?', ['Repet testul', 'Schimb rezultatul', 'Renunț la test'], 'Repetarea ne arată dacă rezultatul se confirmă.',
             'În model, a doua și a treia încercare dau un rezultat asemănător cu primul.', ['Repetarea ne face mai siguri', 'O încercare ajunge mereu', 'Rezultatul se schimbă cum vrem'])],
-        [E('Rezultatul diferă de predicție. Care este pasul științific potrivit?', ['Notez, verific și repet', 'Șterg observația din caiet', 'Schimb rezultatul cu predicția'], 'Datele se păstrează chiar când contrazic predicția.',
+        [E('Se întâmplă altceva decât credeai. Ce faci cu rezultatul?', ['Notez, verific și repet', 'Șterg observația din caiet', 'Scriu doar ce am crezut'], 'Păstrăm ce am observat, chiar dacă ne așteptam la altceva.',
             'Modelul păstrează observația și arată că testul trebuie repetat.', ['O predicție greșită ne învață ceva', 'Predicția trebuie să iasă mereu', 'Datele nepotrivite se șterg']),
-          E('Două grupe lansează aceeași mașinuță pe aceeași pantă și obțin distanțe puțin diferite. Ce concluzie e prudentă?', ['Repetăm și comparăm măsurările', 'Una dintre grupe a greșit sigur', 'Mașinuța s-a stricat'], 'Măsurătorile pot varia puțin; repetăm și comparăm.',
+          E('Două grupe lasă aceeași mașinuță pe aceeași pantă. Distanțele diferă puțin. Ce facem?', ['Repetăm și comparăm măsurările', 'Spunem că o grupă a greșit', 'Păstrăm numai distanța mai mare'], 'Măsurătorile pot varia puțin; repetăm și comparăm.',
             'În model, distanțele sunt 52 cm și 55 cm.', ['Măsurătorile pot varia puțin', '3 cm dovedesc o greșeală', 'Contează doar prima măsurare']),
           E('Vrei să afli dacă muzica ajută plantele. Ce plan este corect?', ['Două plante la fel, doar una cu muzică', 'Una cu muzică la soare, una fără la umbră', 'O singură plantă, cu muzică'], 'Plantele trebuie să fie la fel și în aceleași condiții; diferă doar muzica.',
-            'În model, cele două plante cresc aproape la fel.', ['Aici, muzica nu a făcut diferență', 'Muzica ajută sigur orice plantă', 'Plantele aud melodiile lor preferate'])]
+            'În model, cele două plante cresc aproape la fel.', ['Aici, muzica nu a făcut diferență', 'Muzica ajută sigur orice plantă', 'Planta fără muzică a crescut mai mult'])]
       ]
     };
     return this.draw(bank[mode][level], 2).flatMap(item => [
@@ -745,7 +745,7 @@ const Engines = {
       ],
       emotions: [
         [['Te simți supărat după o neînțelegere.', 'Spun ce simt și iau o pauză', 'Trântesc ușa și plec din cameră', 'Spun că nu simt nimic deloc', 'Emoția este în regulă; alegem ce facem în siguranță.'],
-          ['Ești foarte bucuros că vine bunica.', 'Le spun și altora', 'Ascund bucuria', 'Aștept să vină, fără să spun', 'Bucuria se poate împărtăși.'],
+          ['Vrei să-i spui bunicii că te bucuri să o vezi.', 'Îi spun că mă bucur', 'Îi spun că nu vreau să vină', 'Schimb vorba despre joacă', 'Poți spune ce simți. Nu trebuie să îți arăți bucuria în același fel ca altcineva.'],
           ['Ți-e frică de întuneric seara.', 'Spun unui adult ce simt', 'Ascund frica de toți', 'Stau treaz până adorm de oboseală', 'Frica este o emoție normală. Un adult te poate ajuta.'],
           ['Un coleg plânge.', 'Îl întreb ce s-a întâmplat', 'Mă fac că nu văd', 'Îi spun să nu mai plângă', 'Plânsul arată o emoție. Întrebarea arată grijă.']],
         [['Un coleg tace înaintea unei prezentări.', 'Îl întreb dacă vrea sprijin', 'Decid că sigur îi e frică', 'Îi spun că nu e mare lucru', 'Nu putem ști sigur emoția cuiva doar privindu-l.'],
@@ -779,7 +779,7 @@ const Engines = {
         [['Un coleg nu vrea să fie fotografiat.', 'Nu fac fotografia', 'O fac pe ascuns', 'Spun că refuzul nu contează', 'Respectăm refuzul unei fotografii.'],
           ['O rudă vrea să te pupe, dar tu nu vrei.', 'Propun în loc un salut', 'Accept chiar dacă nu vreau', 'Fug și mă ascund', 'Poți alege cum saluți; un adult de încredere te susține.'],
           ['Prietenul tău îți spune „nu” la un joc.', 'Accept și propun altceva', 'Mă supăr pe el', 'Insist mereu', 'Un prieten poate spune nu fără să piardă prietenia.'],
-          ['Un coleg vrea să-ți citească jurnalul.', 'Spun că este al meu', 'Îl las deși nu vreau', 'Îi citesc eu câteva pagini', 'Jurnalul tău este privat.']],
+          ['Un coleg vrea să-ți citească jurnalul. Nu vrei să-l arăți.', 'Îi spun că nu vreau', 'Îl las deși nu vreau', 'Îi promit că i-l arăt mâine', 'Poți refuza. Tu alegi dacă și cui îi arăți jurnalul.']],
         [['Cineva îți cere să păstrezi un secret care te sperie.', 'Îl spun unui adult de încredere', 'Îl păstrez chiar dacă mi-e frică', 'Cred că este vina mea', 'Poți cere protecție. Nu ești responsabil pentru cererea nepotrivită a altcuiva.'],
           ['Un adult necunoscut îți cere să mergi cu el.', 'Spun nu și merg la un adult cunoscut', 'Merg cu el dacă îmi dă dulciuri', 'Stau și ascult tot ce spune', 'Nu pleci cu necunoscuți. Mergi la un adult de încredere.'],
           ['Cineva te atinge într-un fel care nu-ți place.', 'Spun nu și anunț un adult', 'Tac ca să nu se supere', 'Cred că e vina mea', 'Corpul tău îți aparține. Ai dreptul să spui nu și să ceri ajutor.'],
@@ -847,7 +847,7 @@ const Engines = {
     // citire vocală: sarcina cu variantele numerotate, apoi mesajul de după răspuns
     const speak = async text => {
       if (typeof Speech === 'undefined') return;
-      const problem = await Speech.speak(text);
+      const problem = await Speech.speak(text, { error: message => { if (!disposed) announce(message, true); } });
       if (problem) announce(problem, true);
     };
     const canSpeak = typeof Speech !== 'undefined' && Speech.supported();
@@ -856,7 +856,15 @@ const Engines = {
       const options = Array.from(container.querySelectorAll('#round-content .quiz-opt'), (node, i) => (i + 1) + ': ' + Speech.clean(node.textContent) + '.');
       const firstSelect = container.querySelector('#round-content .match-select select');
       const parts = [q.prompt, q.passage, q.say ? 'Cuvântul este: ' + q.say + '.' : ''].filter(Boolean).map(text => Speech.clean(text));
+      if (q.scene) parts.push(q.scene.split('\n').map((row, index) => 'Rândul ' + (index + 1) + ': ' + Speech.clean(row) + '.').join(' '));
       if (options.length) parts.push('Variantele sunt. ' + options.join(' '));
+      if (q.kind === 'experiment') parts.push('Variantele sunt: ' + q.options.map((option, index) => (index + 1) + ': ' + Speech.clean(option)).join('. ') + '.');
+      if (q.fields) parts.push('Completează: ' + list(q.fields.map(field => field.label)) + '.');
+      if (q.products) parts.push(q.products.map(product => product.name + ': ' + this.quantity(product.price, 'leu', 'lei')).join('. ') + '.');
+      if (q.matrix) parts.push('Rândurile sunt: ' + list(q.matrix.forms) + '. Coloanele sunt: ' + list(q.matrix.colors) + '.');
+      if (q.kind === 'robot') parts.push('Steaua este la rândul ' + (q.goal.y + 1) + ', coloana ' + (q.goal.x + 1) + '.');
+      if (q.kind === 'writing') parts.push(list(q.checklist) + '.');
+      parts.push(...Array.from(container.querySelectorAll('#round-content svg[aria-label]'), node => node.getAttribute('aria-label')));
       if (q.kind === 'match' && firstSelect) {
         const left = list((q.pairs || []).map(pair => pair.a)), right = list(Array.from(firstSelect.options).slice(1).map(option => option.textContent));
         parts.push('Cuvintele sunt: ' + left + '.' + (right ? ' Perechile posibile: ' + right + '.' : ''));
@@ -872,7 +880,8 @@ const Engines = {
       attempts++;
       if (!correct) {
         errors++;
-        announce((detail || 'Încă nu e bine. Schimbă ceva și mai încearcă o dată.') + (roundHints || explained ? '' : ' Dacă vrei ajutor, apasă „Un indiciu”.'), true);
+        const hint = this.nudge(rounds[index]);
+        announce((detail || 'Răspunsul nu se potrivește încă.') + (explained || detail && detail.includes(hint) ? '' : ' ' + hint), true);
         Sound.bad();
         return;
       }
@@ -892,16 +901,24 @@ const Engines = {
       container.innerHTML = '<div class="g-status">Sarcina ' + (index + 1) + ' din ' + rounds.length + ' · ' + LEVELS[level].title + '</div>' +
         '<progress aria-label="Sarcini parcurse" value="' + index + '" max="' + rounds.length + '"></progress>' +
         '<div class="prompt-row"><h3 class="game-prompt" tabindex="-1">' + this.escape(q.prompt) + '</h3>' +
-        (canSpeak ? '<button class="btn btn-listen" id="game-listen" type="button" aria-label="Ascultă sarcina și variantele">🔊 Ascultă</button>' : '') + '</div>' +
+        '<button class="btn btn-listen" id="game-listen" type="button" aria-label="Ascultă sarcina și variantele">🔊 Ascultă</button></div>' +
         '<div id="round-content"></div><p id="game-feedback" class="game-feedback" role="status" aria-live="polite" aria-atomic="true"></p>' +
         '<div class="game-controls">' +
-        (canSpeak ? '<button class="btn btn-listen" id="game-listen-feedback" type="button" hidden aria-label="Ascultă mesajul de sub sarcină">🔊 Ascultă mesajul</button>' : '') +
+        '<button class="btn btn-listen" id="game-listen-feedback" type="button" hidden aria-label="Ascultă mesajul de sub sarcină">🔊 Ascultă mesajul</button>' +
         '<button class="btn" id="game-hint" type="button">Un indiciu</button>' +
         '<button class="btn btn-primary" id="game-next" type="button" hidden>Continuă</button></div>';
       const content = container.querySelector('#round-content');
+      content.dataset.kind = q.kind;
       if (q.passage) {
         const passage = document.createElement('blockquote');
         passage.className = 'reading-passage'; passage.textContent = q.passage; content.appendChild(passage);
+        if (q.passage.split('\n').length > 10) {
+          passage.classList.add('verse-passage');
+          passage.replaceChildren();
+          q.passage.split('\n\n').forEach(text => {
+            const stanza = document.createElement('p'); stanza.textContent = text; passage.appendChild(stanza);
+          });
+        }
       }
       if (q.clock) content.insertAdjacentHTML('beforeend', this.clockSVG(q.clock.hour, q.clock.minutes));
       if (q.shape) content.insertAdjacentHTML('beforeend', this.shapeSVG(q.shape, q.rotation));
@@ -967,7 +984,7 @@ const Engines = {
           const correct = selected === q.answer;
           if (!correct) {
             attempts++; errors++;
-            announce('S-a întâmplat altceva decât credeai. Așa aflăm lucruri noi! Citește ce s-a văzut, apoi alege.', true);
+            announce('Ai ales „' + q.options[selected] + '”. Observația arată altceva. Compară alegerea cu ce s-a văzut, apoi încearcă din nou.', true);
           }
           fieldset.hidden = true;
           run.disabled = true;
@@ -987,7 +1004,8 @@ const Engines = {
         listen(hour, 'change', update); listen(minute, 'change', update);
         hourLabel.appendChild(hour); minuteLabel.appendChild(minute);
         content.appendChild(preview); content.appendChild(hourLabel); content.appendChild(minuteLabel);
-        content.appendChild(button('Verifică ceasul', () => check(Number(hour.value) === q.target.hour && Number(minute.value) === q.target.minutes), 'btn btn-primary'));
+        content.appendChild(button('Verifică ceasul', () => check(Number(hour.value) === q.target.hour && Number(minute.value) === q.target.minutes,
+          'Ai potrivit ceasul la ' + this.time(Number(hour.value), Number(minute.value)) + '.'), 'btn btn-primary'));
         update();
       } else if (q.kind === 'arrange') {
         const selected = [];
@@ -1008,7 +1026,8 @@ const Engines = {
         content.appendChild(row); content.appendChild(pool);
         content.appendChild(button('Verifică ordinea', () => {
           if (selected.length !== q.tokens.length) { announce('Folosește toate piesele. Apasă o piesă din răspuns pentru a o muta înapoi.', true); return; }
-          check(selected.every((id, position) => q.tokens[id] === q.tokens[position]));
+          const wrong = selected.findIndex((id, position) => q.tokens[id] !== q.tokens[position]);
+          check(wrong === -1, wrong === -1 ? '' : 'La locul ' + (wrong + 1) + ', „' + q.tokens[selected[wrong]] + '” nu se potrivește. Scoate această piesă și caută alta.');
         }, 'btn btn-primary'));
         const instruction = document.createElement('p'); instruction.textContent = 'Apasă o piesă din răspuns pentru a o scoate și a schimba ordinea.'; content.appendChild(instruction);
         update();
@@ -1024,7 +1043,8 @@ const Engines = {
         });
         content.appendChild(button('Verifică perechile', () => {
           if (selections.size !== q.pairs.length || Array.from(selections.values()).includes('')) { announce('Alege o pereche pentru fiecare element.', true); return; }
-          check(q.pairs.every((pair, i) => Number(selections.get(i)) === i));
+          const wrong = q.pairs.findIndex((pair, i) => Number(selections.get(i)) !== i);
+          check(wrong === -1, wrong === -1 ? '' : 'Ai legat „' + q.pairs[wrong].a + '” de „' + q.pairs[Number(selections.get(wrong))].b + '”. Mai caută o pereche pentru „' + q.pairs[wrong].a + '”.');
         }, 'btn btn-primary'));
       } else if (q.kind === 'placevalue') {
         let tens = 0, units = 0;
@@ -1040,7 +1060,7 @@ const Engines = {
           controls.appendChild(button(entry[0], () => { if (solved) return; entry[1](); update(); }));
         });
         content.appendChild(model); content.appendChild(controls);
-        content.appendChild(button('Verifică numărul', () => check(tens === q.tens && units === q.units), 'btn btn-primary'));
+        content.appendChild(button('Verifică numărul', () => check(tens === q.tens && units === q.units, 'Ai construit numărul ' + (tens * 10 + units) + '.'), 'btn btn-primary'));
         update();
       } else if (q.kind === 'numberline') {
         const label = document.createElement('label'); label.textContent = 'Poziția pe axă'; label.htmlFor = 'axis-input';
@@ -1049,7 +1069,7 @@ const Engines = {
         const track = document.createElement('p'); track.className = 'axis-labels'; track.textContent = '0 ←────────→ ' + q.max;
         content.appendChild(label); content.appendChild(this.rangeControl(input)); content.appendChild(track);
         content.appendChild(button('Verifică poziția', () => {
-          check(Number(input.value) === q.answer);
+          check(Number(input.value) === q.answer, 'Ai ales numărul ' + input.value + '.');
           input.disabled = solved; this.refreshRangeControls(content);
         }, 'btn btn-primary'));
       } else if (q.kind === 'robot') {
@@ -1087,18 +1107,18 @@ const Engines = {
       } else if (q.kind === 'writing') {
         const label = document.createElement('label'); label.textContent = 'Textul tău'; label.htmlFor = 'writing-text';
         const input = document.createElement('textarea'); input.id = 'writing-text'; input.rows = 6; input.lang = 'ro'; input.maxLength = 5000;
-        const note = document.createElement('p'); note.textContent = 'Autoevaluare: nu primești o certificare automată a gramaticii. Textul nu este trimis unui server și nu este salvat în progres.';
+        const note = document.createElement('p'); note.textContent = 'Recitește ce ai scris. Jocul nu poate verifica dacă povestea are sens. Textul tău nu se păstrează și nu se trimite nimănui.';
         const checks = q.checklist.map((text, i) => {
           const row = document.createElement('label'); row.className = 'radio-choice';
           const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.id = 'writing-check-' + i;
           row.appendChild(checkbox); row.appendChild(document.createTextNode(' ' + text)); return { row, checkbox };
         });
         content.appendChild(label); content.appendChild(input); content.appendChild(note); checks.forEach(item => content.appendChild(item.row));
-        content.appendChild(button('Verifică forma și încheie autoevaluarea', () => {
+        content.appendChild(button('Verifică textul', () => {
           const review = this.reviewWriting(input.value, q.minimum, q.minWords);
           if (!review.valid) { announce(review.message, true); return; }
-          if (!checks.every(item => item.checkbox.checked)) { announce('Recitește textul și verifică fiecare criteriu. Cere feedback unui adult dacă ai dubii.', true); return; }
-          check(true, 'Autoevaluare înregistrată, fără acordarea unei stele de competență.');
+          if (!checks.every(item => item.checkbox.checked)) { announce('Recitește textul. Bifează fiecare rând pe care l-ai verificat. Poți cere ajutor unui adult.', true); return; }
+          check(true, 'Ai terminat exercițiul de scriere. La acest joc nu se dau stele.');
         }, 'btn btn-primary'));
       } else throw new Error('Interfață de joc indisponibilă: ' + q.kind);
       const listenTask = container.querySelector('#game-listen'), listenFeedback = container.querySelector('#game-listen-feedback');
@@ -1130,8 +1150,8 @@ const Engines = {
       const practice = !!demo.focus || demo.type === 'mission';
       const result = { level, total: rounds.length, firstCorrect, hints, errors, moves, evaluation: practice ? 'practice' : self ? 'self' : demo.type === 'memory' ? 'practice' : 'objective',
         percent: Math.round(firstCorrect / rounds.length * 100), finishedAt: new Date().toISOString() };
-      container.innerHTML = '<h3 tabindex="-1">Ai încheiat runda!</h3><p>' + (practice ? 'Ai exersat jocul ales separat, fără stele și fără modificarea progresului salvat. Pentru înregistrarea progresului lecției, revino la jocul inițial.' :
-        self ? 'Ai exersat scrierea și autoevaluarea. Cere și feedback uman.' :
+      container.innerHTML = '<h3 tabindex="-1">Ai încheiat runda!</h3><p>' + (practice ? 'Ai exersat un joc în plus, fără stele. Pentru stele, alege „Jocul lecției”.' :
+        self ? 'Ai scris și ai recitit. Poți ruga un adult să citească și el povestea ta.' :
         demo.type === 'memory' ? 'Ai exersat o strategie de memorare. Numărul de încercări nu este o notă.' :
           'Ai rezolvat din prima ' + firstCorrect + ' din ' + rounds.length + '. ' + (firstCorrect === rounds.length ? 'Toate corecte!' : 'Pe celelalte le-ai corectat. Așa se învață!')) +
         '</p>' + (hints ? '<p>Indicii folosite: ' + hints + '.</p>' : '') + '<p>Poți lua o pauză, poți juca din nou sau poți alege alt nivel.</p>';
@@ -1156,7 +1176,7 @@ const Engines = {
     if (!/[.!?]$/.test(value)) return { valid: false, message: 'Încheie textul cu un semn de punctuație potrivit.' };
     if (sentences.length < minimum) return { valid: false, message: 'Scrie cel puțin ' + this.quantity(minimum, 'enunț încheiat', 'enunțuri încheiate') + ' cu semne de punctuație.' };
     if (words.some(word => /^(.)\1{2,}$/i.test(word))) return { valid: false, message: 'Am observat un șir de litere repetate. Recitește și scrie cuvinte cu sens.' };
-    return { valid: true, message: 'Criteriile automate de formă sunt îndeplinite. Sensul și gramatica necesită recitire și feedback uman.' };
+    return { valid: true, message: 'Ai urmat regulile verificate de joc. Recitește textul. Un adult te poate ajuta să verifici dacă are sens și este scris corect.' };
   },
 
   renderRobot(content, q, check, announce, button, isSolved, cleanup) {

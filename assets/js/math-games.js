@@ -32,14 +32,14 @@ const MathWorkshop = {
     const b = Engines.randInt(1, subtract ? Math.min(a - 1, [5, 12, 35][level]) : Math.min(limit - a, [5, 12, 35][level]));
     const answer = subtract ? a - b : a + b, sign = subtract ? '−' : '+';
     const explain = a + ' ' + sign + ' ' + b + ' = ' + answer + '. Verificăm prin ' + (subtract ? answer + ' + ' + b + ' = ' + a : answer + ' − ' + b + ' = ' + a) + '.';
-    if (index % 4 === 0) return { kind: 'numberline', prompt: 'Un salt, un plan: ' + a + ' ' + sign + ' ' + b + '. Unde ajungi pe axă?',
-      start: a, step: b, subtract, answer, max: limit, explain, hint: 'Pornește de la ' + a + ' și fă ' + b + ' pași ' + (subtract ? 'înapoi.' : 'înainte.') };
+    if (index % 4 === 0) return { kind: 'numberline', prompt: 'Calculează ' + a + ' ' + sign + ' ' + b + '. Alege numărul la care ajungi.',
+      start: a, step: b, subtract, answer, max: limit, explain, hint: 'Pornește de la ' + a + ' și fă ' + Engines.quantity(b, 'pas', 'pași') + ' ' + (subtract ? 'înapoi.' : 'înainte.') };
     if (index % 4 === 1) return this.calculation('Găsește numărul ascuns: ' + a + ' ' + sign + ' □ = ' + answer + '.',
-      [{ label: 'Ce număr lipsește?', answer: b }], explain, 'Folosește operația inversă. Reprezintă diferența pe axă.', { numberCard: a + ' ' + sign + ' ? = ' + answer });
+      [{ label: 'Ce număr lipsește?', answer: b }], explain, 'Numără câți pași sunt între ' + a + ' și ' + answer + '.', { numberCard: a + ' ' + sign + ' ? = ' + answer });
     if (index % 4 === 2) {
       const first = subtract ? answer : a, second = b;
       const total = subtract ? a : answer;
-      return this.calculation('Completează familia de operații pornind de la aceleași trei numere.',
+      return this.calculation('Completează cele două calcule folosind numerele din desen.',
         [{ label: first + ' + ' + second + ' =', answer: total }, { label: total + ' − ' + first + ' =', answer: second }],
         first + ' + ' + second + ' = ' + total + ', iar ' + total + ' − ' + first + ' = ' + second + '.',
         'Întregul este suma celor două părți. Acoperă pe rând o parte.', { bars: [first, second] });
@@ -115,14 +115,14 @@ const MathWorkshop = {
       'Fă întâi măsurarea de la reperul de început, apoi scăderea.', { ruler: { start, end: start + length, max: 22 } });
   },
   fractions(level, index) {
-    const parts = level === 0 ? (index % 2 ? 4 : 2) : level === 1 ? (index % 3 ? 4 : 8) : (index % 3 ? 8 : 16);
+    const parts = level === 0 ? (index % 2 ? 4 : 2) : 4;
     const target = level === 0 ? parts / 2 : level === 1 ? parts / (index % 2 ? 2 : 4) : parts * (index % 2 ? 3 / 4 : 1 / 2);
     const initial = level === 2 ? Array.from({ length: parts / 4 }, (_, i) => i) : [];
     return { kind: 'fraction-paint', parts, target, initial, columns: level === 0 ? 2 : 4,
       prompt: level === 0 ? 'Colorează o jumătate din foaie. Părțile au aceeași mărime.' :
         level === 1 ? 'Colorează ' + (target * 2 === parts ? 'o jumătate' : 'un sfert') + ' din foaia împărțită în ' + parts + ' părți egale.' :
           'Un sfert este deja colorat. Completează până la ' + (target * 2 === parts ? 'o jumătate' : 'trei sferturi') + ' din întreg, fără să ștergi modelul.',
-      explain: 'Ai colorat ' + target + ' din ' + parts + ' părți egale. ' + (target * 2 === parts ? 'Acestea formează o jumătate.' : target * 4 === parts ? 'Aceasta este un sfert.' : 'Părțile colorate reprezintă trei sferturi.'),
+      explain: 'Ai colorat ' + target + ' din ' + parts + ' părți egale. În total, ai colorat ' + (target * 2 === parts ? 'o jumătate.' : target * 4 === parts ? 'un sfert.' : 'trei sferturi.'),
       hint: 'Toate părțile sunt egale. Numără câte părți trebuie să fie colorate în total, nu doar câte adaugi.' };
   },
   geometry(mode, level, index, selectedVariant) {
@@ -136,19 +136,19 @@ const MathWorkshop = {
       const area = level === 2 ? width * height : null;
       return { kind: 'geoboard', size, goal: { shape: target, area }, solution,
         prompt: 'Desenează pe grilă ' + (target === 'triangle' ? 'un triunghi' : target === 'square' ? 'un pătrat' : 'un dreptunghi') +
-          (area ? ' care acoperă ' + Engines.quantity(area, 'pătrățel', 'pătrățele') : '') + '. Sunt acceptate toate construcțiile corecte.',
-        explain: 'Am verificat laturile, unghiurile, conturul fără încrucișări' + (area ? ' și suprafața de ' + Engines.quantity(area, 'pătrățel', 'pătrățele') : '') + '. Poziția și orientarea pot fi diferite.',
+          (area ? ' care acoperă ' + Engines.quantity(area, 'pătrățel', 'pătrățele') : '') + '.',
+        explain: 'Laturile și colțurile sunt potrivite. Liniile nu se încrucișează.' + (area ? ' Figura acoperă ' + Engines.quantity(area, 'pătrățel', 'pătrățele') + '.' : '') + ' Poți desena figura și în alt loc sau întoarsă.',
         hint: 'Alege vârfurile pe rând de-a lungul conturului. Pentru un pătrat, laturile sunt egale și unghiurile sunt drepte.' };
     }
     if (variant === 1) {
-      const size = [6, 6, 8][level], half = size / 2, points = [];
+      const size = [4, 6, 6][level], half = size / 2, points = [];
       const candidates = [];
       for (let y = 0; y < size - 1; y++) for (let x = 0; x < half; x++) candidates.push({ x, y });
       Engines.shuffle(candidates).slice(0, 3 + level * 2).forEach(p => points.push(p));
       return { kind: 'symmetry', size, fixed: points, solution: points.map(p => ({ x: size - 1 - p.x, y: p.y })),
         prompt: 'Desenează în oglindă! Colorează în dreapta, la fel de departe de linia din mijloc.',
         explain: 'În oglindă, fiecare pătrățel stă pe același rând și la fel de departe de linie.',
-        hint: 'Pornește de lângă axă. Numără același număr de pătrățele în partea cealaltă.' };
+        hint: 'Pornește de lângă linia din mijloc. Numără la fel de multe pătrățele în partea cealaltă.' };
     }
     if (variant === 2) {
       const width = [3, 4, 5][level], height = [2, 3, 4][level], solution = [];
@@ -157,7 +157,7 @@ const MathWorkshop = {
       const blocked = level === 2 ? solution.splice(Engines.randInt(0, solution.length - 1), 1)[0] : [];
       return { kind: 'mosaic', width, height, blocked, solution,
         prompt: 'Acoperă toate pătrățelele libere cu piese de câte două. Piesele nu stau una peste alta.',
-        explain: 'Fiecare piesă acoperă exact două pătrățele vecine. Poți găsi și alte pavări decât modelul inițial.',
+        explain: 'Fiecare piesă acoperă exact două pătrățele vecine. Piesele pot fi așezate în mai multe feluri.',
         hint: 'Alege orientarea, apoi primul pătrățel al piesei. Dacă te blochezi, scoate o piesă și încearcă altă așezare.' };
     }
     if (variant === 3) {
@@ -175,7 +175,7 @@ const MathWorkshop = {
     const width = Engines.randInt(2, 6), height = Engines.randInt(2, 5);
     return this.calculation('Grădina are ' + width + ' pătrățele pe lungime și ' + height + ' pe lățime. Numără pătrățelele dinăuntru și drumul de jur împrejur.',
       [{ label: 'Pătrățele în interior', answer: width * height }, { label: 'Laturi de pătrățel pe contur', answer: 2 * (width + height) }],
-      'Înăuntru sunt ' + width * height + ' pătrățele. De jur împrejur: ' + width + ' + ' + height + ' + ' + width + ' + ' + height + ' = ' + 2 * (width + height) + '.',
+      'Înăuntru sunt ' + Engines.quantity(width * height, 'pătrățel', 'pătrățele') + '. De jur împrejur: ' + width + ' + ' + height + ' + ' + width + ' + ' + height + ' = ' + 2 * (width + height) + '.',
       'Interiorul se numără pe rânduri. Conturul este doar drumul de pe margine.', { garden: { width, height } });
   },
   polygonArea(points) {
@@ -195,9 +195,9 @@ const MathWorkshop = {
   },
   rulerSVG(ruler) {
     let ticks = '';
-    for (let i = 0; i <= ruler.max; i++) ticks += '<path d="M' + (22 + i * 20) + ' 80v' + (i % 5 ? 10 : 18) + '"/><text x="' + (22 + i * 20) + '" y="116" text-anchor="middle">' + i + '</text>';
+    for (let i = 0; i <= ruler.max; i++) ticks += '<path d="M' + (22 + i * 20) + ' 80v' + (i % 5 ? 10 : 18) + '"/>' + (i % 5 ? '' : '<text x="' + (22 + i * 20) + '" y="121" text-anchor="middle">' + i + '</text>');
     return '<svg class="math-illustration ruler-illustration" viewBox="0 0 490 140" role="img" aria-label="Bandă de la reperul ' + ruler.start + ' cm la reperul ' + ruler.end + ' cm."><rect x="15" y="76" width="455" height="52" rx="8" fill="#ffdc87"/>' +
-      '<rect x="' + (22 + ruler.start * 20) + '" y="28" width="' + (ruler.end - ruler.start) * 20 + '" height="30" rx="6" fill="#378a80"/><g stroke="#26324f" fill="#26324f" font-size="12">' + ticks + '</g></svg>';
+      '<rect x="' + (22 + ruler.start * 20) + '" y="28" width="' + (ruler.end - ruler.start) * 20 + '" height="30" rx="6" fill="#378a80"/><g stroke="#26324f" fill="#26324f" font-size="26">' + ticks + '</g></svg>';
   },
   rulerHTML(ruler) {
     return '<div class="ruler-model">' + this.rulerSVG(ruler) + '<div class="measurement-readings"><p>Început<strong>' + ruler.start + ' cm</strong></p>' +
@@ -256,6 +256,7 @@ const MathWorkshop = {
     }
     if (q.garden) {
       const garden = document.createElement('div'); garden.className = 'garden-grid'; garden.style.gridTemplateColumns = 'repeat(' + q.garden.width + ', minmax(0, 1fr))';
+      garden.style.maxWidth = Math.min(240, 240 * q.garden.width / q.garden.height) + 'px';
       garden.setAttribute('role', 'img'); garden.setAttribute('aria-label', q.garden.width + ' coloane și ' + q.garden.height + ' rânduri de pătrățele.');
       for (let i = 0; i < q.garden.width * q.garden.height; i++) { const cell = document.createElement('span'); cell.textContent = '✿'; garden.appendChild(cell); }
       content.appendChild(garden);
@@ -273,7 +274,8 @@ const MathWorkshop = {
       form.addEventListener('submit', event => {
         event.preventDefault(); if (isSolved()) return;
         if (inputs.some(input => !/^\d+$/.test(input.value.trim()))) { announce('Completează fiecare răspuns cu un număr întreg, fără litere sau semne.', true); return; }
-        check(inputs.every((input, i) => Number(input.value) === q.fields[i].answer));
+        const wrong = inputs.findIndex((input, i) => Number(input.value) !== q.fields[i].answer);
+        check(wrong === -1, wrong === -1 ? '' : 'La „' + q.fields[wrong].label + '” ai scris „' + inputs[wrong].value.trim() + '”. Acest număr nu se potrivește încă.');
       });
       content.appendChild(form); return true;
     }
@@ -289,7 +291,11 @@ const MathWorkshop = {
         card.setAttribute('aria-pressed', 'false'); gallery.appendChild(card);
       });
       content.appendChild(gallery);
-      content.appendChild(button('Verifică selecția', () => check(selected.size === q.correct.length && q.correct.every(i => selected.has(i))), 'btn btn-primary'));
+      content.appendChild(button('Verifică selecția', () => {
+        const wrong = [...selected].find(index => !q.correct.includes(index));
+        const missing = q.correct.find(index => !selected.has(index));
+        check(wrong === undefined && missing === undefined, wrong !== undefined ? 'Figura ' + (wrong + 1) + ' nu respectă cerința. Mai numără colțurile ei.' : missing !== undefined ? 'Mai este o figură de ales. Privește și figurile pe care nu le-ai apăsat.' : '');
+      }, 'btn btn-primary'));
       return true;
     }
     if (q.kind === 'geoboard') {
@@ -378,7 +384,12 @@ const MathWorkshop = {
       content.appendChild(grid);
       content.appendChild(button(symmetry ? 'Verifică oglindirea' : 'Verifică părțile', () => {
         const expected = symmetry ? q.solution.map(p => String(p.y * size + p.x)) : null;
-        check(symmetry ? selected.size === expected.length && expected.every(key => selected.has(key)) : selected.size === q.target);
+        const wrong = symmetry ? [...selected].find(key => !expected.includes(key)) : undefined;
+        const missing = symmetry ? expected.find(key => !selected.has(key)) : undefined;
+        const correct = symmetry ? wrong === undefined && missing === undefined : selected.size === q.target;
+        const cell = Number(wrong === undefined ? missing : wrong);
+        check(correct, correct ? '' : symmetry ? 'Verifică pătrățelul de pe rândul ' + (Math.floor(cell / size) + 1) + ', coloana ' + (cell % size + 1) + '. ' + (wrong === undefined ? 'Aici lipsește culoarea.' : 'Aici nu trebuie culoare.') :
+          'Ai colorat ' + Engines.quantity(selected.size, 'parte', 'părți') + '. ' + (selected.size < q.target ? 'Mai ai de colorat.' : 'Ai colorat prea mult. Apasă o parte ca să o ștergi.'));
       }, 'btn btn-primary'));
       return true;
     }
@@ -411,7 +422,10 @@ const MathWorkshop = {
       }
       content.appendChild(label); content.appendChild(board);
       const instruction = document.createElement('p'); instruction.textContent = 'Apasă o piesă așezată pentru a o scoate. Numerele identice arată cele două jumătăți ale aceleiași piese.'; content.appendChild(instruction);
-      content.appendChild(button('Verifică mozaicul', () => check(tiles.length * 2 === q.width * q.height - q.blocked.length), 'btn btn-primary'));
+      content.appendChild(button('Verifică mozaicul', () => {
+        const remaining = q.width * q.height - q.blocked.length - tiles.length * 2;
+        check(remaining === 0, remaining ? 'Au rămas ' + Engines.quantity(remaining, 'pătrățel liber', 'pătrățele libere') + '. Așază o piesă peste două pătrățele vecine.' : '');
+      }, 'btn btn-primary'));
       update(); return true;
     }
     return false;

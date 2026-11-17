@@ -66,8 +66,8 @@ const Discovery = {
         ['La „Zeci desfăcute în unități”, apasă plus.', 'Observă cum o bară este înlocuită cu zece unități.', 'Verifică totalul, apoi apasă minus pentru a reface grupul.']],
       11: ['Primești timbre, apoi oferi trei', 'Ai 8 timbre, primești 5 și apoi oferi 3. Punctele tăiate arată cele trei timbre oferite.',
         ['Urmărește cele două calcule: 8 + 5 = 13, apoi 13 − 3 = 10.', 'La „Câte adăugăm”, apasă plus o dată.', 'Câte timbre rămân acum? Cele trei oferite rămân aceleași.']],
-      12: ['Descoperă jumătatea unui întreg', 'Întregul este împărțit în 8 părți egale. La început, 4 dintre ele sunt colorate: o jumătate.',
-        ['La „Optimi colorate”, apasă plus o dată. Mai este colorată doar jumătate?', 'Apasă minus ca să revii la 4 părți colorate.', 'Continuă cu plus până la 8. Ai colorat întregul?']]
+      12: ['Descoperă jumătatea unui întreg', 'Întregul este împărțit în 4 părți egale. La început, 2 dintre ele sunt colorate: o jumătate.',
+        ['La „Sferturi colorate”, apasă plus o dată. Mai este colorată doar jumătate?', 'Apasă minus ca să revii la 2 părți colorate.', 'Continuă cu plus până la 4. Ai colorat întregul?']]
     };
     const experiment = experiments[activity.num];
     if (!experiment) throw new Error('Lipsește explorarea pentru ' + activity.id + '.');
@@ -108,8 +108,8 @@ const Discovery = {
     } else if (activity.subject === 'mat' && n > 12) {
       art = '<text x="180" y="105" text-anchor="middle" font-size="64" fill="#438577">' + Engines.escape(activity.icon) + '</text><text x="180" y="175" text-anchor="middle" font-size="30" fill="#34415e">1 · 10 · 100 · 1000</text>';
     } else if (activity.subject === 'mat') {
-      for (let i = 0; i < 8; i++) art += '<rect x="' + (55 + i % 4 * 61) + '" y="' + (38 + Math.floor(i / 4) * 61) + '" width="57" height="57" rx="4" fill="' + (i % 4 < 2 ? '#75ae9f' : '#fff3d9') + '" stroke="#53647c" stroke-width="2"/>';
-      art += '<text x="180" y="192" text-anchor="middle" font-size="23" fill="#34415e">4 optimi = o jumătate</text>';
+      for (let i = 0; i < 4; i++) art += '<rect x="' + (119 + i % 2 * 61) + '" y="' + (38 + Math.floor(i / 2) * 61) + '" width="57" height="57" rx="4" fill="' + (i % 2 === 0 ? '#75ae9f' : '#fff3d9') + '" stroke="#53647c" stroke-width="2"/>';
+      art += '<text x="180" y="192" text-anchor="middle" font-size="23" fill="#34415e">2 sferturi = o jumătate</text>';
     } else if (activity.subject === 'lim') {
       art = '<path d="M37 45q70-22 143 8 73-30 143-8v122q-70-22-143 8-73-30-143-8z" fill="#fff6dd" stroke="#ad8768" stroke-width="3"/><path d="M180 53v122" stroke="#ad8768" stroke-width="3"/><text x="70" y="108" font-size="45" fill="#ae523d">Ă a</text><path d="M65 130h85m-85 18h65m78-70h82m-82 20h82m-82 20h65m-65 20h82" stroke="#8292ae" stroke-width="4"/><path d="M263 32l9-18 9 18 20 3-15 14 4 20-18-10-18 10 4-20-15-14z" fill="#e7b857"/>';
     } else if (activity.subject === 'log') {
@@ -194,10 +194,10 @@ const Discovery = {
         status.textContent = a.value + ' × 3 = ' + total + ' lei. ' + (money >= total ? 'După plată rămân ' + Engines.quantity(money - total, 'leu', 'lei') + '.' : 'Mai trebuie ' + Engines.quantity(total - money, 'leu', 'lei') + '. Nu avem încă suficienți bani.');
       };
     } else if (n === 12) {
-      a = slider('Optimi colorate', 0, 8, 4);
+      a = slider('Sferturi colorate', 0, 4, 2);
       update = () => {
-        picture.innerHTML = '<div class="fraction-preview" role="img" aria-label="' + a.value + ' din 8 părți egale colorate">' + Array.from({ length: 8 }, (_, i) => '<span class="' + (i < Number(a.value) ? 'painted' : '') + '"></span>').join('') + '</div>';
-        status.textContent = a.value + '/8 din întreg. ' + ({ 0: 'Nicio parte colorată.', 2: 'Aceasta este un sfert.', 4: 'Aceasta este o jumătate.', 6: 'Acestea sunt trei sferturi.', 8: 'Ai colorat întregul.' }[a.value] || 'Compară cu două, patru sau șase optimi.');
+        picture.innerHTML = '<div class="fraction-preview" role="img" aria-label="' + a.value + ' din 4 părți egale colorate">' + Array.from({ length: 4 }, (_, i) => '<span class="' + (i < Number(a.value) ? 'painted' : '') + '"></span>').join('') + '</div>';
+        status.textContent = a.value + '/4 din întreg. ' + { 0: 'Nicio parte colorată.', 1: 'Acesta este un sfert.', 2: 'Aceasta este o jumătate.', 3: 'Acestea sunt trei sferturi.', 4: 'Ai colorat întregul.' }[a.value];
       };
     } else {
       a = slider(n === 11 ? 'Timbre la început' : 'Prima cantitate', n === 11 ? 3 : 1, 20, 8);

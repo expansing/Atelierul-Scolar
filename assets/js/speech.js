@@ -24,16 +24,30 @@ const Speech = {
     const marks = { ',': 'virgulă', '.': 'punct', '?': 'semnul întrebării', '!': 'semnul exclamării', ':': 'două puncte', ';': 'punct și virgulă', '-': 'liniuță' };
     const value = String(text).trim();
     if (marks[value]) return marks[value];
+    if (!/\p{L}/u.test(value)) {
+      const symbols = {
+        '🍎': 'măr', '🍐': 'pară', '🍌': 'banană', '🍇': 'struguri', '🍋': 'lămâie', '🍓': 'căpșună', '🌷': 'lalea', '🖍': 'creion',
+        '🌸': 'floare', '🌳': 'copac', '🍃': 'frunză', '⭐': 'stea', '🌙': 'lună', '☀': 'soare', '🌧': 'ploaie', '☂': 'umbrelă',
+        '🐶': 'câine', '🐕': 'câine', '🐱': 'pisică', '🐈': 'pisică', '🐟': 'pește', '🐸': 'broască', '🦆': 'rață', '🐭': 'șoarece', '🐘': 'elefant',
+        '👧': 'fată', '🧒': 'copil', '🚗': 'mașină', '🚲': 'bicicletă', '🚌': 'autobuz', '⚽': 'minge', '🎈': 'balon', '🏠': 'casă',
+        '📖': 'carte', '📕': 'carte roșie', '📘': 'carte albastră', '📗': 'carte verde', '📒': 'caiet galben', '🥛': 'pahar cu lapte',
+        '❤': 'inimă roșie', '💙': 'inimă albastră', '💚': 'inimă verde', '💛': 'inimă galbenă',
+        '🔴': 'cerc roșu', '🔵': 'cerc albastru', '⚫': 'cerc negru', '🔺': 'triunghi', '🔷': 'romb',
+        '⬆': 'sus', '➡': 'dreapta', '⬇': 'jos', '⬅': 'stânga', '❓': 'locul de completat', '⏰': 'ceas',
+        '🎲': 'zar', '🍦': 'cornet de înghețată', '🥫': 'conservă', '📦': 'cutie', '🍬': 'bomboană'
+      };
+      return value.replace(/\p{Extended_Pictographic}\uFE0F?/gu, symbol => (symbols[symbol.replace(/\uFE0F/g, '')] || 'desen') + ', ').replace(/[,\s]+$/, '').replace(/\s+/g, ' ').trim();
+    }
     return value.replace(/\p{Extended_Pictographic}️?/gu, '').replace(/\s+/g, ' ').trim();
   },
   stop() { if (this.supported()) window.speechSynthesis.cancel(); },
   // întoarce un mesaj de eroare sau '' dacă citirea a pornit
   async speak(text, handlers) {
     const on = handlers || {};
-    if (!this.supported()) return 'Citirea vocală nu este disponibilă în acest browser.';
+    if (!this.supported()) return 'Pe acest dispozitiv nu merge citirea cu voce. Textul rămâne pe ecran. Poți cere ajutor unui adult.';
     window.speechSynthesis.cancel();
     const voice = await this.voice();
-    if (!voice) return 'Browserul nu are o voce română disponibilă. Poți instala una din setările dispozitivului; textul rămâne disponibil pentru citire.';
+    if (!voice) return 'Nu am găsit o voce în română. Textul rămâne pe ecran. Un adult poate verifica vocile din setările dispozitivului.';
     // Fără voce română pe dispozitiv folosim vocea online a browserului, ca un copil care
     // citește greu să nu rămână blocat. Se citesc numai textele lecțiilor, nu ce scrie copilul.
     const speech = new SpeechSynthesisUtterance(text);

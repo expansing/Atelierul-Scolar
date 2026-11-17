@@ -55,6 +55,52 @@ test('Every generated round has valid distinct answers across 100 samples per le
     }
   });
 });
+test('Seeded sampling checks generated arithmetic and Romanian number agreement', () => {
+  let seed = 20261117;
+  const math = Object.create(Math);
+  math.random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
+  const content = loadContent({ Math: math });
+  const calculate = expression => {
+    const sum = expression.split(/([+−])/);
+    const product = value => {
+      const terms = value.split(/([×:])/);
+      let result = Number(terms[0]);
+      for (let index = 1; index < terms.length; index += 2) result = terms[index] === '×' ? result * Number(terms[index + 1]) : result / Number(terms[index + 1]);
+      return result;
+    };
+    let result = product(sum[0]);
+    for (let index = 1; index < sum.length; index += 2) result += sum[index] === '+' ? product(sum[index + 1]) : -product(sum[index + 1]);
+    return result;
+  };
+  let sessions = 0, rounds = 0, equations = 0;
+  content.ACTIVITIES.forEach(activity => {
+    for (let level = 0; level < 3; level++) for (let sample = 0; sample < 1000; sample++) {
+      sessions++;
+      content.Engines.rounds(activity.demo, level).forEach(question => {
+        rounds++;
+        const context = activity.id + '/' + level + ': ';
+        const texts = [question.prompt, question.hint, question.explain, question.observation, question.passage].filter(Boolean);
+        if (question.options) {
+          assert.strictEqual(new Set(question.options).size, question.options.length, context + 'duplicate answers');
+          assert(question.options[question.answer], context + 'missing answer');
+          const direct = question.prompt.match(/^Cât face (\d+\s*[+−×:]\s*\d+)\?/);
+          if (direct) assert.strictEqual(Number(question.options[question.answer]), calculate(direct[1]), context + question.prompt);
+        }
+        texts.forEach(text => {
+          for (const match of text.matchAll(/\b(\d+)\s+(lei|bani|flori|jetoane|pătrățele|minute|pași|unități|desene|cărți|păsări|copii|cuburi|silabe|stele|bile|buchete)\b/gu)) {
+            const count = Number(match[1]);
+            assert(count !== 1 && !(count > 0 && (count % 100 === 0 || count % 100 >= 20)), context + text);
+          }
+          for (const match of text.matchAll(/(\d+(?:(?:\s*[+×−]\s*|\s+:\s+)\d+)+)\s*=\s*(\d+)/g)) {
+            equations++;
+            assert.strictEqual(calculate(match[1]), Number(match[2]), context + text);
+          }
+        });
+      });
+    }
+  });
+  console.log('  Seed 20261117: ' + sessions + ' sessions, ' + rounds + ' rounds, ' + equations + ' independently checked equations.');
+});
 test('Procedural content varies, and counting really reaches 100', () => {
   const numbers = new Set();
   for (let i = 0; i < 1000; i++) numbers.add(data.Engines.generate('placevalue', 'build', 2, i * 3).number);
@@ -134,6 +180,7 @@ test('Visual arithmetic, measurement, fractions, shopping and balance agree with
     assert.strictEqual(ruler.fields[0].answer, ruler.ruler.end - ruler.ruler.start);
     assert(ruler.ruler.start >= 0 && ruler.ruler.end <= ruler.ruler.max);
     const fraction = data.MathWorkshop.fractions(level, i);
+    assert([2, 4].includes(fraction.parts), 'Only halves and quarters in the class I-II lesson');
     assert(Number.isInteger(fraction.target) && fraction.target > fraction.initial.length && fraction.target < fraction.parts);
     assert(fraction.parts % fraction.columns === 0);
     assert([1 / 4, 1 / 2, 3 / 4].includes(fraction.target / fraction.parts));
@@ -209,7 +256,33 @@ test('Romanian quantities handle singular, plural and de', () => {
     data.Engines.randInt = min => min;
     assert(data.MathWorkshop.arithmetic('subtract', 1, 3).prompt.includes('A fost luat 1 jeton.'));
     assert(data.MathWorkshop.arithmetic('add', 1, 3).prompt.includes('A fost adăugat 1 jeton.'));
+    assert(data.MathWorkshop.arithmetic('add', 0, 0).hint.includes('fă 1 pas înainte'));
+    assert(data.Engines.generate('placevalue', 'build', 0, 1).fields[0].label.includes('face o zece'));
+    data.Engines.randInt = (min, max) => max;
+    assert(data.MathWorkshop.geometry('properties', 2, 4).explain.includes('30 de pătrățele'));
+    for (let sample = 0; sample < 50; sample++) {
+      const clock = data.Engines.generate('clock', 'time', 2, sample);
+      assert(!/\b(?:20|25) minute/.test(clock.prompt + clock.explain));
+    }
   } finally { data.Engines.randInt = random; }
+});
+test('The thousand lesson stays within 1000 and generated singulars agree', () => {
+  const random = data.Engines.randInt, draw = data.Engines.draw;
+  try {
+    data.Engines.randInt = (min, max) => max;
+    const sequence = data.Engines.generate('gen', 'thousand', 0, 1);
+    assert.strictEqual(Number(sequence.options[sequence.answer]), 1000);
+    assert(!/1100|1200/.test(sequence.prompt));
+    data.Engines.randInt = min => min;
+    assert(data.Engines.generate('gen', 'nature', 0, 0).prompt.includes('mai vine 1 pasăre'));
+    data.Engines.randInt = (min, max) => min === 10 && max === 19 ? 11 : min;
+    assert(data.Engines.generate('placevalue', 'build', 0, 2).explain.includes('1 unitate separată'));
+    data.Engines.draw = (list, count) => list.slice(0, count);
+    assert(data.Engines.generate('gen', 'data', 0, 1).explain.includes('este 1 desen'));
+    const words = data.Engines.wordRounds('syllables', 2, 10).map(question => question.tokens.join(''));
+    assert(words.includes('calendarul') && words.includes('mulțumire'));
+    assert(!words.includes('caluluui') && !words.includes('mulțumescu'));
+  } finally { data.Engines.randInt = random; data.Engines.draw = draw; }
 });
 test('Writing rejects xxx, incomplete and undersized text honestly', () => {
   const review = data.Engines.reviewWriting.bind(data.Engines);
@@ -303,14 +376,36 @@ test('All lessons have specific vocabulary, visible worked steps, four goals and
       assert(html.includes(data.Engines.escape(text)), activity.id + ': rendered teaching detail');
       assert(speech.includes(text), activity.id + ': spoken teaching detail');
     });
+    const guide = data.Render.subject(activity.subject);
     activity.reflection.forEach(item => {
-      assert(html.includes(data.Engines.escape(item.question)) && html.includes(data.Engines.escape(item.support)), activity.id);
+      assert(guide.includes(data.Engines.escape(item.question)) && guide.includes(data.Engines.escape(item.support)), activity.id);
     });
     assert.strictEqual((html.match(/class="discovery-column"/g) || []).length, 2);
     assert(!html.includes('<details><summary>Desfacem'), 'Worked steps should not start hidden');
   });
   assert.strictEqual(explanations.size, data.ACTIVITIES.length);
   assert.strictEqual(checks.size, data.ACTIVITIES.length);
+});
+test('Adult guidance is grouped by subject without losing lesson content or changing progress', () => {
+  const before = data.Progress.exportData();
+  data.SUBJECTS.forEach(subject => {
+    const html = data.Render.subject(subject.id);
+    assert.strictEqual((html.match(/id="panel-parinte"/g) || []).length, 1);
+    assert(html.includes('id="tab-lectii" aria-controls="panel-lectii" aria-selected="true"'));
+    data.ACTIVITIES.forEach(activity => {
+      assert.strictEqual(html.includes('id="adult-' + activity.id + '"'), activity.subject === subject.id);
+      if (activity.subject !== subject.id) return;
+      activity.objectives.concat(activity.pass, activity.parent.watch, activity.parent.help, activity.parent.support).forEach(text => {
+        assert(html.includes(data.Engines.escape(text)), activity.id + ': preserved adult guidance');
+      });
+      assert(html.includes(data.Render.results(activity.id)), activity.id + ': preserved results');
+      const lesson = data.Render.activity(activity.id);
+      assert(!lesson.includes('id="tab-parinte"') && !lesson.includes('id="panel-parinte"'));
+      assert(lesson.includes('id="tab-joc" aria-controls="panel-joc" aria-selected="true"'));
+      assert(lesson.includes('class="safety-note"'), activity.id + ': safety stays with the lesson');
+    });
+  });
+  assert.strictEqual(data.Progress.exportData(), before, 'Reading adult guidance must not modify progress');
 });
 test('Selected games produce only the chosen mechanic at every supported level', () => {
   const expected = { draw: 'geoboard', symmetry: 'symmetry', mosaic: 'mosaic', properties: 'shape-select',
