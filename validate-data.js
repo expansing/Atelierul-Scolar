@@ -85,6 +85,7 @@ function validate(data) {
     requireValue(activity.objectives.length === 4 && activity.reflection.length === 4 &&
       activity.reflection.every(item => text(item.question) && text(item.support)), id + ': obiective sau reflecții incomplete.');
     requireValue(validSubjects.has(activity.subject), id + ': disciplină necunoscută.');
+    requireValue(['I', 'II', 'I-II'].includes(activity.grade), id + ': lipsește clasa potrivită.');
     ['title', 'icon', 'duration'].forEach(key => requireValue(text(activity[key]), id + ': lipsește ' + key));
     ['objectives', 'explanation', 'guided', 'questions', 'pass'].forEach(key => requireValue(texts(activity[key]) && activity[key].length >= 2, id + ': secțiune incompletă: ' + key));
     requireValue(activity.explanation.length >= 3 && activity.guided.length >= 3, id + ': lecția nu are toți pașii.');

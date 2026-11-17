@@ -15,6 +15,10 @@ Atelier educațional static, în limba română, pentru copii de **6–8 ani** (
 - **Citire vocală:** se folosește întâi vocea română de pe dispozitiv; dacă lipsește, vocea română online a browserului (se trimit doar textele lecțiilor). Fără nicio voce română, butonul explică limitarea.
 - **Emoji:** au rămas doar emoji vechi, care se văd și pe tablete cu Android 8.
 
+## Clasa potrivită
+
+Fiecare lecție arată pentru ce clasă este potrivită: **Clasa I** (20 de lecții), **Clasa a II-a** (22) sau **Clasele I–II** (58: tema începe în clasa I și continuă în a II-a). Încadrarea urmează conținuturile din programele școlare pentru clasele pregătitoare–a II-a (OM 3418/2013: Comunicare în limba română, Matematică și explorarea mediului, Dezvoltare personală). Logica și tehnologia nu sunt discipline separate în aceste clase; pentru ele nivelul este ales după dificultate. Lista este `GRADE` în `assets/js/data.js`.
+
 ## Pornire
 
 ```bash

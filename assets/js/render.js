@@ -72,7 +72,7 @@ const Render = {
       '<button class="tab" role="tab" id="tab-parinte" aria-controls="panel-parinte" aria-selected="false" tabindex="-1" data-tab="parinte">👪 Pentru adulți</button></div>' +
       '<div class="panels">' + this.panel('lectii', '<div class="activities-list">' + ACTIVITIES_BY_SUBJECT[id].map(a => '<a class="activity-card" href="activity.html?activity=' + a.id + '" style="--sc:' + subject.color + '">' +
         '<div class="ac-num">' + a.num + '</div><div class="ac-icon" aria-hidden="true">' + a.icon + '</div><div class="ac-body"><h2>' + a.title + '</h2><p class="kid-line">' + this.escape(a.kid || a.objectives[0]) + '</p>' +
-        '<span class="chip">' + Progress.label(a.id) + '</span></div></a>').join('') + '</div>' +
+        '<span class="chip grade-chip">' + a.gradeLabel + '</span> <span class="chip">' + Progress.label(a.id) + '</span></div></a>').join('') + '</div>' +
       (THINKING_PATH.activities.some(activityId => ACTIVITIES_BY_SUBJECT[id].some(activity => activity.id === activityId)) ? this.thinkingPath() : ''), true) +
       this.panel('parinte', this.adultGuide(subject)) + '</div>';
   },
@@ -83,7 +83,7 @@ const Render = {
     const preferredLevel = Preferences.get(Progress.profile()).level;
     const tabs = [['joc', '🎮 Joacă'], ['explicatie', '📖 Descoperă']];
     return '<section class="lesson-hero" style="--sc:' + subject.color + '"><div class="lh-icon" aria-hidden="true">' + activity.icon + '</div>' +
-      '<a href="subject.html?subject=' + subject.id + '">' + subject.title + '</a><h1>' + activity.title + '</h1><p>' + activity.duration + ' · <span id="activity-status">' + Progress.label(id) + '</span></p></section>' +
+      '<a href="subject.html?subject=' + subject.id + '">' + subject.title + '</a><h1>' + activity.title + '</h1><p><span class="grade-chip-text">' + activity.gradeLabel + '</span> · ' + activity.duration + ' · <span id="activity-status">' + Progress.label(id) + '</span></p></section>' +
       '<div class="tabs" role="tablist" aria-label="Secțiunile lecției">' + tabs.map((t, i) => '<button class="tab' + (i === 0 ? ' active' : '') +
         '" role="tab" id="tab-' + t[0] + '" aria-controls="panel-' + t[0] + '" aria-selected="' + (i === 0) + '" tabindex="' + (i === 0 ? '0' : '-1') + '" data-tab="' + t[0] + '">' + t[1] + '</button>').join('') + '</div>' +
       '<div class="panels">' +

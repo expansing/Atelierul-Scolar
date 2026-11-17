@@ -1924,6 +1924,27 @@ const KID = {
 };
 ACTIVITIES.forEach(activity => { activity.kid = KID[activity.id] || ''; });
 
+// Clasa potrivită, după programa școlară (OM 3418/2013): 'I', 'II' sau 'I-II' (începe în clasa I și continuă în a II-a).
+// Logica și tehnologia nu sunt discipline separate în clasele I–II; nivelul lor este ales după dificultate.
+const GRADE = {
+  'mat-1': 'I', 'mat-2': 'I', 'mat-3': 'I', 'mat-4': 'I-II', 'mat-5': 'I', 'mat-6': 'I-II', 'mat-7': 'I-II', 'mat-8': 'I-II', 'mat-9': 'I-II',
+  'mat-10': 'I', 'mat-11': 'I', 'mat-12': 'II', 'mat-13': 'II', 'mat-14': 'II', 'mat-15': 'II', 'mat-16': 'I-II', 'mat-17': 'I-II', 'mat-18': 'I-II',
+  'mat-19': 'I-II', 'mat-20': 'I-II', 'mat-21': 'I-II', 'mat-22': 'II', 'mat-23': 'I',
+  'lim-1': 'I', 'lim-2': 'I', 'lim-3': 'I', 'lim-4': 'I', 'lim-5': 'I-II', 'lim-6': 'I-II', 'lim-7': 'I', 'lim-8': 'I', 'lim-9': 'I-II', 'lim-10': 'I-II',
+  'lim-11': 'I-II', 'lim-12': 'I-II', 'lim-13': 'I-II', 'lim-14': 'I', 'lim-15': 'I-II', 'lim-16': 'II', 'lim-17': 'II', 'lim-18': 'II', 'lim-19': 'I-II',
+  'lim-20': 'I-II', 'lim-21': 'I-II',
+  'log-1': 'I-II', 'log-2': 'I-II', 'log-3': 'I-II', 'log-4': 'I-II', 'log-5': 'I-II', 'log-6': 'I-II', 'log-7': 'I-II', 'log-8': 'I-II', 'log-9': 'I-II',
+  'log-10': 'I-II', 'log-11': 'II', 'log-12': 'II', 'log-13': 'II', 'log-14': 'II',
+  'inf-1': 'I-II', 'inf-2': 'I-II', 'inf-3': 'I-II', 'inf-4': 'I-II', 'inf-5': 'I-II', 'inf-6': 'I-II', 'inf-7': 'I-II', 'inf-8': 'II', 'inf-9': 'I-II',
+  'sci-1': 'I-II', 'sci-2': 'I-II', 'sci-3': 'I-II', 'sci-4': 'I', 'sci-5': 'I', 'sci-6': 'I-II', 'sci-7': 'I', 'sci-8': 'I', 'sci-9': 'II', 'sci-10': 'I-II',
+  'sci-11': 'I-II', 'sci-12': 'II', 'sci-13': 'I-II', 'sci-14': 'I-II', 'sci-15': 'II', 'sci-16': 'I-II',
+  'civ-1': 'I-II', 'civ-2': 'I', 'civ-3': 'I-II', 'civ-4': 'I-II', 'civ-5': 'I-II', 'civ-6': 'I-II', 'civ-7': 'II', 'civ-8': 'I-II', 'civ-9': 'II',
+  'civ-10': 'I-II', 'civ-11': 'I-II', 'civ-12': 'II', 'civ-13': 'I', 'civ-14': 'II', 'civ-15': 'I-II', 'civ-16': 'II', 'civ-17': 'II'
+};
+const GRADE_LABELS = { 'I': 'Clasa I', 'II': 'Clasa a II-a', 'I-II': 'Clasele I–II' };
+ACTIVITIES.forEach(activity => { activity.grade = GRADE[activity.id]; activity.gradeLabel = GRADE_LABELS[activity.grade]; });
+
+
 const THINKING_PATH = {
   title: 'Gândesc cu mintea mea',
   description: 'Observ, verific dovezile, îmi formez o părere și pot spune respectuos când gândesc altfel.',
